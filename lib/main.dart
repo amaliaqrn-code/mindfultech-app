@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/pages/registrasi_page.dart';
+import 'package:mindfultech_app/presentation/auth/registrasi_page.dart';
 
 void main() {
   runApp(MyApp());
