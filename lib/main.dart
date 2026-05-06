@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/presentation/auth/registrasi_page.dart';
+import 'package:mindfultech_app/presentation/pages/splash_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Montserrat',
         primarySwatch: Colors.blue,
       ),
-      home: RegistrasiPage(),
+      home: SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
