@@ -18,57 +18,80 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     if (currentIndex < onboardingData.length - 1) {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
-        curve: Curves.ease,
+        curve: Curves.easeInOut,
       );
     } else {
-      print("Masuk ke app");
+      print("Masuk App");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: onboardingData.length,
-              onPageChanged: (index) {
-                setState(() => currentIndex = index);
-              },
-              itemBuilder: (context, index) {
-                return OnBoardingItem(data: onboardingData[index]);
-              },
-            ),
-          ),
+      body: SafeArea(
+        child: Column(
+          children: [
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              onboardingData.length,
-              (index) => DotIndicator(
-                isActive: currentIndex == index,
+            // 🔥 PAGEVIEW
+            Expanded(
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: onboardingData.length,
+                onPageChanged: (index) {
+                  setState(() => currentIndex = index);
+                },
+                itemBuilder: (context, index) {
+                  return OnBoardingItem(
+                    data: onboardingData[index],
+                  );
+                },
               ),
             ),
-          ),
 
-          const SizedBox(height: 20),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ElevatedButton(
-              onPressed: nextPage,
-              child: Text(
-                currentIndex == onboardingData.length - 1
-                    ? "Masuk"
-                    : "Lanjut",
+            // 🔘 DOTS
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                onboardingData.length,
+                (index) => DotIndicator(
+                  isActive: currentIndex == index,
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 30),
-        ],
+            const SizedBox(height: 28),
+
+            // 🔥 BUTTON
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SizedBox(
+                width: double.infinity,
+                height: 58,
+                child: ElevatedButton(
+                  onPressed: nextPage,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff67C6FF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  child: Text(
+                    currentIndex == onboardingData.length - 1
+                        ? "Masuk"
+                        : "Lanjut",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 35),
+          ],
+        ),
       ),
     );
   }
