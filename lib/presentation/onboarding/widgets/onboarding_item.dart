@@ -50,7 +50,7 @@ class OnBoardingItem extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.white, // tetap wajib tapi nanti ditimpa shader
                     ),
                   ),
                 ),

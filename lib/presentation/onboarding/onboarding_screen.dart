@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfultech_app/presentation/auth/registrasi_page.dart';
 import 'onboarding_data.dart';
 import 'widgets/onboarding_item.dart';
 import 'widgets/dot_indicator.dart';
@@ -21,7 +22,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      print("Masuk App");
+      // 🔥 PINDAH KE LOGIN
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegistrasiPage(),
+        ),
+      );
     }
   }
 
@@ -61,28 +68,39 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
             const SizedBox(height: 28),
 
-            // 🔥 BUTTON
+            // 🔥 BUTTON GRADIENT
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
                 width: double.infinity,
                 height: 58,
-                child: ElevatedButton(
-                  onPressed: nextPage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff67C6FF),
-                    shape: RoundedRectangleBorder(
+                child: InkWell(
+                  onTap: nextPage,
+                  borderRadius: BorderRadius.circular(18),
+                  child: Ink(
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xff4597E6),
+                          Color(0xff7BBEFF),
+                          Color(0xff83DFC6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    currentIndex == onboardingData.length - 1
-                        ? "Masuk"
-                        : "Lanjut",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        currentIndex == onboardingData.length - 1
+                            ? "Masuk"
+                            : "Lanjut",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
