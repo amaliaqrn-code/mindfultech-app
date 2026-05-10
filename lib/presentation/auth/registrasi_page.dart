@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'login_page.dart';
 
 class RegistrasiPage extends StatefulWidget {
+  const RegistrasiPage({super.key});
+
   @override
-  _RegistrasiPageState createState() => _RegistrasiPageState();
+  State<RegistrasiPage> createState() => _RegistrasiPageState();
 }
 
 class _RegistrasiPageState extends State<RegistrasiPage> {
@@ -24,31 +27,34 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(height: 20),
 
-                  // Maskot
+                  const SizedBox(height: 20),
+
+                  // 🌟 IMAGE
                   Image.asset(
                     'assets/images/mindy_regist.png',
                     height: 100,
                     errorBuilder: (_, __, ___) =>
-                        Icon(Icons.cloud, size: 80, color: Colors.grey),
+                        const Icon(Icons.cloud, size: 80, color: Colors.grey),
                   ),
-                  SizedBox(height: 24),
 
-                  // Judul gradien
+                  const SizedBox(height: 24),
+
+                  // 🌈 TITLE
                   ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
-                      colors: [Color(0xFF4597E6), Color(0xFF7BBEFF), Color(0xFF83DFC6)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [
+                        Color(0xFF4597E6),
+                        Color(0xFF7BBEFF),
+                        Color(0xFF83DFC6),
+                      ],
                     ).createShader(bounds),
-                    child: Text(
+                    child: const Text(
                       'Buat Akun',
                       style: TextStyle(
                         fontSize: 24,
@@ -57,25 +63,30 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
+
+                  const SizedBox(height: 8),
+
+                  const Text(
                     'Teman fokus yang siap menemani harimu',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
                       color: Color(0xFF655F5F),
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 32),
 
+                  const SizedBox(height: 32),
+
+                  // INPUT
                   _buildTextField(
                     controller: _nameController,
                     label: 'Nama',
                     assetIcon: 'assets/images/profile.png',
                     validator: (v) => v!.isEmpty ? 'Nama harus diisi' : null,
                   ),
-                  SizedBox(height: 18),
+
+                  const SizedBox(height: 18),
+
                   _buildTextField(
                     controller: _emailController,
                     label: 'Email',
@@ -87,29 +98,30 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 18),
+
+                  const SizedBox(height: 18),
+
                   _buildPasswordField(
                     controller: _passwordController,
                     label: 'Kata Sandi',
                     obscureText: _obscurePassword,
                     onToggle: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
+                      setState(() => _obscurePassword = !_obscurePassword);
                     },
                     assetLock: 'assets/images/lock.png',
                     assetEye: 'assets/images/eye.png',
-                    validator: (v) => v!.length < 6 ? 'Minimal 6 karakter' : null,
+                    validator: (v) =>
+                        v!.length < 6 ? 'Minimal 6 karakter' : null,
                   ),
-                  SizedBox(height: 18),
+
+                  const SizedBox(height: 18),
+
                   _buildPasswordField(
                     controller: _confirmPasswordController,
                     label: 'Konfirmasi Kata Sandi',
                     obscureText: _obscureConfirmPassword,
                     onToggle: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
+                      setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
                     },
                     assetLock: 'assets/images/lock.png',
                     assetEye: 'assets/images/eye.png',
@@ -120,99 +132,87 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 24),
 
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _agreeTerms = !_agreeTerms;
-                            });
-                          },
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: Colors.white,
-                              border: Border.all(color: Color(0xFF655F5F), width: 1.5),
-                            ),
-                            child: _agreeTerms
-                                ? Center(child: Icon(Icons.check, size: 14, color: Color(0xFF655F5F)))
-                                : null,
+                  const SizedBox(height: 24),
+
+                  // CHECKBOX
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() => _agreeTerms = !_agreeTerms);
+                        },
+                        child: Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.grey),
                           ),
+                          child: _agreeTerms
+                              ? const Icon(Icons.check, size: 14)
+                              : null,
                         ),
-                        SizedBox(width: 12),
-                        Flexible(
-                          child: Text.rich(
-                            TextSpan(
-                              text: 'Saya setuju dengan ',
-                              style: TextStyle(fontSize: 14, color: Color(0xFF655F5F)),
-                              children: [
-                                TextSpan(
-                                  text: 'syarat dan ketentuan',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF4597E6),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Saya setuju dengan syarat dan ketentuan',
+                          style: TextStyle(fontSize: 14),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 32), 
 
-                  Center(
-                    child: GestureDetector(
-                      onTapDown: (_) => _animateButton(scale: 0.98),
-                      onTapUp: (_) => _animateButton(scale: 1.0),
-                      onTapCancel: () => _animateButton(scale: 1.0),
-                      onTap: _handleRegister,
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 100),
-                        width: 364,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF4597E6), Color(0xFF7BBEFF), Color(0xFF83DFC6)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
+                  const SizedBox(height: 32),
+
+                  // BUTTON DAFTAR
+                  GestureDetector(
+                    onTap: _handleRegister,
+                    child: Container(
+                      width: double.infinity,
+                      height: 52,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF4597E6),
+                            Color(0xFF7BBEFF),
+                            Color(0xFF83DFC6),
+                          ],
                         ),
-                        child: Center(
-                          child: Text(
-                            'Daftar',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Daftar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
 
+                  const SizedBox(height: 16),
+
+                  // 🔥 LOGIN NAVIGASI (INI YANG PENTING)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Sudah punya akun? ',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
+                      const Text('Sudah punya akun? '),
                       GestureDetector(
                         onTap: () {
-                          // KIW FUTEMM, HEHHEHE LOGINNYA YA
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          );
                         },
-                        child: Text(
+                        child: const Text(
                           'Masuk',
                           style: TextStyle(
-                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF4597E6),
                           ),
@@ -220,7 +220,8 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 24),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -230,48 +231,38 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
     );
   }
 
-  void _animateButton({required double scale}) {
-    setState(() {});
+  // ================= FUNCTIONS =================
+
+  void _handleRegister() {
+    if (_formKey.currentState!.validate() && _agreeTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pendaftaran berhasil!')),
+      );
+    } else if (!_agreeTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Harap setujui syarat dan ketentuan')),
+      );
+    }
   }
 
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
     required String assetIcon,
-    bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
-    return SizedBox(
-      width: 364,
-      height: 52,
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(fontSize: 14, color: Colors.grey),
-          prefixIcon: Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Image.asset(assetIcon, width: 20, height: 20),
-          ),
-          prefixIconConstraints: BoxConstraints(minWidth: 44, maxWidth: 44),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey, width: 1),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Color(0xFF4597E6), width: 1.5),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Image.asset(assetIcon, width: 20),
         ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
   }
@@ -285,53 +276,22 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
     required String assetEye,
     String? Function(String?)? validator,
   }) {
-    return SizedBox(
-      width: 364,
-      height: 52,
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(fontSize: 14, color: Colors.grey),
-          prefixIcon: Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Image.asset(assetLock, width: 20, height: 20),
-          ),
-          prefixIconConstraints: BoxConstraints(minWidth: 44, maxWidth: 44),
-          suffixIcon: IconButton(
-            icon: Image.asset(assetEye, width: 20, height: 20),
-            onPressed: onToggle,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey, width: 1),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Color(0xFF4597E6), width: 1.5),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Image.asset(assetLock, width: 20),
         ),
+        suffixIcon: IconButton(
+          icon: Image.asset(assetEye, width: 20),
+          onPressed: onToggle,
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
-  }
-
-  void _handleRegister() {
-    if (_formKey.currentState!.validate() && _agreeTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Pendaftaran berhasil!')),
-      );
-      // API REGISTTTTTTT
-    } else if (!_agreeTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Harap setujui syarat dan ketentuan')),
-      );
-    }
   }
 }
