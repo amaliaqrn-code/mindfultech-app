@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mindfultech_app/presentation/auth/forgot_password.dart';
+import 'package:mindfultech_app/presentation/auth/registrasi_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -104,9 +106,16 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        // TODO: navigasi ke halaman lupa kata sandi
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const ForgotPasswordPage(),
+                          ),
+                        );
                       },
-                      child: Text(
+
+                      child: const Text(
                         'Lupa Kata Sandi?',
                         style: TextStyle(
                           fontSize: 13,
@@ -210,7 +219,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // TODO: navigasi ke halaman registrasi
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegistrasiPage(),
+                            ),
+                          );
                         },
                         child: Text(
                           'Daftar',
