@@ -337,10 +337,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login berhasil!')),
-      );
-      // TODO: API LOGIN
+      Navigator.pushReplacementNamed(context, '/journey');
     }
   }
 }

@@ -78,6 +78,25 @@ flutter:
     - assets/images/mindy_lupa_password.png
     - assets/images/mindy_buat_kata_sandi.png
     - assets/images/key.png
+    - assets/images/tutorial/daun.png
+    - assets/images/tutorial/batrai.png
+    - assets/images/tutorial/petir.png
+    - assets/images/journey/awan.png
+    - assets/images/journey/awan1.png
+    - assets/images/journey/bendera.png
+    - assets/images/journey/denah.png
+    - assets/images/journey/hadiah.png
+    - assets/images/journey/hartaKarun.png
+    - assets/images/journey/obrolanChat.png
+    - assets/images/homepage/awan.png
+    - assets/images/homepage/background.png
+    - assets/icon/homepage/belajar.png
+    - assets/icon/homepage/menonton.png
+    - assets/icon/homepage/olahraga.png
+    - assets/icon/homepage/perjalanan.png
+    - assets/icon/homepage/play.png
+    - assets/icon/homepage/streak.png
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

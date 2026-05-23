@@ -69,44 +69,82 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             const SizedBox(height: 28),
 
             // 🔥 BUTTON GRADIENT
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SizedBox(
-                width: double.infinity,
-                height: 58,
-                child: InkWell(
-                  onTap: nextPage,
-                  borderRadius: BorderRadius.circular(18),
-                  child: Ink(
-                    decoration: BoxDecoration(
+           Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                // BUTTON KEMBALI
+                if (currentIndex > 0)
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        _controller.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
                       borderRadius: BorderRadius.circular(18),
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xff4597E6),
-                          Color(0xff7BBEFF),
-                          Color(0xff83DFC6),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                      child: Container(
+                        height: 58,
+                        margin: const EdgeInsets.only(right: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Kembali",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    child: Center(
-                      child: Text(
-                        currentIndex == onboardingData.length - 1
-                            ? "Masuk"
-                            : "Lanjut",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  ),
+
+                // BUTTON LANJUT / MASUK
+                Expanded(
+                  child: InkWell(
+                    onTap: nextPage,
+                    borderRadius: BorderRadius.circular(18),
+                    child: Ink(
+                      height: 58,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xff4597E6),
+                            Color(0xff7BBEFF),
+                            Color(0xff83DFC6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          currentIndex == onboardingData.length - 1
+                              ? "Masuk"
+                              : "Lanjut",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-
+          ),
             const SizedBox(height: 35),
           ],
         ),
