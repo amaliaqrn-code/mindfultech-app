@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import '../data/tutorial_data.dart';
 import '../widgets/dot_indicator.dart';
 import '../widgets/tutorial_button.dart';
 import '../widgets/tutorial_page.dart';
+import '../../homepage/homepage_screen.dart';
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({super.key});
@@ -22,7 +24,23 @@ class _TutorialScreenState extends State<TutorialScreen> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    } else {
+      // Navigate to Homepage
+      _navigateToHomepage();
     }
+  }
+
+  void _navigateToHomepage() {
+    // Mark onboarding as completed
+    final storage = GetStorage();
+    storage.write('hasOnboarded', true);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomepageScreen(),
+      ),
+    );
   }
 
   void previousPage() {

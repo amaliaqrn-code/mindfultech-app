@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/presentation/auth/registrasi_page.dart';
 import 'onboarding_data.dart';
 import 'widgets/onboarding_item.dart';
 import 'widgets/dot_indicator.dart';
@@ -22,13 +21,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      // 🔥 PINDAH KE LOGIN
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RegistrasiPage(),
-        ),
-      );
+      // Navigate to Login Page using named route (so BLoC is provided)
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 

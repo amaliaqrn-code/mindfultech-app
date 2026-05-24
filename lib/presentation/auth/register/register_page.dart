@@ -1,60 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
-import 'package:mindfultech_app/presentation/auth/bloc/login/login_event.dart';
-import 'package:mindfultech_app/presentation/auth/bloc/login/login_state.dart';
+import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
+import 'package:mindfultech_app/presentation/auth/bloc/register/register_event.dart';
+import 'package:mindfultech_app/presentation/auth/bloc/register/register_state.dart';
 import 'package:mindfultech_app/presentation/tutorial/screens/totorial_screen.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
+  bool _agreeTerms = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
-        if (state is LoginSuccess) {
-          try {
-            // Save user name to storage
-            final storage = GetStorage();
-            storage.write('userName', state.user.name);
+        if (state is RegisterSuccess) {
+          // Save user name to storage
+          final storage = GetStorage();
+          storage.write('userName', state.user.name);
 
-            // Navigate to Tutorial Screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const TutorialScreen(),
-              ),
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Gagal membuka halaman selanjutnya'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        } else if (state is LoginFailure) {
+          // Navigate to Tutorial Screen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const TutorialScreen(),
+            ),
+          );
+        } else if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
               backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -68,32 +67,33 @@ class _LoginPageState extends State<LoginPage> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 20),
 
-                    // Maskot
+                    // Image
                     Image.asset(
-                      'assets/images/login.png',
+                      'assets/images/mindy_regist.png',
                       height: 100,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.cloud, size: 80, color: Colors.grey),
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.cloud,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
                     ),
+
                     const SizedBox(height: 24),
 
-                    // Judul gradien
+                    // Title
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [
                           Color(0xFF4597E6),
                           Color(0xFF7BBEFF),
-                          Color(0xFF83DFC6)
+                          Color(0xFF83DFC6),
                         ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
                       ).createShader(bounds),
                       child: const Text(
-                        'Masuk ke Mindy',
+                        'Buat Akun',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w500,
@@ -101,17 +101,32 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 8),
+
                     const Text(
                       'Teman fokus yang siap menemani harimu',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
                         color: Color(0xFF655F5F),
                       ),
-                      textAlign: TextAlign.center,
                     ),
+
                     const SizedBox(height: 32),
+
+                    // Name field
+                    _buildTextField(
+                      controller: _nameController,
+                      label: 'Nama',
+                      assetIcon: 'assets/images/profile.png',
+                      onChanged: (value) {
+                        context.read<RegisterBloc>().add(RegisterNameChanged(value));
+                      },
+                      validator: (v) => v!.isEmpty ? 'Nama harus diisi' : null,
+                    ),
+
+                    const SizedBox(height: 18),
 
                     // Email field
                     _buildTextField(
@@ -120,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                       assetIcon: 'assets/images/email.png',
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (value) {
-                        context.read<LoginBloc>().add(LoginEmailChanged(value));
+                        context.read<RegisterBloc>().add(RegisterEmailChanged(value));
                       },
                       validator: (v) {
                         if (v!.isEmpty) return 'Email harus diisi';
@@ -128,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
+
                     const SizedBox(height: 18),
 
                     // Password field
@@ -136,47 +152,85 @@ class _LoginPageState extends State<LoginPage> {
                       label: 'Kata Sandi',
                       obscureText: _obscurePassword,
                       onToggle: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
+                        setState(() => _obscurePassword = !_obscurePassword);
                       },
                       assetLock: 'assets/images/lock.png',
                       assetEye: 'assets/images/eye.png',
                       onChanged: (value) {
-                        context.read<LoginBloc>().add(LoginPasswordChanged(value));
+                        context.read<RegisterBloc>().add(RegisterPasswordChanged(value));
                       },
-                      validator: (v) =>
-                          v!.isEmpty ? 'Password harus diisi' : null,
+                      validator: (v) => v!.length < 6 ? 'Minimal 6 karakter' : null,
                     ),
-                    const SizedBox(height: 8),
 
-                    // Lupa kata sandi
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigate to forgot password
-                        },
-                        child: const Text(
-                          'Lupa Kata Sandi?',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF4597E6),
-                            fontWeight: FontWeight.w500,
+                    const SizedBox(height: 18),
+
+                    // Confirm Password field
+                    _buildPasswordField(
+                      controller: _confirmPasswordController,
+                      label: 'Konfirmasi Kata Sandi',
+                      obscureText: _obscureConfirmPassword,
+                      onToggle: () {
+                        setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                      },
+                      assetLock: 'assets/images/lock.png',
+                      assetEye: 'assets/images/eye.png',
+                      onChanged: (value) {
+                        context.read<RegisterBloc>().add(RegisterConfirmPasswordChanged(value));
+                      },
+                      validator: (v) {
+                        if (v != _passwordController.text) {
+                          return 'Kata sandi tidak cocok';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Checkbox
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() => _agreeTerms = !_agreeTerms);
+                          },
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: Colors.grey),
+                              color: _agreeTerms ? const Color(0xFF4597E6) : null,
+                            ),
+                            child: _agreeTerms
+                                ? const Icon(
+                                    Icons.check,
+                                    size: 14,
+                                    color: Colors.white,
+                                  )
+                                : null,
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text(
+                            'Saya setuju dengan syarat dan ketentuan',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ],
                     ),
+
                     const SizedBox(height: 32),
 
-                    // Tombol Masuk
-                    BlocBuilder<LoginBloc, LoginState>(
+                    // Button Daftar
+                    BlocBuilder<RegisterBloc, RegisterState>(
                       builder: (context, state) {
-                        final isLoading = state is LoginLoading;
+                        final isLoading = state is RegisterLoading;
                         return GestureDetector(
-                          onTap: isLoading ? null : _handleLogin,
+                          onTap: isLoading ? null : _handleRegister,
                           child: Container(
-                            width: 364,
+                            width: double.infinity,
                             height: 52,
                             decoration: BoxDecoration(
                               gradient: isLoading
@@ -185,10 +239,8 @@ class _LoginPageState extends State<LoginPage> {
                                       colors: [
                                         Color(0xFF4597E6),
                                         Color(0xFF7BBEFF),
-                                        Color(0xFF83DFC6)
+                                        Color(0xFF83DFC6),
                                       ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
                                     ),
                               color: isLoading ? Colors.grey : null,
                               borderRadius: BorderRadius.circular(20),
@@ -204,11 +256,10 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     )
                                   : const Text(
-                                      'Masuk',
+                                      'Daftar',
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
                                         color: Colors.white,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                             ),
@@ -216,24 +267,21 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                     ),
-                    const SizedBox(height: 24),
 
-                    // Link ke Registrasi
+                    const SizedBox(height: 16),
+
+                    // Login link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Belum punya akun? ',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
+                        const Text('Sudah punya akun? '),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/register');
+                            Navigator.pushNamed(context, '/login');
                           },
                           child: const Text(
-                            'Daftar',
+                            'Masuk',
                             style: TextStyle(
-                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF4597E6),
                             ),
@@ -241,6 +289,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -252,12 +301,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _handleLogin() {
+  void _handleRegister() {
     if (_formKey.currentState!.validate()) {
-      context.read<LoginBloc>().add(
-            LoginSubmitted(
+      if (!_agreeTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Harap setujui syarat dan ketentuan'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+      context.read<RegisterBloc>().add(
+            RegisterSubmitted(
+              name: _nameController.text,
               email: _emailController.text,
               password: _passwordController.text,
+              confirmPassword: _confirmPasswordController.text,
             ),
           );
     }
@@ -267,33 +327,25 @@ class _LoginPageState extends State<LoginPage> {
     required TextEditingController controller,
     required String label,
     required String assetIcon,
-    bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
     Function(String)? onChanged,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
-      obscureText: obscureText,
       keyboardType: keyboardType,
       onChanged: onChanged,
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(fontSize: 14, color: Colors.grey),
         prefixIcon: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Image.asset(assetIcon, width: 20, height: 20),
+          padding: const EdgeInsets.all(12),
+          child: Image.asset(assetIcon, width: 20),
         ),
-        prefixIconConstraints:
-            const BoxConstraints(minWidth: 44, maxWidth: 44),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
@@ -303,8 +355,6 @@ class _LoginPageState extends State<LoginPage> {
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
   }
@@ -326,24 +376,18 @@ class _LoginPageState extends State<LoginPage> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(fontSize: 14, color: Colors.grey),
         prefixIcon: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Image.asset(assetLock, width: 20, height: 20),
+          padding: const EdgeInsets.all(12),
+          child: Image.asset(assetLock, width: 20),
         ),
-        prefixIconConstraints:
-            const BoxConstraints(minWidth: 44, maxWidth: 44),
         suffixIcon: IconButton(
-          icon: Image.asset(assetEye, width: 20, height: 20),
+          icon: Image.asset(assetEye, width: 20),
           onPressed: onToggle,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
@@ -353,8 +397,6 @@ class _LoginPageState extends State<LoginPage> {
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
   }

@@ -23,6 +23,6 @@ final List<TutorialModel> tutorialData = [
     title: "Lihat perjalananmu",
     description:
         "pantau streak, journey map, dan refleksi harian untuk melihat progresmu",
-    image: "assets/images/tutorial/slide4.png",
+    image: "assets/images/tutorial/journeymap.png",
   ),
 ];

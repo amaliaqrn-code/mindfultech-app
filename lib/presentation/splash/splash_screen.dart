@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:mindfultech_app/presentation/homepage/homepage_screen.dart';
 import 'package:mindfultech_app/presentation/onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,8 +19,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   /// 🔥 LOGIC SPLASH
   void startSplash() async {
-    final storage = GetStorage();
-
     // Splash pertama (putih)
     await Future.delayed(const Duration(seconds: 2));
 
@@ -36,14 +32,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    // Check if user has completed onboarding
-    // final hasOnboarded = storage.read('hasOnboarded') ?? false;
-
+    // Always go to onboarding first
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            const HomepageScreen()
+        builder: (context) => const OnBoardingScreen(),
       ),
     );
   }
