@@ -34,7 +34,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  get: ^4.7.3
+  get: 4.6.6
   dio: ^5.9.2
   get_storage: ^2.1.1
   google_fonts: ^8.1.0
@@ -92,6 +92,11 @@ flutter:
     - assets/images/tutorial/slide2.png
     - assets/images/tutorial/slide3.png
     - assets/images/tutorial/journeymap.png
+    - assets/images/tutorial/streak.png
+    - assets/images/tutorial/journey.png
+    - assets/images/tutorial/reward.png
+    - assets/images/tutorial/bintang.png
+    - assets/images/tutorial/refleksiharian.png
     - assets/images/journey/awan.png
     - assets/images/journey/awan1.png
     - assets/images/journey/bendera.png
@@ -101,12 +106,18 @@ flutter:
     - assets/images/journey/obrolanChat.png
     - assets/images/homepage/awan.png
     - assets/images/homepage/background.png
-    - assets/icon/homepage/belajar.png
     - assets/icon/homepage/menonton.png
     - assets/icon/homepage/olahraga.png
     - assets/icon/homepage/perjalanan.png
     - assets/icon/homepage/play.png
     - assets/icon/homepage/streak.png
+    - assets/icon/homepage/belajar.png
+    - assets/images/pilihenergi/energi_rendah.png
+    - assets/images/pilihenergi/energi_sedang.png
+    - assets/images/pilihenergi/energi_tinggi.png
+    - assets/icon/pilihenergi/bintang.svg
+    - assets/icon/pilihenergi/petir.svg
+    - assets/icon/pilihenergi/daun.svg
 
 
   # The following line ensures that the Material Icons font is

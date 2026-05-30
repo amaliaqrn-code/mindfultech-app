@@ -20,4 +20,22 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // Green Theme Colors (Sage Green)
+  static const Color sageGreen = Color(0xFF6A9859);
+  static const Color sageGreenDark = Color(0xFF3D6B33);
+  static const Color sageGreenLight = Color(0xFFD4E6C9);
+  static const Color sageGreenPale = Color(0xFFF5F7F4);
+  static const Color mintGreen = Color(0xFF83DFC6);
+  static const Color mintGreenLight = Color(0xFFE8F8F2);
+  static const Color greenBackground = Color(0xFFF8FAF5);
+
+  static const LinearGradient greenButtonGradient = LinearGradient(
+    colors: [
+      sageGreen,
+      sageGreenDark,
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

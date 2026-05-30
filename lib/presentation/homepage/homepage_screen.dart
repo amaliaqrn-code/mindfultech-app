@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../core/constants/colors.dart';
 
-class HomepageScreen extends StatelessWidget {
+class HomepageScreen extends StatefulWidget {
   const HomepageScreen({super.key});
 
+  @override
+  State<HomepageScreen> createState() => _HomepageScreenState();
+}
+
+class _HomepageScreenState extends State<HomepageScreen> {
   @override
   Widget build(BuildContext context) {
     final storage = GetStorage();
@@ -13,349 +19,552 @@ class HomepageScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
+        child: Column(
+          children: [
+            // ================= MAIN CONTENT AREA =================
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
 
-              // ================= HEADER =================
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    // ================= HEADER =================
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Halo, $userName! 👋',
-                          style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Halo, $userName! 👋',
+                                style: const TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Hari ini, mari bertumbuh bersama mindy.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          'Hari ini, mari bertumbuh bersama mindy.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade700,
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.3),
+                              width: 2,
+                            ),
+                          ),
+                          child: const ClipOval(
+                            child: Image(
+                              image: AssetImage('assets/images/profile.png'),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
 
-                  const SizedBox(width: 12),
+                    const SizedBox(height: 20),
 
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundImage: AssetImage(
-                      'assets/images/homepage/profile.jpg',
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 18),
-
-              // ================= CLOUD CARD =================
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xffEAF0FA),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'Yuk mulai hari\nproduktif bareng\nMindy!',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          height: 1.3,
-                        ),
+                    // ================= BANNER MASCOT CARD =================
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 18,
                       ),
-                    ),
-
-                    Image.asset(
-                      'assets/images/homepage/awan.png',
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.contain,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 18),
-
-              // ================= LANDSCAPE =================
-              SizedBox(
-                height: 200,
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
-                      child: Image.asset(
-                        'assets/images/homepage/background.png',
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffEAF0FA),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    ),
-
-                    Positioned(
-                      left: 14,
-                      right: 14,
-                      bottom: 14,
                       child: Row(
                         children: [
                           Expanded(
-                            child: _buildMiniCard(
-                              icon: Icons.local_fire_department,
-                              title: 'Streak hari ini',
-                              value: '5',
-                              subtitle: '/ 30 hari',
-                              color: Colors.orange,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'Yuk mulai hari',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  'produktif bareng',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  'Mindy!',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(width: 12),
+                          Image.asset(
+                            'assets/images/homepage/awan.png',
+                            width: 85,
+                            height: 85,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ),
+                    ),
 
-                          const SizedBox(width: 10),
+                    const SizedBox(height: 20),
 
-                          Expanded(
-                            child: _buildMiniCard(
-                              icon: Icons.map,
-                              title: 'Perjalananmu',
-                              value: 'LEVEL 01',
-                              subtitle: '',
-                              color: Colors.green,
+                    // ================= STATISTICS SECTION =================
+                    SizedBox(
+                      height: 210,
+                      child: Stack(
+                        children: [
+                          // Background Mountain Image
+                          Positioned.fill(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(28),
+                              child: Image.asset(
+                                'assets/images/homepage/background.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          // Overlay Cards
+                          Positioned(
+                            left: 16,
+                            right: 16,
+                            bottom: 16,
+                            child: Row(
+                              children: [
+                                // Left Card - Streak
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(22),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/icon/homepage/streak.png',
+                                              width: 24,
+                                              height: 24,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              'Streak hari ini',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        RichText(
+                                          text: const TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: '5',
+                                                style: TextStyle(
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: ' / 30 hari',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(width: 12),
+
+                                // Right Card - Journey
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(22),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/icon/homepage/perjalanan.png',
+                                              width: 24,
+                                              height: 24,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              'Perjalananmu',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        RichText(
+                                          text: const TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'LEVEL 01',
+                                                style: TextStyle(
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+
+                    // ================= MAIN ACTION BUTTON =================
+                    Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xff4597E6),
+                            Color(0xff83DFC6),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Get.toNamed('/journey');
+                          },
+                          borderRadius: BorderRadius.circular(30),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Image(
+                                    image: AssetImage('assets/icon/homepage/play.png'),
+                                    width: 22,
+                                    height: 22,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Mulai Fokus',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ================= TASKS SECTION TITLE =================
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Tugas hari ini',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            '3 tugas',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // ================= TASK LIST =================
+                    _buildTaskCard(
+                      iconPath: 'assets/icon/homepage/belajar.png',
+                      title: 'Belajar',
+                      duration: '20 Menit Fokus',
+                      category: 'Belajar',
+                      categoryColor: AppColors.primary,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    _buildTaskCard(
+                      iconPath: 'assets/icon/homepage/olahraga.png',
+                      title: 'Olahraga Lari',
+                      duration: '15 Menit Fokus',
+                      category: 'Kesehatan',
+                      categoryColor: const Color(0xff4CAF50),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    _buildTaskCard(
+                      iconPath: 'assets/icon/homepage/menonton.png',
+                      title: 'Menonton Film',
+                      duration: '20 Menit Fokus',
+                      category: 'Pribadi',
+                      categoryColor: const Color(0xffFF9800),
+                    ),
+
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
 
-              const SizedBox(height: 18),
-
-              // ================= BUTTON =================
-              Container(
-                width: double.infinity,
-                height: 56,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(22),
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xff4597E6),
-                      Color(0xff83DFC6),
-                    ],
-                  ),
+      // ================= BOTTOM NAVIGATION BAR =================
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  icon: Icons.home_rounded,
+                  label: 'Beranda',
+                  isActive: true,
+                  onTap: () {},
                 ),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow_rounded,
-                          color: AppColors.primary,
-                          size: 26,
-                        ),
-                      ),
-
-                      const SizedBox(width: 10),
-
-                      const Text(
-                        'Mulai Fokus',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
+                _buildNavItem(
+                  icon: Icons.timer_outlined,
+                  label: 'Fokus',
+                  isActive: false,
+                  onTap: () {},
                 ),
-              ),
-
-              const SizedBox(height: 18),
-
-              // ================= TITLE =================
-              const Text(
-                'Tugas hari ini',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff2E5BD7),
+                _buildNavItem(
+                  icon: Icons.map_outlined,
+                  label: 'Journey',
+                  isActive: false,
+                  onTap: () {
+                    Get.toNamed('/journey');
+                  },
                 ),
-              ),
-
-              const SizedBox(height: 14),
-
-              // ================= TASK LIST =================
-              _buildTaskCard(
-                icon: Icons.menu_book,
-                title: 'Belajar',
-                duration: '20 Menit Fokus',
-                category: 'Belajar',
-                categoryColor: AppColors.primary,
-              ),
-
-              const SizedBox(height: 10),
-
-              _buildTaskCard(
-                icon: Icons.directions_run,
-                title: 'Olahraga Lari',
-                duration: '15 Menit Fokus',
-                category: 'Kesehatan',
-                categoryColor: Colors.green,
-              ),
-
-              const SizedBox(height: 10),
-
-              _buildTaskCard(
-                icon: Icons.movie,
-                title: 'Menonton Film',
-                duration: '20 Menit Fokus',
-                category: 'Pribadi',
-                categoryColor: Colors.orange,
-              ),
-            ],
+                _buildNavItem(
+                  icon: Icons.local_fire_department_outlined,
+                  label: 'Streak',
+                  isActive: false,
+                  onTap: () {},
+                ),
+                _buildNavItem(
+                  icon: Icons.person_outline,
+                  label: 'Profil',
+                  isActive: false,
+                  onTap: () {},
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // ================= MINI CARD =================
-
-  Widget _buildMiniCard({
+  // ================= NAVIGATION ITEM =================
+  Widget _buildNavItem({
     required IconData icon,
-    required String title,
-    required String value,
-    required String subtitle,
-    required Color color,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.primary,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 28,
+              color: isActive ? AppColors.primary : Colors.grey.shade400,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                color: isActive ? AppColors.primary : Colors.grey.shade500,
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 18),
-
-              const SizedBox(width: 6),
-
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 6),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-
-              const SizedBox(width: 4),
-
-              Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
 
   // ================= TASK CARD =================
-
   Widget _buildTaskCard({
-    required IconData icon,
+    required String iconPath,
     required String title,
     required String duration,
     required String category,
     required Color categoryColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.primary,
+          color: Colors.grey.shade200,
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 24,
-            color: Colors.black,
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Center(
+              child: Image.asset(
+                iconPath,
+                width: 28,
+                height: 28,
+              ),
+            ),
           ),
 
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
 
           Expanded(
             child: Column(
@@ -364,11 +573,12 @@ class HomepageScreen extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                 ),
-
+                const SizedBox(height: 2),
                 Text(
                   duration,
                   style: TextStyle(
@@ -382,18 +592,18 @@ class HomepageScreen extends StatelessWidget {
 
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 16,
+              horizontal: 14,
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: categoryColor,
+              color: categoryColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
               category,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                color: categoryColor,
+                fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
             ),

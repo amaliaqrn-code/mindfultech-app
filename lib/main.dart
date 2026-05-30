@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindfultech_app/presentation/journey/screens/journey_screen.dart';
 
 import 'core/network/dio_client.dart';
 import 'data/datasources/auth_local_datasource.dart';
@@ -16,7 +17,12 @@ import 'presentation/onboarding/onboarding_screen.dart';
 import 'presentation/homepage/homepage_screen.dart';
 import 'presentation/tutorial/screens/totorial_screen.dart';
 import 'presentation/journey/controllers/journey_controller.dart';
-import 'presentation/journey/screens/journey_screen.dart';
+import 'presentation/choose_energy/choose_energy_screen.dart';
+import 'presentation/choose_energy/mindy_bantu_aku_screen.dart';
+import 'presentation/choose_energy/mindy_bantu_aku_blue_screen.dart';
+import 'presentation/choose_energy/mindy_bantu_aku_purple_screen.dart';
+import 'presentation/homepage/dynamic_homepage_screen.dart';
+import 'presentation/timer/screens/timer_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +51,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       onGenerateRoute: (settings) {
@@ -74,8 +80,14 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/onboarding': (context) => const OnBoardingScreen(),
         '/homepage': (context) => const HomepageScreen(),
+        '/dynamic-homepage': (context) => const DynamicHomepageScreen(),
         '/tutorial': (context) => const TutorialScreen(),
-        '/journey': (context) => const JourneyScreen(),
+        '/journey': (context) => const JourneyMapScreen(),
+        '/choose-energy': (context) => const ChooseEnergyScreen(),
+        '/mindy-bantu-aku': (context) => const MindyBantuAkuScreen(),
+        '/mindy-bantu-aku-blue': (context) => const MindyBantuAkuBlueScreen(),
+        '/mindy-bantu-aku-purple': (context) => const MindyBantuAkuPurpleScreen(),
+        '/timer': (context) => const TimerScreen(),
       },
     );
   }
