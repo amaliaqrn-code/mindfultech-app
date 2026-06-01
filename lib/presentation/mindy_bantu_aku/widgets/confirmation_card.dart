@@ -116,8 +116,6 @@ class ConfirmationCard extends StatelessWidget {
         return GreenTheme.categoryIconColors['belajar']!;
       case TaskCategory.hubungan:
         return GreenTheme.categoryIconColors['hubungan']!;
-      case TaskCategory.kreativitas:
-        return GreenTheme.categoryIconColors['kreativitas']!;
       case TaskCategory.kesehatan:
         return GreenTheme.categoryIconColors['kesehatan']!;
     }

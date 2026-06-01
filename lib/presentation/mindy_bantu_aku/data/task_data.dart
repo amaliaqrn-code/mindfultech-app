@@ -285,13 +285,13 @@ class TaskData {
       estimatedMinutes: 60,
     ),
 
-    // ===== TUGAS KREATIVITAS =====
-    // Energy Low - Kreativitas
+    // ===== TUGAS LAINNYA =====
+    // Energy Low - Lainnya
     TaskModel(
       id: 'kr1',
       title: 'Doodle di Kertas',
       description: 'Gambar corat-coret di kertas. Tidak perlu sempurna, biarkan imajinasimu mengalir.',
-      category: TaskCategory.kreativitas,
+      category: TaskCategory.hubungan,
       energyLevel: EnergyLevel.low,
       iconName: 'brush',
       estimatedMinutes: 10,
@@ -300,17 +300,17 @@ class TaskData {
       id: 'kr2',
       title: 'Dengarkan Musik',
       description: 'Temukan playlist baru atau buat playlist sesuai mood. Enjoy musiknya.',
-      category: TaskCategory.kreativitas,
+      category: TaskCategory.hubungan,
       energyLevel: EnergyLevel.low,
       iconName: 'music_note',
       estimatedMinutes: 15,
     ),
-    // Energy Medium - Kreativitas
+    // Energy Medium - Lainnya
     TaskModel(
       id: 'kr3',
       title: 'Memasak Resep Baru',
       description: 'Coba resep baru yang belum pernah dibuat. Siap-siap bereksperimen di dapur!',
-      category: TaskCategory.kreativitas,
+      category: TaskCategory.hubungan,
       energyLevel: EnergyLevel.medium,
       iconName: 'restaurant_menu',
       estimatedMinutes: 45,
@@ -319,17 +319,17 @@ class TaskData {
       id: 'kr4',
       title: 'Menulis Puisi/Cerpen',
       description: 'Tulis puisi pendek atau cerpen berdasarkan perasaanmu saat ini.',
-      category: TaskCategory.kreativitas,
+      category: TaskCategory.hubungan,
       energyLevel: EnergyLevel.medium,
       iconName: 'create',
       estimatedMinutes: 30,
     ),
-    // Energy High - Kreativitas
+    // Energy High - Lainnya
     TaskModel(
       id: 'kr5',
       title: 'Proyek Seni',
       description: 'Buat karya seni yang lebih kompleks. Bisa lukisan, kolase, atau craft.',
-      category: TaskCategory.kreativitas,
+      category: TaskCategory.hubungan,
       energyLevel: EnergyLevel.high,
       iconName: 'palette',
       estimatedMinutes: 60,
@@ -338,7 +338,7 @@ class TaskData {
       id: 'kr6',
       title: 'Bikin Konten Kreatif',
       description: 'Buat konten untuk media sosial - foto, video, atau tulisan kreatif.',
-      category: TaskCategory.kreativitas,
+      category: TaskCategory.hubungan,
       energyLevel: EnergyLevel.high,
       iconName: 'videocam',
       estimatedMinutes: 45,

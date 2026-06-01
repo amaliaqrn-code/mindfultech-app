@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
-import '../theme/green_theme.dart';
+import '../theme/blue_theme.dart';
 
-/// Grid Kategori - 2 kolom x 3 baris
-class CategoryGridWidget extends StatelessWidget {
+/// Blue Category Grid Widget - Grid 2x3 dengan Blue Theme
+class BlueCategoryGridWidget extends StatelessWidget {
   final TaskCategory? selectedCategory;
   final Function(TaskCategory) onCategorySelected;
 
-  const CategoryGridWidget({
+  const BlueCategoryGridWidget({
     super.key,
     required this.selectedCategory,
     required this.onCategorySelected,
@@ -28,7 +28,7 @@ class CategoryGridWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final category = TaskCategory.values[index];
         final isSelected = selectedCategory == category;
-        return _CategoryCard(
+        return BlueCategoryCard(
           category: category,
           isSelected: isSelected,
           onTap: () => onCategorySelected(category),
@@ -38,12 +38,13 @@ class CategoryGridWidget extends StatelessWidget {
   }
 }
 
-class _CategoryCard extends StatelessWidget {
+class BlueCategoryCard extends StatelessWidget {
   final TaskCategory category;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _CategoryCard({
+  const BlueCategoryCard({
+    super.key,
     required this.category,
     required this.isSelected,
     required this.onTap,
@@ -56,53 +57,47 @@ class _CategoryCard extends StatelessWidget {
       case TaskCategory.pekerjaan:
         return Icons.work_rounded;
       case TaskCategory.selfCare:
-        return Icons.favorite_rounded;
+        return Icons.person_rounded;
       case TaskCategory.belajar:
         return Icons.menu_book_rounded;
       case TaskCategory.hubungan:
-        return Icons.people_rounded;
-      case TaskCategory.kreativitas:
-        return Icons.palette_rounded;
+        return Icons.auto_awesome_rounded;
       case TaskCategory.kesehatan:
-        return Icons.accessibility_new_rounded;
+        return Icons.favorite_rounded;
     }
   }
 
   Color get _backgroundColor {
     switch (category) {
-      case TaskCategory.rumah:
-        return GreenTheme.categoryColors['rumah']!;
       case TaskCategory.pekerjaan:
-        return GreenTheme.sageGreenPale;
-      case TaskCategory.selfCare:
-        return GreenTheme.categoryColors['selfCare']!;
+        return BlueTheme.categoryColors['pekerjaan']!;
       case TaskCategory.belajar:
-        return GreenTheme.categoryColors['belajar']!;
-      case TaskCategory.hubungan:
-        return GreenTheme.categoryColors['hubungan']!;
-      case TaskCategory.kreativitas:
-        return GreenTheme.categoryColors['kreativitas']!;
+        return BlueTheme.categoryColors['belajar']!;
       case TaskCategory.kesehatan:
-        return GreenTheme.categoryColors['kesehatan']!;
+        return BlueTheme.categoryColors['kesehatan']!;
+      case TaskCategory.hubungan:
+        return BlueTheme.categoryColors['hubungan']!;
+      case TaskCategory.rumah:
+        return BlueTheme.backgroundCream;
+      case TaskCategory.selfCare:
+        return BlueTheme.categoryColors['kesehatanMental']!;
     }
   }
 
   Color get _iconColor {
     switch (category) {
-      case TaskCategory.rumah:
-        return GreenTheme.categoryIconColors['rumah']!;
       case TaskCategory.pekerjaan:
-        return GreenTheme.sageGreen;
-      case TaskCategory.selfCare:
-        return GreenTheme.categoryIconColors['selfCare']!;
+        return BlueTheme.categoryIconColors['pekerjaan']!;
       case TaskCategory.belajar:
-        return GreenTheme.categoryIconColors['belajar']!;
-      case TaskCategory.hubungan:
-        return GreenTheme.categoryIconColors['hubungan']!;
-      case TaskCategory.kreativitas:
-        return GreenTheme.categoryIconColors['kreativitas']!;
+        return BlueTheme.categoryIconColors['belajar']!;
       case TaskCategory.kesehatan:
-        return GreenTheme.categoryIconColors['kesehatan']!;
+        return BlueTheme.categoryIconColors['kesehatan']!;
+      case TaskCategory.hubungan:
+        return BlueTheme.categoryIconColors['hubungan']!;
+      case TaskCategory.rumah:
+        return BlueTheme.primaryBlue;
+      case TaskCategory.selfCare:
+        return BlueTheme.categoryIconColors['kesehatanMental']!;
     }
   }
 
@@ -113,17 +108,17 @@ class _CategoryCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isSelected ? GreenTheme.sageGreenLight : _backgroundColor,
+          color: isSelected ? BlueTheme.primaryBluePale : _backgroundColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? GreenTheme.sageGreen : Colors.transparent,
+            color: isSelected ? BlueTheme.primaryBlue : Colors.transparent,
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? GreenTheme.sageGreen.withValues(alpha: 0.3)
-                  : GreenTheme.shadowColor,
+                  ? BlueTheme.primaryBlue.withValues(alpha: 0.3)
+                  : BlueTheme.shadowColor,
               blurRadius: isSelected ? 12 : 8,
               offset: const Offset(0, 4),
             ),
@@ -136,7 +131,7 @@ class _CategoryCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: isSelected ? GreenTheme.sageGreen : _iconColor,
+                color: isSelected ? BlueTheme.primaryBlue : _iconColor,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -151,7 +146,7 @@ class _CategoryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? GreenTheme.sageGreen : GreenTheme.textDark,
+                color: isSelected ? BlueTheme.primaryBlue : BlueTheme.textDark,
               ),
             ),
           ],

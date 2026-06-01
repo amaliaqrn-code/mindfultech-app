@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/constants/colors.dart';
-import '../../homepage/homepage_screen.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/core/constants/colors.dart';
 
 class JourneyMapScreen extends StatefulWidget {
   const JourneyMapScreen({super.key});
@@ -11,39 +11,19 @@ class JourneyMapScreen extends StatefulWidget {
 }
 
 class _JourneyMapScreenState extends State<JourneyMapScreen> {
-  // ================= DYNAMIC VARIABLES =================
-  // Current level (set to 2 as example, can be adjusted dynamically)
-  int currentLevel = 2;
+  int _currentNavIndex = 2;
+  int _currentLevel = 2;
+  int _totalDays = 10;
+  final int _maxDays = 30;
 
-  // Total progress days
-  int totalDays = 10;
-
-  // Maximum days in journey
-  final int maxDays = 30;
-
-  // ================= LEVEL POSITIONS ARRAY =================
-  // Coordinates for 6 level nodes (x, y in percentage of map size)
-  // Adjust these coordinates to match your map path
-  final List<Map<String, double>> levelPositions = [
-    {'x': 0.15, 'y': 0.85},  // Level 1 - Start (bottom left)
-    {'x': 0.35, 'y': 0.70},  // Level 2 - First milestone
-    {'x': 0.55, 'y': 0.55},  // Level 3 - Middle path
-    {'x': 0.40, 'y': 0.40},  // Level 4 - Upper path
-    {'x': 0.60, 'y': 0.25},  // Level 5 - Near top
-    {'x': 0.80, 'y': 0.12},  // Level 6 - Top destination
+  final List<Map<String, double>> _levelPositions = [
+    {'x': 0.15, 'y': 0.85},
+    {'x': 0.35, 'y': 0.70},
+    {'x': 0.55, 'y': 0.55},
+    {'x': 0.40, 'y': 0.40},
+    {'x': 0.60, 'y': 0.25},
+    {'x': 0.80, 'y': 0.12},
   ];
-
-  // ================= MOTIVATIONAL MESSAGES =================
-  final List<String> motivationMessages = [
-    "Tetap fokus, ya!",
-    "Kamu hebat!",
-    "Semangat terus!",
-    "Hampir sampai!",
-    "Keren sekali!",
-    "Sampai tujuan! 🎉",
-  ];
-
-  String get currentMessage => motivationMessages[currentLevel - 1];
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +32,8 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // ================= TOP HEADER SECTION =================
             _buildHeader(),
-
-            // ================= MAP AREA (STACK LAYOUT) =================
-            Expanded(
-              child: _buildMapArea(),
-            ),
-
-            // ================= BOTTOM NAVIGATION BAR =================
+            Expanded(child: _buildMapArea()),
             _buildBottomNavBar(),
           ],
         ),
@@ -68,75 +41,59 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
     );
   }
 
-  // ================= HEADER SECTION =================
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         children: [
-          // Row: Back Button, Title, Mindy
           Row(
             children: [
-              // Back Button
               GestureDetector(
                 onTap: () => Get.back(),
                 child: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.3),
-                      width: 1.5,
-                    ),
+                    color: AppColors.primary,
                   ),
                   child: const Icon(
                     Icons.arrow_back_ios_new,
-                    color: AppColors.primary,
-                    size: 18,
+                    color: Colors.white,
+                    size: 16,
                   ),
                 ),
               ),
-
               const SizedBox(width: 12),
-
-              // Title
               const Expanded(
                 child: Text(
                   'Journey Map',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
                 ),
               ),
-
-              // Mindy with Speech Bubble
               _buildMindyWithBubble(),
             ],
           ),
-
           const SizedBox(height: 16),
-
-          // ================= PROGRESS CARD (OVERLAPPING) =================
           _buildProgressCard(),
         ],
       ),
     );
   }
 
-  // ================= MINDY MASCOT WITH SPEECH BUBBLE =================
   Widget _buildMindyWithBubble() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Speech Bubble
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: const Color(0xFF4CAF50),
-            borderRadius: BorderRadius.circular(16),
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -145,94 +102,76 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
               ),
             ],
           ),
-          child: Text(
-            currentMessage,
-            style: const TextStyle(
-              fontSize: 11,
+          child: const Text(
+            "Semangat, ya!",
+            style: TextStyle(
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),
         ),
-
         const SizedBox(width: 6),
-
-        // Mindy Cloud Image
         Image.asset(
           'assets/images/journey/awan.png',
-          width: 70,
-          height: 56,
+          width: 60,
+          height: 48,
           fit: BoxFit.contain,
         ),
       ],
     );
   }
 
-  // ================= PROGRESS CARD =================
   Widget _buildProgressCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
-          // Left: Progress Info
           Expanded(
             child: Row(
               children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Image.asset(
-                    'assets/images/journey/bendera.png',
-                    width: 24,
-                    height: 24,
-                    color: AppColors.primary,
-                  ),
+                Image.asset(
+                  'assets/images/journey/bendera.png',
+                  width: 22,
+                  height: 22,
+                  color: Colors.black,
                 ),
-
-                const SizedBox(width: 12),
-
+                const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Progress Perjalananmu',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     RichText(
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: '$totalDays',
+                            text: '$_totalDays',
                             style: const TextStyle(
-                              fontSize: 22,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: AppColors.secondary,
                             ),
                           ),
                           TextSpan(
-                            text: ' / $maxDays hari',
+                            text: ' / $_maxDays hari',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: Colors.grey.shade600,
                             ),
@@ -245,36 +184,29 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
               ],
             ),
           ),
-
-          // Divider
           Container(
             width: 1,
-            height: 44,
+            height: 40,
             color: Colors.grey.shade200,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
           ),
-
-          // Right: Reward Info
           Expanded(
             child: Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFB74D).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Image.asset(
                     'assets/images/journey/hadiah.png',
-                    width: 24,
-                    height: 24,
-                    color: const Color(0xFFFF9800),
+                    width: 22,
+                    height: 22,
                   ),
                 ),
-
-                const SizedBox(width: 10),
-
+                const SizedBox(width: 8),
                 const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,18 +214,17 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
                       Text(
                         'Hadiah Spesial',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFE65100),
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox(height: 2),
                       Text(
                         'Menantimu',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFE65100),
+                          color: Colors.black,
                         ),
                       ),
                     ],
@@ -307,86 +238,64 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
     );
   }
 
-  // ================= MAP AREA (STACK LAYOUT) =================
   Widget _buildMapArea() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
+        return SizedBox(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/journey/denah.png',
+                  fit: BoxFit.cover,
+                ),
               ),
+              ..._buildLevelNodes(constraints),
+              _buildCurrentLevelMascot(constraints),
+              _buildTreasureChestCard(constraints),
             ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: Stack(
-                children: [
-                  // ================= BACKGROUND MAP =================
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/images/journey/denah.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  // ================= LEVEL NODES =================
-                  ..._buildLevelNodes(constraints),
-
-                  // ================= CURRENT LEVEL MASCOT =================
-                  _buildCurrentLevelMascot(constraints),
-
-                  // ================= FLOATING SPEECH BUBBLE =================
-                  _buildFloatingSpeechBubble(constraints),
-
-                  // ================= TREASURE CHEST CARD =================
-                  _buildTreasureChestCard(constraints),
-                ],
-              ),
-            ),
           ),
         );
       },
     );
   }
 
-  // ================= LEVEL NODES =================
   List<Widget> _buildLevelNodes(BoxConstraints constraints) {
     final nodes = <Widget>[];
-
-    for (int i = 0; i < levelPositions.length; i++) {
-      final pos = levelPositions[i];
+    for (int i = 0; i < _levelPositions.length; i++) {
+      final pos = _levelPositions[i];
       final level = i + 1;
-      final isCompleted = level < currentLevel;
-      final isCurrent = level == currentLevel;
-      final isUnlocked = level <= currentLevel;
+      final isCompleted = level < _currentLevel;
+      final isCurrent = level == _currentLevel;
+      final isUnlocked = level <= _currentLevel;
 
       nodes.add(
         Positioned(
-          left: pos['x']! * constraints.maxWidth - 22,
-          top: pos['y']! * constraints.maxHeight - 48,
-          child: _buildLevelNode(
-            level: level,
-            isCompleted: isCompleted,
-            isCurrent: isCurrent,
-            isUnlocked: isUnlocked,
+          left: pos['x']! * constraints.maxWidth - 20,
+          top: pos['y']! * constraints.maxHeight - 44,
+          child: GestureDetector(
+            onTap: () => _onLevelTapped(level),
+            child: _buildLevelNode(
+              level: level,
+              isCompleted: isCompleted,
+              isCurrent: isCurrent,
+              isUnlocked: isUnlocked,
+            ),
           ),
         ),
       );
     }
-
     return nodes;
   }
 
-  // ================= INDIVIDUAL LEVEL NODE =================
+  void _onLevelTapped(int level) {
+    if (level <= _currentLevel) {
+      Get.toNamed(AppRoutes.chooseEnergy);
+    }
+  }
+
   Widget _buildLevelNode({
     required int level,
     required bool isCompleted,
@@ -397,243 +306,189 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
     Color borderColor;
     Color textColor;
 
-    if (isCurrent) {
-      // Current level - Primary blue
-      bgColor = AppColors.primary;
-      borderColor = Colors.white;
-      textColor = Colors.white;
-    } else if (isCompleted) {
-      // Completed level - Green
+    if (isCompleted) {
       bgColor = const Color(0xFF4CAF50);
       borderColor = Colors.white;
       textColor = Colors.white;
-    } else if (isUnlocked) {
-      // Unlocked but not current - Light blue
-      bgColor = const Color(0xFF81D4FA);
-      borderColor = Colors.white;
-      textColor = Colors.white;
+    } else if (isCurrent) {
+      bgColor = Colors.transparent;
+      borderColor = Colors.transparent;
+      textColor = Colors.transparent;
     } else {
-      // Locked level - Gray
       bgColor = Colors.grey.shade400;
-      borderColor = Colors.grey.shade300;
+      borderColor = Colors.grey.shade400;
       textColor = Colors.white;
+    }
+
+    // Don't show node for current level (mascot is shown instead)
+    if (isCurrent) {
+      return const SizedBox.shrink();
     }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Node Circle with Number
         Container(
-          width: 44,
-          height: 44,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: bgColor,
-            border: Border.all(color: borderColor, width: 3),
+            border: Border.all(color: borderColor, width: 2.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
           child: Center(
-            child: isUnlocked
-                ? Text(
-                    '$level',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  )
-                : Icon(
-                    Icons.lock,
-                    size: 18,
-                    color: textColor,
-                  ),
+            child: Text(
+              '$level',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
           ),
         ),
-
-        // Pointer Triangle
         CustomPaint(
-          size: const Size(16, 10),
+          size: const Size(14, 8),
           painter: _TrianglePainter(color: borderColor),
         ),
       ],
     );
   }
 
-  // ================= CURRENT LEVEL MASCOT =================
   Widget _buildCurrentLevelMascot(BoxConstraints constraints) {
-    if (currentLevel < 1 || currentLevel > levelPositions.length) {
+    if (_currentLevel < 1 || _currentLevel > _levelPositions.length) {
       return const SizedBox();
     }
 
-    final pos = levelPositions[currentLevel - 1];
+    final pos = _levelPositions[_currentLevel - 1];
 
     return Positioned(
-      left: pos['x']! * constraints.maxWidth - 30,
-      top: pos['y']! * constraints.maxHeight - 110,
+      left: pos['x']! * constraints.maxWidth - 25,
+      top: pos['y']! * constraints.maxHeight - 60,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Speech bubble above mascot
+          Image.asset(
+            'assets/images/journey/awan1.png',
+            width: 50,
+            height: 36,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 2),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 6,
+                  blurRadius: 4,
                 ),
               ],
             ),
-            child: Text(
-              "Jangan berhenti\ndi sini, ya.",
+            child: const Text(
+              "Jangan berhenti di sini, ya.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                fontSize: 8,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
               ),
             ),
-          ),
-
-          const SizedBox(height: 4),
-
-          // Mindy mascot image
-          Image.asset(
-            'assets/images/journey/awan1.png',
-            width: 56,
-            height: 40,
-            fit: BoxFit.contain,
           ),
         ],
       ),
     );
   }
 
-  // ================= FLOATING SPEECH BUBBLE =================
-  Widget _buildFloatingSpeechBubble(BoxConstraints constraints) {
-    return Positioned(
-      left: constraints.maxWidth * 0.25,
-      top: constraints.maxHeight * 0.75,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Text(
-          "Mulai dari langkah\nkecil, ya",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ================= TREASURE CHEST CARD =================
   Widget _buildTreasureChestCard(BoxConstraints constraints) {
-    // Check if current level has reached treasure threshold
-    final isTreasureUnlocked = currentLevel >= 6;
+    final isTreasureUnlocked = _currentLevel >= 6;
 
     return Positioned(
-      right: 12,
-      top: constraints.maxHeight * 0.35,
-      child: Container(
-        width: 110,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+      left: 10,
+      top: constraints.maxHeight * 0.45,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 100,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Lock icon (top right)
-            if (!isTreasureUnlocked)
-              Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.lock,
-                    size: 12,
-                    color: Colors.grey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Hadiah Spesial',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-
-            // Title
-            const Text(
-              'Hadiah Spesial',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFE53935),
+                const SizedBox(height: 6),
+                Image.asset(
+                  'assets/images/journey/hartaKarun.png',
+                  width: 44,
+                  height: 36,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isTreasureUnlocked
+                      ? 'Selamat!\nKlaim hadiahmu!'
+                      : 'Mulai Fokus Hari\nIni, Raih Hadiah\ndi Level 6!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!isTreasureUnlocked)
+            Positioned(
+              top: -8,
+              right: -8,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.lock,
+                  size: 14,
+                  color: Colors.white,
+                ),
               ),
             ),
-
-            const SizedBox(height: 8),
-
-            // Treasure chest image
-            Image.asset(
-              'assets/images/journey/hartaKarun.png',
-              width: 50,
-              height: 42,
-              fit: BoxFit.contain,
-            ),
-
-            const SizedBox(height: 6),
-
-            // Description text
-            Text(
-              isTreasureUnlocked
-                  ? 'Selamat!\nKlaim hadiahmu!'
-                  : 'Mulai Fokus Hari\nIni, Raih Hadiah\ndi Level 6!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
-                height: 1.3,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
 
-  // ================= BOTTOM NAVIGATION BAR =================
   Widget _buildBottomNavBar() {
     return Container(
       decoration: BoxDecoration(
@@ -641,30 +496,34 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
+            blurRadius: 18,
             offset: const Offset(0, -4),
           ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(
                 icon: Icons.home_rounded,
                 label: 'Beranda',
-                isActive: false,
+                isActive: _currentNavIndex == 0,
                 onTap: () {
-                  Get.off(() => const HomepageScreen());
+                  setState(() => _currentNavIndex = 0);
+                  Get.offAllNamed(AppRoutes.homepage);
                 },
               ),
               _buildNavItem(
                 icon: Icons.timer_outlined,
                 label: 'Fokus',
-                isActive: false,
-                onTap: () {},
+                isActive: _currentNavIndex == 1,
+                onTap: () {
+                  setState(() => _currentNavIndex = 1);
+                  Get.toNamed(AppRoutes.timer);
+                },
               ),
               _buildNavItem(
                 icon: Icons.map_outlined,
@@ -675,14 +534,14 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
               _buildNavItem(
                 icon: Icons.local_fire_department_outlined,
                 label: 'Streak',
-                isActive: false,
-                onTap: () {},
+                isActive: _currentNavIndex == 3,
+                onTap: () => setState(() => _currentNavIndex = 3),
               ),
               _buildNavItem(
                 icon: Icons.person_outline,
                 label: 'Profil',
-                isActive: false,
-                onTap: () {},
+                isActive: _currentNavIndex == 4,
+                onTap: () => setState(() => _currentNavIndex = 4),
               ),
             ],
           ),
@@ -700,13 +559,13 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              size: 26,
+              size: 24,
               color: isActive ? AppColors.primary : Colors.grey.shade400,
             ),
             const SizedBox(height: 4),
@@ -725,10 +584,8 @@ class _JourneyMapScreenState extends State<JourneyMapScreen> {
   }
 }
 
-// ================= CUSTOM PAINTER FOR TRIANGLE =================
 class _TrianglePainter extends CustomPainter {
   final Color color;
-
   _TrianglePainter({required this.color});
 
   @override

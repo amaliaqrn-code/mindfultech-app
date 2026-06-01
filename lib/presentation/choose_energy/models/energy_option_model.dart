@@ -21,9 +21,9 @@ class EnergyOption {
     EnergyOption(
       index: 0,
       title: 'Energi Rendah',
-      subtitle: 'Butuh istirahat dan kegiatan ringan untuk mengisi ulang energi',
+      subtitle: 'Butuh istirahat dan kegiatan ringan untuk mengisi ulang',
       imageAsset: 'assets/images/pilihenergi/energi_rendah.png',
-      backgroundColor: Color(0xFFF5F7F4),
+      backgroundColor: Color(0xFFE8F5E9),
       accentColor: Color(0xFF6A9859),
     ),
     EnergyOption(
@@ -31,16 +31,16 @@ class EnergyOption {
       title: 'Energi Sedang',
       subtitle: 'Energi lumayan baik, siap untuk fokus secukupnya',
       imageAsset: 'assets/images/pilihenergi/energi_sedang.png',
-      backgroundColor: Color(0xFFE6F0FE),
-      accentColor: Color(0xFF2859C5),
+      backgroundColor: Color(0xFFE3F2FD),
+      accentColor: Color(0xFF4597E6),
     ),
     EnergyOption(
       index: 2,
       title: 'Energi Tinggi',
       subtitle: 'Aku penuh semangat kali ini! Yuk kita selesaikan banyak hal!',
       imageAsset: 'assets/images/pilihenergi/energi_tinggi.png',
-      backgroundColor: Color(0xFFEEEAF8),
-      accentColor: Color(0xFF8871C6),
+      backgroundColor: Color(0xFFEDE7F6),
+      accentColor: Color(0xFF8E6DC9),
     ),
   ];
 }

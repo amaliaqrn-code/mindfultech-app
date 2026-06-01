@@ -66,7 +66,7 @@ class _ForgotPasswordPageState
             child: Column(
               children: [
 
-                const SizedBox(height: 50),
+                const SizedBox(height: 100),
 
                 // ☁️ IMAGE
                 Image.asset(

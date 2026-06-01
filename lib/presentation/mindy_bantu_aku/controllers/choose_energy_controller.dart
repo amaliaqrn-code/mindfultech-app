@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../models/task_model.dart';
 import '../data/task_data.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 
 /// Steps dalam alur Choose Energy
 enum ChooseEnergyStep {
@@ -139,10 +140,10 @@ class ChooseEnergyController extends GetxController {
     }
   }
 
-  // Navigate to focus session
+  // Navigate to timer screen
   void proceedToFocusSession() {
     if (confirmedTask.value != null) {
-      Get.toNamed('/focus-session', arguments: {
+      Get.toNamed(AppRoutes.timer, arguments: {
         'task': confirmedTask.value,
         'energy': userEnergyLevel.value.value,
       });

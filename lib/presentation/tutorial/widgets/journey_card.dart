@@ -38,17 +38,10 @@ class JourneyCard extends StatelessWidget {
         // ================= JOURNEY MAP ILLUSTRATION =================
         Container(
           width: double.infinity,
-          height: 100,
+          height: 300,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
@@ -79,37 +72,12 @@ class JourneyCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFFE8F4FC),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
           ),
           child: Row(
             children: [
-              // Reflection Icon
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFE082).withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Image.asset(
-                  "assets/images/tutorial/refleksiharian.png",
-                  width: 26,
-                  height: 26,
-                  fit: BoxFit.contain,
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Reflection Text
+              // Reflection Text (LEFT)
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,11 +102,28 @@ class JourneyCard extends StatelessWidget {
                 ),
               ),
 
-              // Arrow Icon
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: Colors.grey.shade400,
+              // Icon Illustration (RIGHT)
+              Image.asset(
+                "assets/images/tutorial/refleksiharian.png",
+                width: 50,
+                height: 50,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  debugPrint("Error loading reflection icon: $error");
+                  return Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFE082).withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.edit_note_rounded,
+                      size: 28,
+                      color: Color(0xFFFFA726),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -158,15 +143,17 @@ class JourneyCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : Colors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.primary,
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: isActive
-                  ? AppColors.primary.withValues(alpha: 0.3)
-                  : Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -178,12 +165,12 @@ class JourneyCard extends StatelessWidget {
               width: 32,
               height: 32,
               fit: BoxFit.contain,
-              color: isActive ? Colors.white : AppColors.primary,
+              color: AppColors.primary,
               errorBuilder: (context, error, stackTrace) {
                 return Icon(
                   Icons.star,
                   size: 28,
-                  color: isActive ? Colors.white : AppColors.primary,
+                  color: AppColors.primary,
                 );
               },
             ),
@@ -193,7 +180,7 @@ class JourneyCard extends StatelessWidget {
               style: AppTextStyles.smallText.copyWith(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isActive ? Colors.white : AppColors.textGrey,
+                color: AppColors.textGrey,
               ),
             ),
           ],

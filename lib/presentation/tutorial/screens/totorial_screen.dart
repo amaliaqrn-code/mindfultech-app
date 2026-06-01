@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../core/constants/colors.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import '../data/tutorial_data.dart';
 import '../widgets/dot_indicator.dart';
 import '../widgets/tutorial_button.dart';
 import '../widgets/tutorial_page.dart';
-import '../../homepage/homepage_screen.dart';
+import '../widgets/energy_tutorial_page.dart';
+import '../widgets/task_tutorial_page.dart';
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({super.key});
@@ -43,11 +44,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
     final storage = GetStorage();
     storage.write('hasOnboarded', true);
 
-    Get.off(
-      () => const HomepageScreen(),
-      transition: Transition.fade,
-      duration: const Duration(milliseconds: 300),
-    );
+    Get.offAllNamed(AppRoutes.homepage);
   }
 
   @override
@@ -59,7 +56,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF4FAFF),
       body: SafeArea(
         child: Column(
           children: [
@@ -75,6 +72,19 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   });
                 },
                 itemBuilder: (context, index) {
+                  // Page 0: Energy Tutorial
+                  if (index == 0) {
+                    return EnergyTutorialPage(
+                      data: tutorialData[index],
+                    );
+                  }
+                  // Page 1: Task Tutorial
+                  if (index == 1) {
+                    return TaskTutorialPage(
+                      data: tutorialData[index],
+                    );
+                  }
+                  // Pages 2-3: Default Tutorial Pages
                   return TutorialPage(
                     data: tutorialData[index],
                     index: index,
@@ -108,7 +118,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         child: TutorialButton(
                           text: "Kembali",
                           isGradient: false,
-                          backgroundColor: AppColors.secondary,
+                          isOutline: true,
                           onTap: _previousPage,
                         ),
                       ),
@@ -129,97 +139,6 @@ class _TutorialScreenState extends State<TutorialScreen> {
             ),
 
             const SizedBox(height: 16),
-
-            // ================= BOTTOM NAVIGATION BAR =================
-            _buildBottomNavBar(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                icon: Icons.home_rounded,
-                label: 'Beranda',
-                isActive: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.timer_outlined,
-                label: 'Fokus',
-                isActive: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.map_outlined,
-                label: 'Journey',
-                isActive: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.local_fire_department_outlined,
-                label: 'Streak',
-                isActive: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.person_outline,
-                label: 'Profil',
-                isActive: false,
-                onTap: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 26,
-              color: isActive ? AppColors.primary : Colors.grey.shade400,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                color: isActive ? AppColors.primary : Colors.grey.shade500,
-              ),
-            ),
           ],
         ),
       ),

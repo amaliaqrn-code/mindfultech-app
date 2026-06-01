@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 enum EnergyLevel { low, medium, high }
 
 /// Enum untuk kategori tugas
-enum TaskCategory { rumah, selfCare, belajar, hubungan, kreativitas, kesehatan, pekerjaan }
+enum TaskCategory { rumah, selfCare, belajar, pekerjaan, kesehatan, hubungan }
 
 extension EnergyLevelExtension on EnergyLevel {
   String get displayName {
@@ -49,17 +49,15 @@ extension TaskCategoryExtension on TaskCategory {
       case TaskCategory.rumah:
         return 'Rumah';
       case TaskCategory.selfCare:
-        return 'Self Care';
+        return 'Pribadi';
       case TaskCategory.belajar:
         return 'Belajar';
-      case TaskCategory.hubungan:
-        return 'Hubungan';
-      case TaskCategory.kreativitas:
-        return 'Kreativitas';
-      case TaskCategory.kesehatan:
-        return 'Kesehatan';
       case TaskCategory.pekerjaan:
         return 'Pekerjaan';
+      case TaskCategory.kesehatan:
+        return 'Kesehatan';
+      case TaskCategory.hubungan:
+        return 'Lainnya';
     }
   }
 
@@ -68,17 +66,15 @@ extension TaskCategoryExtension on TaskCategory {
       case TaskCategory.rumah:
         return 'home';
       case TaskCategory.selfCare:
-        return 'favorite';
+        return 'person';
       case TaskCategory.belajar:
         return 'menu_book';
-      case TaskCategory.hubungan:
-        return 'people';
-      case TaskCategory.kreativitas:
-        return 'palette';
-      case TaskCategory.kesehatan:
-        return 'accessibility_new';
       case TaskCategory.pekerjaan:
         return 'work';
+      case TaskCategory.kesehatan:
+        return 'favorite';
+      case TaskCategory.hubungan:
+        return 'auto_awesome';
     }
   }
 }

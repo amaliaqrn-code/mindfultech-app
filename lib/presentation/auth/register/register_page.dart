@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_event.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_state.dart';
-import 'package:mindfultech_app/presentation/tutorial/screens/totorial_screen.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -42,13 +43,8 @@ class _RegisterPageState extends State<RegisterPage> {
           final storage = GetStorage();
           storage.write('userName', state.user.name);
 
-          // Navigate to Tutorial Screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const TutorialScreen(),
-            ),
-          );
+          // Navigate to Tutorial Screen using GetX
+          Get.offAllNamed(AppRoutes.tutorial);
         } else if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -61,241 +57,249 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
 
-                    // Image
-                    Image.asset(
-                      'assets/images/mindy_regist.png',
-                      height: 100,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.cloud,
-                        size: 80,
-                        color: Colors.grey,
-                      ),
+                  // Image
+                  Image.asset(
+                    'assets/images/mindy_regist.png',
+                    height: 175.13546752929688,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.cloud,
+                      size: 80,
+                      color: Colors.grey,
                     ),
+                  ),
 
-                    const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                    // Title
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [
-                          Color(0xFF4597E6),
-                          Color(0xFF7BBEFF),
-                          Color(0xFF83DFC6),
-                        ],
-                      ).createShader(bounds),
-                      child: const Text(
-                        'Buat Akun',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
-                      'Teman fokus yang siap menemani harimu',
-                      textAlign: TextAlign.center,
+                  // Title
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [
+                        Color(0xFF4597E6),
+                        Color(0xFF7BBEFF),
+                        Color(0xFF83DFC6),
+                      ],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'Buat Akun',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF655F5F),
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 32),
+                  const SizedBox(height: 8),
 
-                    // Name field
-                    _buildTextField(
-                      controller: _nameController,
-                      label: 'Nama',
-                      assetIcon: 'assets/images/profile.png',
-                      onChanged: (value) {
-                        context.read<RegisterBloc>().add(RegisterNameChanged(value));
-                      },
-                      validator: (v) => v!.isEmpty ? 'Nama harus diisi' : null,
+                  const Text(
+                    'Teman fokus yang siap menemani harimu',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF655F5F),
                     ),
+                  ),
 
-                    const SizedBox(height: 18),
+                  const SizedBox(height: 32),
 
-                    // Email field
-                    _buildTextField(
-                      controller: _emailController,
-                      label: 'Email',
-                      assetIcon: 'assets/images/email.png',
-                      keyboardType: TextInputType.emailAddress,
-                      onChanged: (value) {
-                        context.read<RegisterBloc>().add(RegisterEmailChanged(value));
-                      },
-                      validator: (v) {
-                        if (v!.isEmpty) return 'Email harus diisi';
-                        if (!v.contains('@')) return 'Email tidak valid';
-                        return null;
-                      },
-                    ),
+                  // Name field
+                  _buildTextField(
+                    controller: _nameController,
+                    label: 'Nama',
+                    assetIcon: 'assets/images/profile.png',
+                    onChanged: (value) {
+                      context.read<RegisterBloc>().add(RegisterNameChanged(value));
+                    },
+                    validator: (v) => v!.isEmpty ? 'Nama harus diisi' : null,
+                  ),
 
-                    const SizedBox(height: 18),
+                  const SizedBox(height: 18),
 
-                    // Password field
-                    _buildPasswordField(
-                      controller: _passwordController,
-                      label: 'Kata Sandi',
-                      obscureText: _obscurePassword,
-                      onToggle: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                      assetLock: 'assets/images/lock.png',
-                      assetEye: 'assets/images/eye.png',
-                      onChanged: (value) {
-                        context.read<RegisterBloc>().add(RegisterPasswordChanged(value));
-                      },
-                      validator: (v) => v!.length < 6 ? 'Minimal 6 karakter' : null,
-                    ),
+                  // Email field
+                  _buildTextField(
+                    controller: _emailController,
+                    label: 'Email',
+                    assetIcon: 'assets/images/email.png',
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      context.read<RegisterBloc>().add(RegisterEmailChanged(value));
+                    },
+                    validator: (v) {
+                      if (v!.isEmpty) return 'Email harus diisi';
+                      if (!v.contains('@')) return 'Email tidak valid';
+                      return null;
+                    },
+                  ),
 
-                    const SizedBox(height: 18),
+                  const SizedBox(height: 18),
 
-                    // Confirm Password field
-                    _buildPasswordField(
-                      controller: _confirmPasswordController,
-                      label: 'Konfirmasi Kata Sandi',
-                      obscureText: _obscureConfirmPassword,
-                      onToggle: () {
-                        setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                      },
-                      assetLock: 'assets/images/lock.png',
-                      assetEye: 'assets/images/eye.png',
-                      onChanged: (value) {
-                        context.read<RegisterBloc>().add(RegisterConfirmPasswordChanged(value));
-                      },
-                      validator: (v) {
-                        if (v != _passwordController.text) {
-                          return 'Kata sandi tidak cocok';
-                        }
-                        return null;
-                      },
-                    ),
+                  // Password field
+                  _buildPasswordField(
+                    controller: _passwordController,
+                    label: 'Kata Sandi',
+                    obscureText: _obscurePassword,
+                    onToggle: () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    },
+                    assetLock: 'assets/images/lock.png',
+                    assetEye: 'assets/images/eye.png',
+                    onChanged: (value) {
+                      context.read<RegisterBloc>().add(RegisterPasswordChanged(value));
+                    },
+                    validator: (v) => v!.length < 6 ? 'Minimal 6 karakter' : null,
+                  ),
 
-                    const SizedBox(height: 24),
+                  const SizedBox(height: 18),
 
-                    // Checkbox
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() => _agreeTerms = !_agreeTerms);
-                          },
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: Colors.grey),
-                              color: _agreeTerms ? const Color(0xFF4597E6) : null,
-                            ),
-                            child: _agreeTerms
-                                ? const Icon(
-                                    Icons.check,
-                                    size: 14,
-                                    color: Colors.white,
-                                  )
-                                : null,
+                  // Confirm Password field
+                  _buildPasswordField(
+                    controller: _confirmPasswordController,
+                    label: 'Konfirmasi Kata Sandi',
+                    obscureText: _obscureConfirmPassword,
+                    onToggle: () {
+                      setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                    },
+                    assetLock: 'assets/images/lock.png',
+                    assetEye: 'assets/images/eye.png',
+                    onChanged: (value) {
+                      context.read<RegisterBloc>().add(RegisterConfirmPasswordChanged(value));
+                    },
+                    validator: (v) {
+                      if (v != _passwordController.text) {
+                        return 'Kata sandi tidak cocok';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Checkbox
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() => _agreeTerms = !_agreeTerms);
+                        },
+                        child: Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.grey),
+                            color: _agreeTerms ? const Color(0xFF4597E6) : null,
+                          ),
+                          child: _agreeTerms
+                              ? const Icon(
+                                  Icons.check,
+                                  size: 14,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Saya setuju dengan syarat dan ketentuan',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Button Daftar
+                  BlocBuilder<RegisterBloc, RegisterState>(
+                    builder: (context, state) {
+                      final isLoading = state is RegisterLoading;
+                      return _buildRegisterButton(
+                        isLoading: isLoading,
+                        onTap: isLoading ? null : _handleRegister,
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Login link
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Sudah punya akun? '),
+                      GestureDetector(
+                        onTap: () {
+                          Get.toNamed(AppRoutes.login);
+                        },
+                        child: const Text(
+                          'Masuk',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF4597E6),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'Saya setuju dengan syarat dan ketentuan',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
 
-                    const SizedBox(height: 32),
-
-                    // Button Daftar
-                    BlocBuilder<RegisterBloc, RegisterState>(
-                      builder: (context, state) {
-                        final isLoading = state is RegisterLoading;
-                        return GestureDetector(
-                          onTap: isLoading ? null : _handleRegister,
-                          child: Container(
-                            width: double.infinity,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              gradient: isLoading
-                                  ? null
-                                  : const LinearGradient(
-                                      colors: [
-                                        Color(0xFF4597E6),
-                                        Color(0xFF7BBEFF),
-                                        Color(0xFF83DFC6),
-                                      ],
-                                    ),
-                              color: isLoading ? Colors.grey : null,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                              child: isLoading
-                                  ? const SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Daftar',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Login link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Sudah punya akun? '),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/login');
-                          },
-                          child: const Text(
-                            'Masuk',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF4597E6),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-                  ],
-                ),
+                  const SizedBox(height: 24),
+                ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterButton({
+    required bool isLoading,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        height: 52,
+        decoration: BoxDecoration(
+          gradient: isLoading
+              ? null
+              : const LinearGradient(
+                  colors: [
+                    Color(0xFF4597E6),
+                    Color(0xFF7BBEFF),
+                    Color(0xFF83DFC6),
+                  ],
+                ),
+          color: isLoading ? Colors.grey : null,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Center(
+          child: isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text(
+                  'Daftar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
         ),
       ),
     );

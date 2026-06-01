@@ -57,15 +57,13 @@ class PurpleCategoryCard extends StatelessWidget {
       case TaskCategory.pekerjaan:
         return Icons.work_rounded;
       case TaskCategory.selfCare:
-        return Icons.favorite_rounded;
+        return Icons.person_rounded;
       case TaskCategory.belajar:
         return Icons.menu_book_rounded;
       case TaskCategory.hubungan:
-        return Icons.people_rounded;
-      case TaskCategory.kreativitas:
-        return Icons.palette_rounded;
+        return Icons.auto_awesome_rounded;
       case TaskCategory.kesehatan:
-        return Icons.fitness_center_rounded;
+        return Icons.favorite_rounded;
     }
   }
 
@@ -73,8 +71,6 @@ class PurpleCategoryCard extends StatelessWidget {
     switch (category) {
       case TaskCategory.kesehatan:
         return PurpleTheme.categoryColors['kesehatan']!;
-      case TaskCategory.kreativitas:
-        return PurpleTheme.categoryColors['kreativitas']!;
       case TaskCategory.pekerjaan:
         return PurpleTheme.categoryColors['pekerjaan']!;
       case TaskCategory.belajar:
@@ -92,8 +88,6 @@ class PurpleCategoryCard extends StatelessWidget {
     switch (category) {
       case TaskCategory.kesehatan:
         return PurpleTheme.categoryIconColors['kesehatan']!;
-      case TaskCategory.kreativitas:
-        return PurpleTheme.categoryIconColors['kreativitas']!;
       case TaskCategory.pekerjaan:
         return PurpleTheme.categoryIconColors['pekerjaan']!;
       case TaskCategory.belajar:

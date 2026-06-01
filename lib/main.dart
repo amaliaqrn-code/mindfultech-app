@@ -1,94 +1,115 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mindfultech_app/presentation/journey/screens/journey_screen.dart';
-
-import 'core/network/dio_client.dart';
-import 'data/datasources/auth_local_datasource.dart';
-import 'data/datasources/auth_remote_datasource.dart';
-import 'data/repositories/auth_repository.dart';
-import 'presentation/auth/bloc/login/login_bloc.dart';
-import 'presentation/auth/bloc/register/register_bloc.dart';
-import 'presentation/auth/login_page.dart';
-import 'presentation/auth/register/register_page.dart';
-import 'presentation/splash/splash_screen.dart';
-import 'presentation/onboarding/onboarding_screen.dart';
-import 'presentation/homepage/homepage_screen.dart';
-import 'presentation/tutorial/screens/totorial_screen.dart';
-import 'presentation/journey/controllers/journey_controller.dart';
-import 'presentation/choose_energy/choose_energy_screen.dart';
-import 'presentation/choose_energy/mindy_bantu_aku_screen.dart';
-import 'presentation/choose_energy/mindy_bantu_aku_blue_screen.dart';
-import 'presentation/choose_energy/mindy_bantu_aku_purple_screen.dart';
-import 'presentation/homepage/dynamic_homepage_screen.dart';
-import 'presentation/timer/screens/timer_screen.dart';
+import 'package:mindfultech_app/core/routes/app_router.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
-  // Initialize dependencies
-  final dioClient = DioClient();
-  final localDataSource = AuthLocalDataSource();
-  final remoteDataSource = AuthRemoteDataSource(dioClient);
-  final authRepository = AuthRepository(
-    remoteDataSource: remoteDataSource,
-    localDataSource: localDataSource,
-  );
+  // Initialize dependencies (controllers, repositories, etc.)
+  final authRepository = AppRouter.initDependencies();
 
-  // Put controllers
-  Get.put(JourneyController());
-  Get.put<AuthRepository>(authRepository);
-
-  runApp(MyApp(authRepository: authRepository));
+  runApp(MindfulTechApp(authRepository: authRepository));
 }
 
-class MyApp extends StatelessWidget {
+class MindfulTechApp extends StatelessWidget {
   final AuthRepository authRepository;
 
-  const MyApp({super.key, required this.authRepository});
+  const MindfulTechApp({super.key, required this.authRepository});
 
   @override
   Widget build(BuildContext context) {
+    // Build routes with authRepository for BLoC providers
+    final appRoutes = AppRouter.routes(authRepository);
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/login':
-            return MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                create: (_) => LoginBloc(authRepository: authRepository),
-                child: LoginPage(),
-              ),
-            );
-          case '/register':
-            return MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                create: (_) => RegisterBloc(authRepository: authRepository),
-                child: RegisterPage(),
-              ),
-            );
-          default:
-            return MaterialPageRoute(
-              builder: (_) => const SplashScreen(),
-            );
-        }
-      },
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/onboarding': (context) => const OnBoardingScreen(),
-        '/homepage': (context) => const HomepageScreen(),
-        '/dynamic-homepage': (context) => const DynamicHomepageScreen(),
-        '/tutorial': (context) => const TutorialScreen(),
-        '/journey': (context) => const JourneyMapScreen(),
-        '/choose-energy': (context) => const ChooseEnergyScreen(),
-        '/mindy-bantu-aku': (context) => const MindyBantuAkuScreen(),
-        '/mindy-bantu-aku-blue': (context) => const MindyBantuAkuBlueScreen(),
-        '/mindy-bantu-aku-purple': (context) => const MindyBantuAkuPurpleScreen(),
-        '/timer': (context) => const TimerScreen(),
-      },
+      title: 'MindfulTech',
+
+      // Initial route - SplashScreen handles redirection logic
+      initialRoute: AppRoutes.splash,
+
+      // Define all app routes
+      getPages: [
+        GetPage(
+          name: AppRoutes.splash,
+          page: () => appRoutes[AppRoutes.splash]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.onboarding,
+          page: () => appRoutes[AppRoutes.onboarding]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.login,
+          page: () => appRoutes[AppRoutes.login]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.register,
+          page: () => appRoutes[AppRoutes.register]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.forgotPassword,
+          page: () => appRoutes[AppRoutes.forgotPassword]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.passwordSuccess,
+          page: () => appRoutes[AppRoutes.passwordSuccess]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.tutorial,
+          page: () => appRoutes[AppRoutes.tutorial]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.homepage,
+          page: () => appRoutes[AppRoutes.homepage]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.journey,
+          page: () => appRoutes[AppRoutes.journey]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.chooseEnergy,
+          page: () => appRoutes[AppRoutes.chooseEnergy]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.mindyBantuAku,
+          page: () => appRoutes[AppRoutes.mindyBantuAku]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.mindyBantuAkuBlue,
+          page: () => appRoutes[AppRoutes.mindyBantuAkuBlue]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.mindyBantuAkuPurple,
+          page: () => appRoutes[AppRoutes.mindyBantuAkuPurple]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.mindyBantuAkuRendah,
+          page: () => appRoutes[AppRoutes.mindyBantuAkuRendah]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.mindyBantuAkuSedang,
+          page: () => appRoutes[AppRoutes.mindyBantuAkuSedang]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.mindyBantuAkuTinggi,
+          page: () => appRoutes[AppRoutes.mindyBantuAkuTinggi]!(null),
+        ),
+        GetPage(
+          name: AppRoutes.timer,
+          page: () => appRoutes[AppRoutes.timer]!(null),
+        ),
+      ],
+
+      // Handle routes that need BLoC providers
+      onGenerateRoute: AppRouter.generateRoute,
+
+      // Default transition animation
+      defaultTransition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 300),
     );
   }
 }

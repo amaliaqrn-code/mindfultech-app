@@ -150,8 +150,6 @@ class AlternativeTaskCard extends StatelessWidget {
         return GreenTheme.categoryColors['belajar']!;
       case TaskCategory.hubungan:
         return GreenTheme.categoryColors['hubungan']!;
-      case TaskCategory.kreativitas:
-        return GreenTheme.categoryColors['kreativitas']!;
       case TaskCategory.kesehatan:
         return GreenTheme.categoryColors['kesehatan']!;
     }
@@ -169,8 +167,6 @@ class AlternativeTaskCard extends StatelessWidget {
         return GreenTheme.categoryIconColors['belajar']!;
       case TaskCategory.hubungan:
         return GreenTheme.categoryIconColors['hubungan']!;
-      case TaskCategory.kreativitas:
-        return GreenTheme.categoryIconColors['kreativitas']!;
       case TaskCategory.kesehatan:
         return GreenTheme.categoryIconColors['kesehatan']!;
     }

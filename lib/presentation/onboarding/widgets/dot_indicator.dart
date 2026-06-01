@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/constants/colors.dart';
 
 class DotIndicator extends StatelessWidget {
   final bool isActive;
@@ -7,13 +8,14 @@ class DotIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(4),
-      width: isActive ? 12 : 8,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      width: isActive ? 24 : 8,
       height: 8,
       decoration: BoxDecoration(
-        color: isActive ? Colors.blue : Colors.grey,
-        borderRadius: BorderRadius.circular(10),
+        color: isActive ? AppColors.primary : Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

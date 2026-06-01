@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/colors.dart';
 
 class TutorialButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final bool isGradient;
+  final bool isOutline;
   final Color? backgroundColor;
 
   const TutorialButton({
@@ -12,6 +14,7 @@ class TutorialButton extends StatelessWidget {
     required this.text,
     required this.onTap,
     this.isGradient = true,
+    this.isOutline = false,
     this.backgroundColor,
   });
 
@@ -26,7 +29,7 @@ class TutorialButton extends StatelessWidget {
           height: 58,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            gradient: isGradient
+            gradient: isGradient && !isOutline
                 ? const LinearGradient(
                     colors: [
                       Color(0xff4597E6),
@@ -37,8 +40,14 @@ class TutorialButton extends StatelessWidget {
                     end: Alignment.centerRight,
                   )
                 : null,
-            color: !isGradient ? (backgroundColor ?? AppColors.secondary) : null,
-            boxShadow: isGradient
+            color: !isGradient ? (backgroundColor ?? Colors.white) : null,
+            border: isOutline
+                ? Border.all(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  )
+                : null,
+            boxShadow: isGradient && !isOutline
                 ? [
                     BoxShadow(
                       color: AppColors.primary.withValues(alpha: 0.3),
@@ -51,10 +60,10 @@ class TutorialButton extends StatelessWidget {
           child: Center(
             child: Text(
               text,
-              style: const TextStyle(
+              style: GoogleFonts.montserrat(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: isOutline ? AppColors.primary : Colors.white,
               ),
             ),
           ),

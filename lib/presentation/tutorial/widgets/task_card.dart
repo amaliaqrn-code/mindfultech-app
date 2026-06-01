@@ -59,6 +59,16 @@ class TaskCard extends StatelessWidget {
                 category: "Kerja",
                 categoryColor: AppColors.primary,
               ),
+              const SizedBox(height: 12),
+
+              // Task Item 2: Balas email klien
+              _buildTaskItem(
+                iconPath: "assets/icon/icon-park-solid_laptop.svg",
+                title: "Tugas Poster",
+                duration: "45 menit",
+                category: "Kerja",
+                categoryColor: AppColors.primary,
+              ),
             ],
           ),
         ),

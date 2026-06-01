@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/constants/styles.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/core/constants/colors.dart';
 import 'models/energy_option_model.dart';
 import 'data/choose_energy_data.dart';
 import 'widgets/energy_card.dart';
@@ -14,7 +14,7 @@ class ChooseEnergyScreen extends StatefulWidget {
 }
 
 class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
-  int selectedEnergy = -1;
+  int _selectedEnergy = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +22,16 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               _buildHeader(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               _buildTitle(),
-              const SizedBox(height: 40),
-              _buildEnergyList(),
+              const SizedBox(height: 32),
+              Expanded(child: _buildEnergyList()),
               _buildContinueButton(),
             ],
           ),
@@ -46,19 +46,19 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
         GestureDetector(
           onTap: () => Get.back(),
           child: Container(
-            width: 40,
-            height: 40,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
                 color: AppColors.primary,
-                width: 2,
+                width: 1.5,
               ),
             ),
             child: const Icon(
               Icons.arrow_back_ios_new,
               color: AppColors.primary,
-              size: 18,
+              size: 16,
             ),
           ),
         ),
@@ -70,39 +70,52 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
   Widget _buildTitle() {
     return Column(
       children: [
-        Center(
-          child: ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [
-                Color(0xff4597E6),
-                Color(0xff83DFC6),
-              ],
-            ).createShader(bounds),
-            child: Text.rich(
-              textAlign: TextAlign.center,
-              TextSpan(
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  height: 1.3,
-                ),
-                children: const [
-                  TextSpan(text: 'Hai, Bagaimana '),
-                  TextSpan(text: 'energimu', style: TextStyle(color: Color(0xFFFFFBF0))),
-                  TextSpan(text: ' hari ini?'),
-                ],
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [
+              Color(0xff4597E6),
+              Color(0xff83DFC6),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ).createShader(bounds),
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: const TextSpan(
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                height: 1.4,
+                color: Colors.white,
               ),
+              children: [
+                TextSpan(
+                  text: 'Hai, Bagaimana ',
+                  style: TextStyle(color: Colors.black),
+                ),
+                TextSpan(
+                  text: 'energimu',
+                  style: TextStyle(color: Colors.white),
+                ),
+                TextSpan(
+                  text: ' hari ini?',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          ChooseEnergyData.subtitle,
-          textAlign: TextAlign.center,
-          style: AppTextStyles.subHeading.copyWith(
-            fontSize: 16,
-            color: const Color(0xff858794),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            ChooseEnergyData.subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              height: 1.5,
+            ),
           ),
         ),
       ],
@@ -110,73 +123,74 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
   }
 
   Widget _buildEnergyList() {
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: EnergyOption.options.map((option) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: EnergyCard(
-              option: option,
-              isSelected: selectedEnergy == option.index,
-              onTap: () {
-                setState(() {
-                  selectedEnergy = option.index;
-                });
-              },
-            ),
-          );
-        }).toList(),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: EnergyOption.options.map((option) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 14),
+          child: EnergyCard(
+            option: option,
+            isSelected: _selectedEnergy == option.index,
+            onTap: () {
+              setState(() {
+                _selectedEnergy = option.index;
+              });
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildContinueButton() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32),
-      child: Container(
-        width: double.infinity,
-        height: 56,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          gradient: selectedEnergy >= 0
-              ? const LinearGradient(
-                  colors: [
-                    Color(0xff4597E6),
-                    Color(0xff83DFC6),
-                  ],
-                )
-              : null,
-          color: selectedEnergy >= 0 ? null : Colors.grey.shade300,
-        ),
-        child: ElevatedButton(
-          onPressed: selectedEnergy >= 0
-              ? () {
-                  Get.toNamed(ChooseEnergyData.nextRoute, arguments: {
-                    'energy': selectedEnergy,
-                  });
-                }
-              : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            disabledBackgroundColor: Colors.grey.shade300,
+      padding: const EdgeInsets.only(bottom: 28),
+      child: GestureDetector(
+        onTap: _selectedEnergy >= 0 ? _onContinue : null,
+        child: Container(
+          width: double.infinity,
+          height: 52,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            gradient: _selectedEnergy >= 0
+                ? const LinearGradient(
+                    colors: [
+                      Color(0xff4597E6),
+                      Color(0xff83DFC6),
+                    ],
+                  )
+                : null,
+            color: _selectedEnergy >= 0 ? null : Colors.grey.shade300,
           ),
-          child: Text(
-            ChooseEnergyData.continueButtonText,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: selectedEnergy >= 0
-                  ? Colors.white
-                  : Colors.grey.shade600,
+          child: Center(
+            child: Text(
+              ChooseEnergyData.continueButtonText,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: _selectedEnergy >= 0
+                    ? Colors.white
+                    : Colors.grey.shade500,
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _onContinue() {
+    // Navigate based on energy selection - go to MindyBantuAku screen
+    switch (_selectedEnergy) {
+      case 0: // Rendah - Green
+        Get.toNamed(AppRoutes.mindyBantuAku, arguments: {'energy': 0});
+        break;
+      case 1: // Sedang - Blue
+        Get.toNamed(AppRoutes.mindyBantuAku, arguments: {'energy': 1});
+        break;
+      case 2: // Tinggi - Purple
+        Get.toNamed(AppRoutes.mindyBantuAku, arguments: {'energy': 2});
+        break;
+    }
   }
 }
