@@ -6,6 +6,7 @@ import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_event.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_state.dart';
+import 'package:mindfultech_app/presentation/auth/controllers/auth_controller.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,6 +21,9 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
+  // AuthController instance untuk manage login state
+  final AuthController _authController = Get.find<AuthController>();
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -33,12 +37,12 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         if (state is LoginSuccess) {
           try {
-            // Save user name to storage
+            // Simpan user name ke storage
             final storage = GetStorage();
             storage.write('userName', state.user.name);
 
-            // Navigate to Tutorial Screen using GetX
-            Get.offAllNamed(AppRoutes.tutorial);
+            // 🔥 PANGGIL AUTH CONTROLLER - Simpan token & redirect
+            _authController.onLoginSuccess();
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

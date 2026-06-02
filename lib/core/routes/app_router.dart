@@ -1,7 +1,3 @@
-library;
-
-export 'app_routes.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -12,6 +8,7 @@ import 'package:mindfultech_app/data/datasources/auth_remote_datasource.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
+import 'package:mindfultech_app/presentation/auth/controllers/auth_controller.dart';
 import 'package:mindfultech_app/presentation/auth/login_page.dart';
 import 'package:mindfultech_app/presentation/auth/register/register_page.dart';
 import 'package:mindfultech_app/presentation/auth/forgot_password.dart';
@@ -29,6 +26,9 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_pur
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_rendah_screen.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_sedang_screen.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_tinggi_screen.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_generic_screen.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_task_recommendation_screen.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/mindy_theme.dart';
 import 'package:mindfultech_app/presentation/timer/screens/timer_screen.dart';
 
 /// App Router - Centralized routing configuration using GetX
@@ -58,6 +58,15 @@ class AppRouter {
       AppRoutes.mindyBantuAkuRendah: (_) => MindyBantuAkuRendahScreen(),
       AppRoutes.mindyBantuAkuSedang: (_) => MindyBantuAkuSedangScreen(),
       AppRoutes.mindyBantuAkuTinggi: (_) => MindyBantuAkuTinggiScreen(),
+      AppRoutes.mindyBantuAkuGeneric: (params) {
+        final args = params as Map<String, dynamic>?;
+        final energyLevel = args?['energy'] as int?;
+        final level = energyLevel != null
+            ? EnergyLevel.fromValue(energyLevel)
+            : EnergyLevel.low;
+        return MindyBantuAkuGenericScreen(energyLevel: level);
+      },
+      AppRoutes.mindyTaskRecommendation: (_) => const MindyTaskRecommendationScreen(),
       AppRoutes.timer: (_) => TimerScreen(),
     };
   }
@@ -73,8 +82,9 @@ class AppRouter {
       localDataSource: localDataSource,
     );
 
-    // Controllers
+    // Register repositories and controllers to GetX
     Get.put<AuthRepository>(authRepository);
+    Get.put(AuthController(authRepository: authRepository));
     Get.put(JourneyController());
 
     return authRepository;

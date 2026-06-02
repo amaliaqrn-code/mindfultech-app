@@ -16,6 +16,8 @@ class AppRoutes {
   static const String mindyBantuAkuRendah = '/mindy-bantu-aku-rendah';
   static const String mindyBantuAkuSedang = '/mindy-bantu-aku-sedang';
   static const String mindyBantuAkuTinggi = '/mindy-bantu-aku-tinggi';
+  static const String mindyTaskRecommendation = '/mindy-task-recommendation';
+  static const String mindyBantuAkuGeneric = '/mindy-bantu-aku-generic';
   static const String timer = '/timer';
   static const String passwordSuccess = '/password-success';
 }

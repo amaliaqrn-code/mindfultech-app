@@ -180,16 +180,16 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
   }
 
   void _onContinue() {
-    // Navigate based on energy selection - go to MindyBantuAku screen
+    // Navigate based on energy selection - go to generic screen with theme
     switch (_selectedEnergy) {
       case 0: // Rendah - Green
-        Get.toNamed(AppRoutes.mindyBantuAku, arguments: {'energy': 0});
+        Get.toNamed(AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 0});
         break;
       case 1: // Sedang - Blue
-        Get.toNamed(AppRoutes.mindyBantuAku, arguments: {'energy': 1});
+        Get.toNamed(AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 1});
         break;
       case 2: // Tinggi - Purple
-        Get.toNamed(AppRoutes.mindyBantuAku, arguments: {'energy': 2});
+        Get.toNamed(AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 2});
         break;
     }
   }

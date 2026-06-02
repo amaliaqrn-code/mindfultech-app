@@ -83,9 +83,14 @@ flutter:
     - assets/images/pilihenergi/energi_sedang.png
     - assets/images/pilihenergi/energi_tinggi.png
 
+
     # Energi Rendah images
     - assets/images/energirendah/awanmindy1.png
     - assets/images/energirendah/awanmindy2.png
+    # Energi Sedang images
+    - assets/images/energisedang/mindy.png
+    # Energi Tinggi images
+    - assets/images/energitinggi/mindy.png
 
     # Tutorial images
     - assets/images/tutorial/slide1.png

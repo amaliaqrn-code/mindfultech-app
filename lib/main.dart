@@ -99,6 +99,14 @@ class MindfulTechApp extends StatelessWidget {
           page: () => appRoutes[AppRoutes.mindyBantuAkuTinggi]!(null),
         ),
         GetPage(
+          name: AppRoutes.mindyBantuAkuGeneric,
+          page: () {
+            final args = Get.arguments as Map<String, dynamic>?;
+            final energy = args?['energy'] as int? ?? 0;
+            return appRoutes[AppRoutes.mindyBantuAkuGeneric]!({'energy': energy});
+          },
+        ),
+        GetPage(
           name: AppRoutes.timer,
           page: () => appRoutes[AppRoutes.timer]!(null),
         ),

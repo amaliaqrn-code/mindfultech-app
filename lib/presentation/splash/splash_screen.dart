@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 
+/// 🔥 SPLASH SCREEN - Authentication Flow Entry Point
+///
+/// Fungsi utama:
+/// 1. Menampilkan animasi splash
+/// 2. Mengecek apakah user sudah login (auto-login)
+/// 3. Navigasi ke halaman yang sesuai berdasarkan status login
+///
+/// Alur:
+/// - Token ada & valid → Homepage
+/// - Token tidak ada → Onboarding (kemudian login)
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -14,6 +25,9 @@ class _SplashScreenState extends State<SplashScreen>
   bool _isSecond = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+
+  // Instance AuthLocalDataSource untuk cek status login
+  final AuthLocalDataSource _authLocalDataSource = AuthLocalDataSource();
 
   @override
   void initState() {
@@ -32,11 +46,11 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  /// 🔥 LOGIC SPLASH - Navigation flow
+  /// 🔥 LOGIC SPLASH - Navigation flow dengan Auto-Login Check
   void _startSplash() async {
     try {
       // Splash pertama (putih)
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
       if (!mounted) return;
       setState(() {
@@ -44,13 +58,29 @@ class _SplashScreenState extends State<SplashScreen>
       });
       _animationController.forward();
 
-      // Splash kedua (gradient)
-      await Future.delayed(const Duration(seconds: 2));
+      // Splash kedua (gradient) dengan loading check
+      await Future.delayed(const Duration(milliseconds: 1500));
 
       if (!mounted) return;
 
-      // Navigate to Onboarding using GetX
-      Get.offAllNamed(AppRoutes.onboarding);
+      // 🔥 CEK STATUS LOGIN - Auto Login Logic
+      final isLoggedIn = _authLocalDataSource.isLoggedIn();
+      final token = _authLocalDataSource.getToken();
+
+      debugPrint('=== SPLASH AUTH CHECK ===');
+      debugPrint('Is Logged In: $isLoggedIn');
+      debugPrint('Has Token: ${token != null && token.isNotEmpty}');
+
+      // Navigate berdasarkan status login
+      if (isLoggedIn && token != null && token.isNotEmpty) {
+        // ✅ User SUDAH LOGIN → Langsung ke Homepage
+        debugPrint('🔄 Auto-login: Redirecting to Homepage');
+        Get.offAllNamed(AppRoutes.homepage);
+      } else {
+        // ❌ User BELUM LOGIN → Ke Onboarding
+        debugPrint('🔄 New user: Redirecting to Onboarding');
+        Get.offAllNamed(AppRoutes.onboarding);
+      }
     } catch (e) {
       debugPrint('Splash navigation error: $e');
       // Fallback navigation if error occurs
@@ -137,6 +167,16 @@ class _SplashScreenState extends State<SplashScreen>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Loading indicator saat cek auth
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
                   color: Colors.white,
                 ),
               ),
