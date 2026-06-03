@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'models/task_model.dart';
-import 'controllers/choose_energy_controller.dart';
+import 'cubit/choose_energy_cubit.dart';
+import 'cubit/choose_energy_state.dart';
 import 'widgets/mascot_widget.dart';
 import 'widgets/category_grid_widget.dart';
 import 'widgets/recommendation_card.dart';
 import 'widgets/alternative_task_list.dart';
-import 'widgets/confirmation_card.dart';
 import 'widgets/main_action_button.dart';
 import 'theme/green_theme.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
+
+// Catatan: Jika GreenBackButton belum didefinisikan, kamu bisa membuat widget kustom 
+// atau menggunakan IconButton standar di dalam proyekmu.
+class GreenBackButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const GreenBackButton({super.key, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: GreenTheme.textDark),
+      onPressed: onTap,
+    );
+  }
+}
 
 /// Layar "Mindy Bantu Aku" - Sistem Filter & Rekomendasi Tugas
 /// Menggunakan nuansa hijau (Sage Green theme)
@@ -17,26 +33,15 @@ class MindyBantuAkuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize controller
-    final controller = Get.put(ChooseEnergyController());
-
-    // Get energy level from arguments
-    final args = Get.arguments;
-    if (args != null && args['energy'] != null) {
-      final energyValue = args['energy'] as int;
-      final energy = EnergyLevelExtension.fromValue(energyValue);
-      controller.initializeWithEnergy(energy);
-    }
-
     return Scaffold(
       backgroundColor: GreenTheme.backgroundPage,
       body: SafeArea(
         child: Column(
           children: [
-            // Header with back button and progress
-            _buildHeader(controller),
+            // Header dengan tombol back dan progress indicator dinamis
+            _buildHeader(context),
 
-            // Main content (scrollable)
+            // Konten Utama (Scrollable)
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -46,12 +51,14 @@ class MindyBantuAkuScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 16),
 
-                    // Mascot
+                    // Maskot Animasi/Gambar Mindy
                     const MascotWidget(size: 100),
                     const SizedBox(height: 24),
 
-                    // Dynamic content based on step
-                    Obx(() => _buildDynamicContent(controller)),
+                    // Konten Dinamis Berdasarkan State Cubit yang Baru
+                    BlocBuilder<ChooseEnergyCubit, ChooseEnergyState>(
+                      builder: (context, state) => _buildDynamicContent(context, state),
+                    ),
 
                     const SizedBox(height: 24),
                   ],
@@ -59,18 +66,20 @@ class MindyBantuAkuScreen extends StatelessWidget {
               ),
             ),
 
-            // Bottom action button
+            // Tombol Aksi di Bagian Bawah (Bottom Button)
             Padding(
               padding: EdgeInsets.only(
                 left: 24,
                 right: 24,
                 bottom: MediaQuery.of(context).padding.bottom + 16,
               ),
-              child: Obx(() => MainActionButton(
-                text: controller.buttonText,
-                isEnabled: controller.isButtonEnabled,
-                onPressed: () => _handleMainAction(controller),
-              )),
+              child: BlocBuilder<ChooseEnergyCubit, ChooseEnergyState>(
+                builder: (context, state) => MainActionButton(
+                  text: state.buttonText,
+                  isEnabled: state.isButtonEnabled,
+                  onPressed: () => _handleMainAction(context, state),
+                ),
+              ),
             ),
           ],
         ),
@@ -78,15 +87,22 @@ class MindyBantuAkuScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(ChooseEnergyController controller) {
+  Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       child: Row(
         children: [
-          GreenBackButton(onTap: () => controller.goBack()),
+          GreenBackButton(onTap: () {
+            final shouldPop = context.read<ChooseEnergyCubit>().goBack();
+            if (shouldPop) {
+              Navigator.pop(context);
+            }
+          }),
           const Spacer(),
-          // Progress indicator
-          Obx(() => _buildProgressIndicator(controller.currentStep.value)),
+          // Progress indicator menyesuaikan 2-langkah utama
+          BlocBuilder<ChooseEnergyCubit, ChooseEnergyState>(
+            builder: (context, state) => _buildProgressIndicator(state.currentStep),
+          ),
         ],
       ),
     );
@@ -112,37 +128,38 @@ class MindyBantuAkuScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDynamicContent(ChooseEnergyController controller) {
-    switch (controller.currentStep.value) {
+  Widget _buildDynamicContent(BuildContext context, ChooseEnergyState state) {
+    switch (state.currentStep) {
       case ChooseEnergyStep.categorySelection:
-        return _buildCategorySelectionContent(controller);
-      case ChooseEnergyStep.recommendation:
-        return _buildRecommendationContent(controller);
-      case ChooseEnergyStep.alternative:
-        return _buildAlternativeContent(controller);
-      case ChooseEnergyStep.confirmation:
-        return _buildConfirmationContent(controller);
+        return _buildCategorySelectionContent(context, state);
+      case ChooseEnergyStep.taskSelection:
+        // Jika sedang memicu alternatif list, render list tugas pilihan lain
+        if (state.isShowingAlternativeList) {
+          return _buildAlternativeContent(context, state);
+        }
+        // Jika tidak, render kartu rekomendasi tunggal (Baik rekomendasi otomatis awal / konfirmasi tugas)
+        return _buildTaskContent(context, state);
     }
   }
 
-  // Step 1: Category Selection
-  Widget _buildCategorySelectionContent(ChooseEnergyController controller) {
+  // Langkah 1: Tampilan Pilih Kategori
+  Widget _buildCategorySelectionContent(BuildContext context, ChooseEnergyState state) {
     return Column(
       children: [
-        // Header
-        const Text(
-          'Pilih Kategori',
-          style: TextStyle(
+        Text(
+          state.headerTitle,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: GreenTheme.textDark,
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Kategori apa yang ingin kamu kerjakan saat ini?',
+        Text(
+          state.headerSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: GreenTheme.textGrey,
             height: 1.5,
@@ -150,39 +167,39 @@ class MindyBantuAkuScreen extends StatelessWidget {
         ),
         const SizedBox(height: 32),
 
-        // Category Grid
+        // Grid Kategori Tugas
         CategoryGridWidget(
-          selectedCategory: controller.selectedCategory.value,
+          selectedCategory: state.selectedCategory,
           onCategorySelected: (category) {
-            controller.selectCategory(category);
+            context.read<ChooseEnergyCubit>().selectCategory(category);
           },
         ),
       ],
     );
   }
 
-  // Step 2: Recommendation
-  Widget _buildRecommendationContent(ChooseEnergyController controller) {
-    if (controller.recommendedTask.value == null) {
+  // Langkah 2: Tampilan Rekomendasi Tugas Terpilih (Satu Kartu Utama)
+  Widget _buildTaskContent(BuildContext context, ChooseEnergyState state) {
+    if (state.selectedTask == null) {
       return const SizedBox.shrink();
     }
 
     return Column(
       children: [
-        // Header
-        const Text(
-          'Rekomendasi untukmu',
-          style: TextStyle(
+        Text(
+          state.headerTitle,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: GreenTheme.textDark,
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Aku punya saran nih untukmu',
+        Text(
+          state.headerSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: GreenTheme.textGrey,
             height: 1.5,
@@ -190,34 +207,34 @@ class MindyBantuAkuScreen extends StatelessWidget {
         ),
         const SizedBox(height: 32),
 
-        // Recommendation Card
+        // Menggunakan RecommendationCard bawaan untuk render tugas tunggal
         RecommendationCard(
-          task: controller.recommendedTask.value!,
-          onConfirm: () => controller.confirmRecommendedTask(),
-          onTryAnother: () => controller.showAlternativeTasks(),
+          task: state.selectedTask!,
+          onConfirm: () => _proceedToFocusSession(context, state.selectedTask!, state.userEnergyLevel),
+          onTryAnother: () => context.read<ChooseEnergyCubit>().switchToAlternativeList(),
         ),
       ],
     );
   }
 
-  // Step 3: Alternative Task Selection
-  Widget _buildAlternativeContent(ChooseEnergyController controller) {
+  // Langkah 2 Alternatif: Tampilan Daftar List Tugas Lain (Opsi Pengganti)
+  Widget _buildAlternativeContent(BuildContext context, ChooseEnergyState state) {
     return Column(
       children: [
-        // Header
-        const Text(
-          'Pilih Tugas Lain',
-          style: TextStyle(
+        Text(
+          state.headerTitle,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: GreenTheme.textDark,
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Pilih tugas yang sesuai selera kamu',
+        Text(
+          state.headerSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: GreenTheme.textGrey,
             height: 1.5,
@@ -225,52 +242,45 @@ class MindyBantuAkuScreen extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        // Alternative Task List
+        // List Radio Opsi Alternatif
         AlternativeTaskList(
-          tasks: controller.alternativeTasks,
-          selectedTask: controller.selectedAlternativeTask.value,
+          tasks: state.availableTasks,
+          selectedTask: state.selectedTask,
           onTaskSelected: (task) {
-            controller.selectAlternativeTask(task);
+            context.read<ChooseEnergyCubit>().selectAlternativeTask(task);
           },
         ),
       ],
     );
   }
 
-  // Step 4: Confirmation
-  Widget _buildConfirmationContent(ChooseEnergyController controller) {
-    if (controller.confirmedTask.value == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-
-        // Confirmation Card
-        ConfirmationCard(
-          task: controller.confirmedTask.value!,
-          onConfirm: () => controller.proceedToFocusSession(),
-        ),
-
-        const SizedBox(height: 24),
-      ],
-    );
+  void _proceedToFocusSession(BuildContext context, TaskModel task, EnergyLevel energyLevel) {
+    Navigator.pushNamed(context, AppRoutes.timer, arguments: {
+      'taskName': task.title,
+      'energy': energyLevel.value,
+    });
   }
 
-  void _handleMainAction(ChooseEnergyController controller) {
-    switch (controller.currentStep.value) {
+  // Manajemen Aksi Tombol Bawah Hijau agar Sesuai Alur 2 Langkah Desain
+  void _handleMainAction(BuildContext context, ChooseEnergyState state) {
+    final cubit = context.read<ChooseEnergyCubit>();
+    
+    switch (state.currentStep) {
       case ChooseEnergyStep.categorySelection:
-        // Category is already selected, proceed
+        // Pindah dari halaman kategori ke halaman rekomendasi otomatis
+        cubit.proceedToTaskSelection();
         break;
-      case ChooseEnergyStep.recommendation:
-        controller.confirmRecommendedTask();
-        break;
-      case ChooseEnergyStep.alternative:
-        controller.confirmAlternativeTask();
-        break;
-      case ChooseEnergyStep.confirmation:
-        controller.proceedToFocusSession();
+        
+      case ChooseEnergyStep.taskSelection:
+        if (state.isShowingAlternativeList) {
+          // Jika di dalam list alternatif, konfirmasi pilihan lalu kunci kembali ke mode kartu tunggal
+          cubit.confirmAlternativeSelection();
+        } else {
+          // Jika sudah mantap di kartu tunggal, langsung arahkan navigasi ke halaman Timer
+          if (state.selectedTask != null) {
+            _proceedToFocusSession(context, state.selectedTask!, state.userEnergyLevel);
+          }
+        }
         break;
     }
   }

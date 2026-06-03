@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/mindy_theme.dart';
 
@@ -123,7 +122,7 @@ class _MindyBantuAkuGenericScreenState extends State<MindyBantuAkuGenericScreen>
                   _selectedTaskIndex = -1;
                 });
               } else {
-                Get.back();
+                Navigator.pop(context);
               }
             },
             child: Container(
@@ -672,7 +671,7 @@ class _MindyBantuAkuGenericScreenState extends State<MindyBantuAkuGenericScreen>
                     _selectedTaskIndex = -1;
                   });
                 } else {
-                  Get.toNamed(AppRoutes.timer);
+                  Navigator.pushNamed(context, AppRoutes.timer);
                 }
               }
             : null,

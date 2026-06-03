@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../controllers/timer_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/timer_cubit.dart';
+import '../cubit/timer_state.dart';
 import '../theme/timer_theme.dart';
 import '../widgets/goal_card.dart';
 import '../widgets/circular_timer_widget.dart';
@@ -14,85 +15,88 @@ class TimerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize controller
-    final controller = Get.put(TimerController());
+    return BlocBuilder<TimerCubit, TimerState>(
+      builder: (context, state) {
+        final cubit = context.read<TimerCubit>();
 
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: TimerTheme.skyGradient,
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 16),
+        return Scaffold(
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: TimerTheme.skyGradient,
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 16),
 
-                      // Goal Card (Header)
-                      Obx(() => GoalCard(
-                        taskName: controller.taskName.value,
-                        onExitTap: () => _showExitDialog(context),
-                      )),
+                          // Goal Card (Header)
+                          GoalCard(
+                            taskName: state.taskName,
+                            onExitTap: () => _showExitDialog(context),
+                          ),
 
-                      const SizedBox(height: 32),
+                          const SizedBox(height: 32),
 
-                      // Circular Timer
-                      Obx(() => CircularTimerWidget(
-                        progress: controller.progress,
-                        timeText: controller.formattedTime,
-                        minutesLabel: '${controller.targetMinutes.value} menit',
-                        sessionLabel: 'Sesi Fokus',
-                        qualityLabel: 'Waktu Fokus Berkualitas',
-                        canEdit: controller.canEditTime,
-                        onEditTap: () => _showTimePicker(context, controller),
-                      )),
+                          // Circular Timer
+                          CircularTimerWidget(
+                            progress: state.progress,
+                            timeText: state.formattedTime,
+                            minutesLabel: '${state.targetMinutes} menit',
+                            sessionLabel: 'Sesi Fokus',
+                            qualityLabel: 'Waktu Fokus Berkualitas',
+                            canEdit: state.canEditTime,
+                            onEditTap: () => _showTimePicker(context, cubit),
+                          ),
 
-                      const SizedBox(height: 32),
+                          const SizedBox(height: 32),
 
-                      // Motivation Card
-                      const MotivationCard(),
+                          // Motivation Card
+                          const MotivationCard(),
 
-                      const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                      // Warning Card
-                      const WarningCard(),
+                          // Warning Card
+                          const WarningCard(),
 
-                      const SizedBox(height: 32),
-                    ],
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              // Bottom Action Button
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  bottom: MediaQuery.of(context).padding.bottom + 16,
-                ),
-                child: Obx(() => TimerActionButton(
-                  isRunning: controller.isRunning.value,
-                  onTap: () => controller.toggleTimer(),
-                )),
+                  // Bottom Action Button
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      bottom: MediaQuery.of(context).padding.bottom + 16,
+                    ),
+                    child: TimerActionButton(
+                      isRunning: state.isRunning,
+                      onTap: () => cubit.toggleTimer(),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  void _showTimePicker(BuildContext context, TimerController controller) {
+  void _showTimePicker(BuildContext context, TimerCubit cubit) {
     TimePickerBottomSheet.show(
       context,
-      currentMinutes: controller.targetMinutes.value,
+      currentMinutes: cubit.state.targetMinutes,
       onSave: (minutes) {
-        controller.setTargetMinutes(minutes);
+        cubit.setTargetMinutes(minutes);
       },
     );
   }
@@ -100,7 +104,7 @@ class TimerScreen extends StatelessWidget {
   void _showExitDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -119,7 +123,7 @@ class TimerScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'Batal',
               style: TextStyle(
@@ -129,8 +133,8 @@ class TimerScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
+              Navigator.pop(dialogContext);
               Navigator.pop(context);
-              Get.back();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: TimerTheme.warningRed,

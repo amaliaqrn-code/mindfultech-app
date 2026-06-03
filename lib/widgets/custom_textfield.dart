@@ -84,7 +84,7 @@ class CustomTextField extends StatelessWidget {
 
             borderSide: BorderSide(
               color: AppColors.secondary
-                  .withOpacity(0.7),
+                  .withValues(alpha: 0.7),
               width: 1,
             ),
           ),

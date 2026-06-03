@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'cubit/homepage_cubit.dart';
+import 'cubit/homepage_state.dart';
 
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({super.key});
@@ -19,91 +21,64 @@ class _HomepageScreenState extends State<HomepageScreen> {
     final storage = GetStorage();
     final userName = storage.read('userName') ?? 'Aluna';
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ================= MAIN CONTENT AREA =================
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
+    return BlocBuilder<HomepageCubit, HomepageState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // ================= MAIN CONTENT AREA =================
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 12),
 
-                    // ================= HEADER =================
-                    _buildHeader(userName),
+                        // ================= HEADER =================
+                        _buildHeader(userName, context),
 
-                    const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                    // ================= BANNER MASCOT CARD =================
-                    _buildBannerCard(),
+                        // ================= BANNER MASCOT CARD =================
+                        _buildBannerCard(state.mascotGreeting),
 
-                    const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                    // ================= STATISTICS SECTION =================
-                    _buildStatisticsSection(),
+                        // ================= STATISTICS SECTION =================
+                        _buildStatisticsSection(state),
 
-                    const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                    // ================= MAIN ACTION BUTTON =================
-                    _buildMainActionButton(),
+                        // ================= MAIN ACTION BUTTON =================
+                        _buildMainActionButton(context),
 
-                    const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                    // ================= TASKS SECTION TITLE =================
-                    _buildTasksSectionTitle(),
+                        // ================= TASKS SECTION =================
+                        _buildTasksSection(state),
 
-                    const SizedBox(height: 14),
-
-                    // ================= TASK LIST =================
-                    _buildTaskCard(
-                      iconPath: 'assets/icon/homepage/belajar.png',
-                      title: 'Belajar',
-                      duration: '20 Menit Fokus',
-                      category: 'Belajar',
-                      categoryColor: AppColors.primary,
+                        const SizedBox(height: 24),
+                      ],
                     ),
-
-                    const SizedBox(height: 12),
-
-                    _buildTaskCard(
-                      iconPath: 'assets/icon/homepage/olahraga.png',
-                      title: 'Olahraga Lari',
-                      duration: '15 Menit Fokus',
-                      category: 'Kesehatan',
-                      categoryColor: const Color(0xff4CAF50),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _buildTaskCard(
-                      iconPath: 'assets/icon/homepage/menonton.png',
-                      title: 'Menonton Film',
-                      duration: '20 Menit Fokus',
-                      category: 'Pribadi',
-                      categoryColor: const Color(0xffFF9800),
-                    ),
-
-                    const SizedBox(height: 24),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
 
-      // ================= BOTTOM NAVIGATION BAR =================
-      bottomNavigationBar: _buildBottomNavBar(),
+          // ================= BOTTOM NAVIGATION BAR =================
+          bottomNavigationBar: _buildBottomNavBar(context),
+        );
+      },
     );
   }
 
   // ================= HEADER =================
-  Widget _buildHeader(String userName) {
+  Widget _buildHeader(String userName, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -155,7 +130,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   // ================= BANNER MASCOT CARD =================
-  Widget _buildBannerCard() {
+  Widget _buildBannerCard(String mascotGreeting) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
@@ -171,29 +146,13 @@ class _HomepageScreenState extends State<HomepageScreen> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Yuk mulai hari',
-                  style: TextStyle(
+                  mascotGreeting,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
-                  ),
-                ),
-                Text(
-                  'produktif bareng',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                Text(
-                  'Mindy!',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
                   ),
                 ),
               ],
@@ -212,7 +171,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   // ================= STATISTICS SECTION =================
-  Widget _buildStatisticsSection() {
+  Widget _buildStatisticsSection(HomepageState state) {
     return SizedBox(
       height: 200,
       child: Stack(
@@ -222,7 +181,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(28),
               child: Image.asset(
-                'assets/images/homepage/background.png',
+                state.backgroundImagePath,
                 fit: BoxFit.cover,
               ),
             ),
@@ -239,8 +198,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                   child: _buildStatCard(
                     iconPath: 'assets/icon/homepage/streak.png',
                     title: 'Streak hari ini',
-                    value: '5',
-                    suffix: '/ 30 hari',
+                    streakText: state.streakText,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -249,8 +207,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                   child: _buildStatCard(
                     iconPath: 'assets/icon/homepage/perjalanan.png',
                     title: 'Perjalananmu',
-                    value: 'LEVEL 01',
-                    isTextValue: true,
+                    levelText: state.levelText,
                   ),
                 ),
               ],
@@ -264,9 +221,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
   Widget _buildStatCard({
     required String iconPath,
     required String title,
-    required String value,
-    String? suffix,
-    bool isTextValue = false,
+    String? streakText,
+    String? levelText,
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -306,36 +262,35 @@ class _HomepageScreenState extends State<HomepageScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          if (isTextValue)
+          if (levelText != null)
             Text(
-              value,
+              levelText,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             )
-          else
+          else if (streakText != null)
             RichText(
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: value,
+                    text: streakText.split(' ')[0],
                     style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
                   ),
-                  if (suffix != null)
-                    TextSpan(
-                      text: suffix,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade600,
-                      ),
+                  TextSpan(
+                    text: ' / 30 hari',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -345,10 +300,10 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   // ================= MAIN ACTION BUTTON =================
-  Widget _buildMainActionButton() {
+  Widget _buildMainActionButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed(AppRoutes.journey);
+        Navigator.pushNamed(context, AppRoutes.journey);
       },
       child: Container(
         width: double.infinity,
@@ -404,37 +359,55 @@ class _HomepageScreenState extends State<HomepageScreen> {
     );
   }
 
-  // ================= TASKS SECTION TITLE =================
-  Widget _buildTasksSectionTitle() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  // ================= TASKS SECTION =================
+  Widget _buildTasksSection(HomepageState state) {
+    final tasks = state.currentTasks;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Tugas hari ini',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: const Text(
-            '3 tugas',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Tugas hari ini',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
             ),
-          ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${state.taskCount} tugas',
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
         ),
+        const SizedBox(height: 14),
+        ...tasks.map((task) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildTaskCard(
+            iconPath: task.iconPath,
+            title: task.title,
+            duration: task.duration,
+            category: task.category,
+            categoryColor: task.categoryColor,
+          ),
+        )),
       ],
     );
   }
@@ -529,7 +502,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   // ================= BOTTOM NAVIGATION BAR =================
-  Widget _buildBottomNavBar() {
+  Widget _buildBottomNavBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -548,36 +521,41 @@ class _HomepageScreenState extends State<HomepageScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(
+                context: context,
                 icon: Icons.home_rounded,
                 label: 'Beranda',
                 isActive: _currentNavIndex == 0,
                 onTap: () => setState(() => _currentNavIndex = 0),
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.timer_outlined,
                 label: 'Fokus',
                 isActive: _currentNavIndex == 1,
                 onTap: () {
                   setState(() => _currentNavIndex = 1);
-                  Get.toNamed(AppRoutes.timer);
+                  Navigator.pushNamed(context, AppRoutes.timer);
                 },
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.map_outlined,
                 label: 'Journey',
                 isActive: _currentNavIndex == 2,
                 onTap: () {
                   setState(() => _currentNavIndex = 2);
-                  Get.toNamed(AppRoutes.journey);
+                  Navigator.pushNamed(context, AppRoutes.journey);
                 },
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.local_fire_department_outlined,
                 label: 'Streak',
                 isActive: _currentNavIndex == 3,
                 onTap: () => setState(() => _currentNavIndex = 3),
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.person_outline,
                 label: 'Profil',
                 isActive: _currentNavIndex == 4,
@@ -591,6 +569,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   Widget _buildNavItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required bool isActive,

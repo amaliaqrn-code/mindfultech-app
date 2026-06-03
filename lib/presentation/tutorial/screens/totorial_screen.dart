@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import '../data/tutorial_data.dart';
@@ -44,7 +43,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
     final storage = GetStorage();
     storage.write('hasOnboarded', true);
 
-    Get.offAllNamed(AppRoutes.homepage);
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
   }
 
   @override

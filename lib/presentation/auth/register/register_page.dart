@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
@@ -43,8 +42,8 @@ class _RegisterPageState extends State<RegisterPage> {
           final storage = GetStorage();
           storage.write('userName', state.user.name);
 
-          // Navigate to Tutorial Screen using GetX
-          Get.offAllNamed(AppRoutes.tutorial);
+          // Navigate to Tutorial Screen using standard Navigator
+          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.tutorial, (route) => false);
         } else if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -238,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       const Text('Sudah punya akun? '),
                       GestureDetector(
                         onTap: () {
-                          Get.toNamed(AppRoutes.login);
+                          Navigator.pushNamed(context, AppRoutes.login);
                         },
                         child: const Text(
                           'Masuk',

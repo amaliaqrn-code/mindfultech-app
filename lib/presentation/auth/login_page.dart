@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_event.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_state.dart';
-import 'package:mindfultech_app/presentation/auth/controllers/auth_controller.dart';
+import 'package:mindfultech_app/presentation/auth/cubit/auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,8 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
-  // AuthController instance untuk manage login state
-  final AuthController _authController = Get.find<AuthController>();
+
 
   @override
   void dispose() {
@@ -41,8 +39,12 @@ class _LoginPageState extends State<LoginPage> {
             final storage = GetStorage();
             storage.write('userName', state.user.name);
 
-            // 🔥 PANGGIL AUTH CONTROLLER - Simpan token & redirect
-            _authController.onLoginSuccess();
+            // 🔥 PANGGIL AUTH CUBIT - Simpan token & redirect
+            context.read<AuthCubit>().onLoginSuccess().then((_) {
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
+              }
+            });
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -156,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutes.forgotPassword);
+                        Navigator.pushNamed(context, AppRoutes.forgotPassword);
                       },
                       child: const Text(
                         'Lupa Kata Sandi?',
@@ -192,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.toNamed(AppRoutes.register);
+                          Navigator.pushNamed(context, AppRoutes.register);
                         },
                         child: const Text(
                           'Daftar',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 
@@ -75,17 +74,17 @@ class _SplashScreenState extends State<SplashScreen>
       if (isLoggedIn && token != null && token.isNotEmpty) {
         // ✅ User SUDAH LOGIN → Langsung ke Homepage
         debugPrint('🔄 Auto-login: Redirecting to Homepage');
-        Get.offAllNamed(AppRoutes.homepage);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
       } else {
         // ❌ User BELUM LOGIN → Ke Onboarding
         debugPrint('🔄 New user: Redirecting to Onboarding');
-        Get.offAllNamed(AppRoutes.onboarding);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.onboarding, (route) => false);
       }
     } catch (e) {
       debugPrint('Splash navigation error: $e');
       // Fallback navigation if error occurs
       if (mounted) {
-        Get.offAllNamed(AppRoutes.onboarding);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.onboarding, (route) => false);
       }
     }
   }

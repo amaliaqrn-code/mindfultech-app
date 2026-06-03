@@ -1,7 +1,6 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-/// Model untuk task di homepage
 class TaskItem {
   final String id;
   final String title;
@@ -20,7 +19,6 @@ class TaskItem {
   });
 }
 
-/// Data dinamis berdasarkan level
 class LevelData {
   final int level;
   final String streakText;
@@ -37,15 +35,15 @@ class LevelData {
   });
 }
 
-/// Dynamic Homepage Controller
-class HomepageController extends GetxController {
-  // User level (1-6)
-  final RxInt userLevel = 1.obs;
+class HomepageState extends Equatable {
+  final int userLevel;
+  final String mascotGreeting;
 
-  // Mascot greeting text
-  final RxString mascotGreeting = ''.obs;
+  const HomepageState({
+    required this.userLevel,
+    required this.mascotGreeting,
+  });
 
-  // All level data configurations
   static const Map<int, LevelData> levelConfigs = {
     1: LevelData(
       level: 1,
@@ -241,52 +239,37 @@ class HomepageController extends GetxController {
     ),
   };
 
-  @override
-  void onInit() {
-    super.onInit();
-    _updateMascotText();
-  }
-
-  void _updateMascotText() {
-    final config = levelConfigs[userLevel.value];
-    if (config != null) {
-      mascotGreeting.value = config.mascotText;
-    }
-  }
-
-  // Get current level data
   LevelData get currentLevelData {
-    return levelConfigs[userLevel.value] ?? levelConfigs[1]!;
+    return levelConfigs[userLevel] ?? levelConfigs[1]!;
   }
 
-  // Get current tasks
   List<TaskItem> get currentTasks => currentLevelData.tasks;
 
-  // Get task count
   int get taskCount => currentTasks.length;
 
-  // Set user level
-  void setUserLevel(int level) {
-    if (level >= 1 && level <= 6) {
-      userLevel.value = level;
-      _updateMascotText();
-    }
-  }
-
-  // Get background image path based on level
   String get backgroundImagePath {
     return 'assets/images/homepage/background.png';
   }
 
-  // Get streak value
   String get streakText => currentLevelData.streakText;
 
-  // Get level text
   String get levelText => currentLevelData.levelText;
 
-  // Get progress percentage for streak
   double get streakProgress {
     final streakValue = int.parse(currentLevelData.streakText.split(' ')[0]);
     return streakValue / 30;
   }
+
+  HomepageState copyWith({
+    int? userLevel,
+    String? mascotGreeting,
+  }) {
+    return HomepageState(
+      userLevel: userLevel ?? this.userLevel,
+      mascotGreeting: mascotGreeting ?? this.mascotGreeting,
+    );
+  }
+
+  @override
+  List<Object?> get props => [userLevel, mascotGreeting];
 }

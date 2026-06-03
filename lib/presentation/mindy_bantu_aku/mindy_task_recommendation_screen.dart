@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 
 /// Layar "Task yang Mindy Pilih" - Rekomendasi Tugas
@@ -13,7 +12,7 @@ class MindyTaskRecommendationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get data from arguments
-    final args = Get.arguments as Map<String, dynamic>?;
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final taskTitle = args?['taskTitle'] as String? ?? 'Baca buku 5 menit';
     final taskDuration = args?['taskDuration'] as String? ?? '5 menit';
     final taskCategory = args?['taskCategory'] as String? ?? 'Belajar';
@@ -351,7 +350,7 @@ class MindyTaskRecommendationScreen extends StatelessWidget {
         ],
       ),
       child: GestureDetector(
-        onTap: () => Get.toNamed(AppRoutes.timer),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.timer),
         child: Container(
           width: double.infinity,
           height: 54,

@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/streak_models.dart';
 import '../widgets/streak_widgets.dart';
 
-/// ============================================================
-/// STREAK SCREEN - Main page for Streak feature
-///
-/// Folder: lib/presentation/streak/screens/
-///
-/// Aset yang dibutuhkan:
-/// - assets/images/streak/mindyStreak.png
-/// ============================================================
-
+// Streak itu pake build listener karena melakukan update UI berdasarkan perubahan streak,
+// misalnya dari streak 5 ke streak 6, maka UI nya akan berubah sesuai dengan tema yang sudah ditentukan untuk streak 6. Jadi setiap kali streak berubah, UI nya juga harus berubah untuk mencerminkan perubahan tersebut.
 class StreakScreen extends StatefulWidget {
   const StreakScreen({super.key});
 
@@ -19,14 +12,7 @@ class StreakScreen extends StatefulWidget {
 }
 
 class _StreakScreenState extends State<StreakScreen> with SingleTickerProviderStateMixin {
-  // ============================================================
-  // STATE MANAGEMENT
-  // ============================================================
-
-  /// Ubah nilai ini untuk testing different streak levels
-  /// Coba: 5, 10, 15, 20, 25, 30
   int _currentStreak = 5;
-
   int _selectedTabIndex = 0;
   late TabController _tabController;
 
@@ -35,9 +21,9 @@ class _StreakScreenState extends State<StreakScreen> with SingleTickerProviderSt
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      setState(() {
-        _selectedTabIndex = _tabController.index;
-      });
+      if (_tabController.indexIsChanging) {
+        setState(() => _selectedTabIndex = _tabController.index);
+      }
     });
   }
 
@@ -50,10 +36,6 @@ class _StreakScreenState extends State<StreakScreen> with SingleTickerProviderSt
   StreakTheme get _theme => StreakTheme(streakDays: _currentStreak);
   List<AchievementLevel> get _achievements => AchievementLevel.getAchievements(_currentStreak);
 
-  // ============================================================
-  // BUILD METHOD
-  // ============================================================
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,20 +43,8 @@ class _StreakScreenState extends State<StreakScreen> with SingleTickerProviderSt
       body: SafeArea(
         child: Column(
           children: [
-            // Custom AppBar
-            StreakAppBar(
-              theme: _theme,
-              onBackPressed: () => Navigator.pop(context),
-            ),
-
-            // Custom Tab Bar
-            StreakTabBar(
-              selectedIndex: _selectedTabIndex,
-              theme: _theme,
-              onTabChanged: (index) => _tabController.animateTo(index),
-            ),
-
-            // Content
+            StreakAppBar(theme: _theme, onBackPressed: () => Navigator.pop(context)),
+            StreakTabBar(selectedIndex: _selectedTabIndex, theme: _theme, tabController: _tabController),
             Expanded(
               child: _selectedTabIndex == 0
                   ? _buildStreakSummary()
@@ -86,60 +56,55 @@ class _StreakScreenState extends State<StreakScreen> with SingleTickerProviderSt
     );
   }
 
-  // ============================================================
-  // TAB 1: STREAK SUMMARY
-  // ============================================================
-
   Widget _buildStreakSummary() {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          // Mindy Asset with Torch
-          MindySection(theme: _theme),
-
+          StreakMindySection(theme: _theme),
           const SizedBox(height: 24),
-
-          // Streak Info
-          StreakInfo(
-            currentStreak: _currentStreak,
-            theme: _theme,
-          ),
-
+          StreakInfo(currentStreak: _currentStreak, theme: _theme),
           const SizedBox(height: 24),
-
-          // Progress Bar
-          StreakProgressBar(
-            theme: _theme,
-            currentStreak: _currentStreak,
-          ),
-
+          StreakProgressBar(theme: _theme, currentStreak: _currentStreak),
           const SizedBox(height: 32),
-
-          // Action Button
-          StreakActionButton(
-            theme: _theme,
-            text: 'Lihat Pencapaian',
-            onPressed: () => _tabController.animateTo(1),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Debug Info (untuk testing)
-          StreakDebugControls(
-            currentStreak: _currentStreak,
-            theme: _theme,
-            onStreakChanged: (days) => setState(() => _currentStreak = days),
-          ),
+          StreakActionButton(theme: _theme, onPressed: () => _tabController.animateTo(1)),
+          const SizedBox(height: 24),
+          _buildDebugControls(),
         ],
       ),
     );
   }
 
-  // ============================================================
-  // TAB 2: ACHIEVEMENTS LIST
-  // ============================================================
+  Widget _buildDebugControls() {
+    return Column(
+      children: [
+        const Text('Testing Controls', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [5, 10, 15, 20, 25, 30].map((days) {
+            final isSelected = _currentStreak == days;
+            return GestureDetector(
+              onTap: () => setState(() => _currentStreak = days),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? _theme.primaryColor : Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$days Hari',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : Colors.grey.shade600),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
 
   Widget _buildAchievementsList() {
     return ListView.builder(
@@ -148,11 +113,8 @@ class _StreakScreenState extends State<StreakScreen> with SingleTickerProviderSt
       itemCount: _achievements.length,
       itemBuilder: (context, index) {
         final achievement = _achievements[index];
-        return AchievementCard(
-          achievement: achievement,
-          isUnlocked: achievement.isUnlocked,
-          index: index,
-        );
+        final isActuallyUnlocked = index == 3 || achievement.isUnlocked;
+        return AchievementCard(achievement: achievement, isUnlocked: isActuallyUnlocked);
       },
     );
   }

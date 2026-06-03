@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'onboarding_data.dart';
 import 'widgets/onboarding_item.dart';
@@ -23,8 +22,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      // Navigate to Login Page using GetX
-      Get.offAllNamed(AppRoutes.login);
+      // Navigate to Login Page using standard Navigator
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
     }
   }
 

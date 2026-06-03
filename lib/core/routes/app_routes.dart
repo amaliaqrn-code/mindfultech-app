@@ -8,14 +8,14 @@ class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String tutorial = '/tutorial';
   static const String homepage = '/homepage';
+  static const String mainPage = '/main-page';
   static const String journey = '/journey';
+  static const String streak = '/streak';
   static const String chooseEnergy = '/choose-energy';
   static const String mindyBantuAku = '/mindy-bantu-aku';
   static const String mindyBantuAkuBlue = '/mindy-bantu-aku-blue';
   static const String mindyBantuAkuPurple = '/mindy-bantu-aku-purple';
-  static const String mindyBantuAkuRendah = '/mindy-bantu-aku-rendah';
-  static const String mindyBantuAkuSedang = '/mindy-bantu-aku-sedang';
-  static const String mindyBantuAkuTinggi = '/mindy-bantu-aku-tinggi';
+  static const String mindyBantuAkuGreen = '/mindy-bantu-aku-green';
   static const String mindyTaskRecommendation = '/mindy-task-recommendation';
   static const String mindyBantuAkuGeneric = '/mindy-bantu-aku-generic';
   static const String timer = '/timer';

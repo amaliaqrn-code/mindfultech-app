@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
 import 'models/energy_option_model.dart';
@@ -44,7 +43,7 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
     return Row(
       children: [
         GestureDetector(
-          onTap: () => Get.back(),
+          onTap: () => Navigator.pop(context),
           child: Container(
             width: 38,
             height: 38,
@@ -183,13 +182,13 @@ class _ChooseEnergyScreenState extends State<ChooseEnergyScreen> {
     // Navigate based on energy selection - go to generic screen with theme
     switch (_selectedEnergy) {
       case 0: // Rendah - Green
-        Get.toNamed(AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 0});
+        Navigator.pushNamed(context, AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 0});
         break;
       case 1: // Sedang - Blue
-        Get.toNamed(AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 1});
+        Navigator.pushNamed(context, AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 1});
         break;
       case 2: // Tinggi - Purple
-        Get.toNamed(AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 2});
+        Navigator.pushNamed(context, AppRoutes.mindyBantuAkuGeneric, arguments: {'energy': 2});
         break;
     }
   }
