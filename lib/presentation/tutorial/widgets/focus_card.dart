@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/core/constants/styles.dart';
 import '../../../core/constants/colors.dart';
 
 class FocusCard extends StatelessWidget {
@@ -8,100 +7,158 @@ class FocusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
+        // ================= MINDY IMAGE =================
         Container(
-          padding: const EdgeInsets.all(18),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Image.asset(
+            'assets/images/energisedang/mindy.png',
+            height: 120,
+            fit: BoxFit.contain,
+          ),
+        ),
 
+        const SizedBox(height: 8),
+
+        // ================= FOCUS TASK ITEM =================
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-
           child: Row(
             children: [
+              // Task Icon
               Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColors.secondary
-                      .withOpacity(0.15),
-                  borderRadius:
-                      BorderRadius.circular(14),
+                  color: AppColors.secondary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
                   Icons.menu_book_outlined,
                   color: AppColors.primary,
+                  size: 24,
                 ),
               ),
 
               const SizedBox(width: 14),
 
+              // Task Info
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Belajar UI/UX dasar",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            "Belajar UI/UX dasar",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        // Star icon (favorite)
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: const Icon(
+                            Icons.star,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ],
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       "2 jam fokus",
-                      style:
-                          AppTextStyles.smallText,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
-                ),
-              ),
-
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient:
-                      AppColors.primaryGradient,
-                ),
-                child: const Icon(
-                  Icons.star,
-                  color: Colors.white,
                 ),
               ),
             ],
           ),
         ),
 
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
 
+        // ================= START FOCUS BUTTON =================
         Container(
           width: double.infinity,
-          height: 58,
-
+          height: 54,
           decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xff4597E6),
+                Color(0xff83DFC6),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.35),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-
-          child: const Center(
-            child: Text(
-              "Mulai Fokus Sekarang",
-              style: AppTextStyles.buttonText,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {},
+              borderRadius: BorderRadius.circular(20),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 26,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "Mulai Fokus Sekarang",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
+
+        const SizedBox(height: 16),
       ],
     );
   }

@@ -38,7 +38,7 @@ class PasswordSuccessPage extends StatelessWidget {
 
                 decoration: BoxDecoration(
                   color: Colors.white
-                      .withOpacity(0.15),
+                      .withValues(alpha: 0.15),
 
                   shape: BoxShape.circle,
                 ),

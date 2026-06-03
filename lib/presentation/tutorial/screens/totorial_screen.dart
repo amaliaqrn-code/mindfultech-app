@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import '../data/tutorial_data.dart';
 import '../widgets/dot_indicator.dart';
 import '../widgets/tutorial_button.dart';
 import '../widgets/tutorial_page.dart';
-import '../../homepage/homepage_screen.dart';
+import '../widgets/energy_tutorial_page.dart';
+import '../widgets/task_tutorial_page.dart';
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({super.key});
@@ -15,59 +17,73 @@ class TutorialScreen extends StatefulWidget {
 
 class _TutorialScreenState extends State<TutorialScreen> {
   final PageController _controller = PageController();
+  int _currentIndex = 0;
 
-  int currentIndex = 0;
-
-  void nextPage() {
-    if (currentIndex < tutorialData.length - 1) {
+  void _nextPage() {
+    if (_currentIndex < tutorialData.length - 1) {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
-      // Navigate to Homepage
       _navigateToHomepage();
     }
   }
 
+  void _previousPage() {
+    if (_currentIndex > 0) {
+      _controller.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   void _navigateToHomepage() {
-    // Mark onboarding as completed
     final storage = GetStorage();
     storage.write('hasOnboarded', true);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const HomepageScreen(),
-      ),
-    );
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
   }
 
-  void previousPage() {
-    _controller.previousPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-
+      backgroundColor: const Color(0xFFF4FAFF),
       body: SafeArea(
         child: Column(
           children: [
+            // ================= MAIN CONTENT =================
             Expanded(
               child: PageView.builder(
                 controller: _controller,
                 itemCount: tutorialData.length,
+                physics: const BouncingScrollPhysics(),
                 onPageChanged: (index) {
                   setState(() {
-                    currentIndex = index;
+                    _currentIndex = index;
                   });
                 },
                 itemBuilder: (context, index) {
+                  // Page 0: Energy Tutorial
+                  if (index == 0) {
+                    return EnergyTutorialPage(
+                      data: tutorialData[index],
+                    );
+                  }
+                  // Page 1: Task Tutorial
+                  if (index == 1) {
+                    return TaskTutorialPage(
+                      data: tutorialData[index],
+                    );
+                  }
+                  // Pages 2-3: Default Tutorial Pages
                   return TutorialPage(
                     data: tutorialData[index],
                     index: index,
@@ -76,47 +92,52 @@ class _TutorialScreenState extends State<TutorialScreen> {
               ),
             ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                tutorialData.length,
-                (index) => DotIndicator(
-                  isActive: currentIndex == index,
+            // ================= DOT INDICATOR =================
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  tutorialData.length,
+                  (index) => DotIndicator(isActive: _currentIndex == index),
                 ),
               ),
             ),
 
-            const SizedBox(height: 28),
-
+            // ================= NAVIGATION BUTTONS =================
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 children: [
-                  if (currentIndex > 0)
+                  // Back Button
+                  if (_currentIndex > 0)
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.only(right: 12),
                         child: TutorialButton(
                           text: "Kembali",
-                          isWhite: true,
-                          onTap: previousPage,
+                          isGradient: false,
+                          isOutline: true,
+                          onTap: _previousPage,
                         ),
                       ),
                     ),
 
+                  // Next/Enter Button
                   Expanded(
                     child: TutorialButton(
-                      text: currentIndex == tutorialData.length - 1
+                      text: _currentIndex == tutorialData.length - 1
                           ? "Masuk"
                           : "Lanjut",
-                      onTap: nextPage,
+                      isGradient: true,
+                      onTap: _nextPage,
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 35),
+            const SizedBox(height: 16),
           ],
         ),
       ),

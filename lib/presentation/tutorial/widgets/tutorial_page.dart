@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/core/constants/styles.dart';
-import 'package:mindfultech_app/presentation/tutorial/widgets/energy_card.dart';
-import 'package:mindfultech_app/presentation/tutorial/widgets/focus_card.dart';
-import 'package:mindfultech_app/presentation/tutorial/widgets/journey_card.dart';
-import 'package:mindfultech_app/presentation/tutorial/widgets/task_card.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../models/tutorial_model.dart';
-
-import '../../../core/constants/colors.dart';
+import '../widgets/task_card.dart';
+import '../widgets/focus_card.dart';
+import '../widgets/journey_card.dart';
 
 class TutorialPage extends StatelessWidget {
   final TutorialModel data;
@@ -19,20 +15,14 @@ class TutorialPage extends StatelessWidget {
     required this.index,
   });
 
-  Widget buildCard() {
+  Widget _buildCard() {
     switch (index) {
-      case 0:
-        return const EnergyCard();
-
       case 1:
         return const TaskCard();
-
       case 2:
         return const FocusCard();
-
       case 3:
         return const JourneyCard();
-
       default:
         return const SizedBox();
     }
@@ -40,46 +30,63 @@ class TutorialPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-
+    return Container(
+      color: const Color(0xFFF4FAFF),
       child: Column(
         children: [
+          // ================= HEADER SECTION =================
+          const SizedBox(height: 44),
 
-          const SizedBox(height: 40),
-
-          // TITLE
-          Text(
-            data.title,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.heading.copyWith(
-              color: AppColors.primary,
+          // Title with gradient
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) {
+              return const LinearGradient(
+                colors: [
+                  Color(0xff4597E6),
+                  Color(0xff7BBEFF),
+                  Color(0xff83DFC6),
+                ],
+              ).createShader(bounds);
+            },
+            child: Text(
+              data.title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.montserrat(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
+                color: Colors.white,
+              ),
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
 
-          // DESCRIPTION
-          Text(
-            data.description,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.subHeading,
+          // Description
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              data.description,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.montserrat(
+                fontSize: 16,
+                height: 1.4,
+                color: const Color(0xFF7BBEFF),
+              ),
+            ),
           ),
 
-          const SizedBox(height: 30),
-
-          // CLOUD CHARACTER
-          Image.asset(
-            "assets/tutorial/cloud.png",
-            height: 160,
+          // ================= DYNAMIC CONTENT CARD =================
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildCard(),
+            ),
           ),
 
-          const SizedBox(height: 30),
-
-          // CARD BERUBAH SESUAI PAGE
-          buildCard(),
-
-          const Spacer(),
+          const SizedBox(height: 8),
         ],
       ),
     );
