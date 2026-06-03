@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
 
 import 'core/network/dio_client.dart';
 import 'data/datasources/auth_local_datasource.dart';
@@ -65,9 +66,7 @@ class MyApp extends StatelessWidget {
               ),
             );
           default:
-            return MaterialPageRoute(
-              builder: (_) => const SplashScreen(),
-            );
+            return MaterialPageRoute(builder: (_) => const SplashScreen());
         }
       },
       routes: {
@@ -76,6 +75,7 @@ class MyApp extends StatelessWidget {
         '/homepage': (context) => const HomepageScreen(),
         '/tutorial': (context) => const TutorialScreen(),
         '/journey': (context) => const JourneyScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }
