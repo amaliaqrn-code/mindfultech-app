@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mindfultech_app/presentation/splash/splash_screen.dart';
+import 'package:mindfultech_app/presentation/splash/pages/splash_page.dart';
 import 'notification_screen.dart';
-import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 import 'privacy_policy_screen.dart';
 
 import 'edit_profile_screen.dart';
@@ -246,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (_) =>
-                                                    const SplashScreen(),
+                                                    const SplashPage(),
                                               ),
                                               (route) => false,
                                             );

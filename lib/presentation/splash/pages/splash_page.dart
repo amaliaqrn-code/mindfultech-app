@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../auth/login_page.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 
