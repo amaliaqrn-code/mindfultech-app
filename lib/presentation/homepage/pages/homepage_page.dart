@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
 import '../bloc/homepage_cubit.dart';
 import '../bloc/homepage_state.dart';
 
@@ -24,11 +25,10 @@ class _HomepagePageState extends State<HomepagePage> {
     return BlocBuilder<HomepageCubit, HomepageState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC), // Menggunakan latar belakang sedikit abu agar card putih terlihat kontras
+          backgroundColor: const Color(0xFFF8FAFC),
           body: SafeArea(
             child: Column(
               children: [
-                // ================= MAIN CONTENT AREA =================
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -37,30 +37,15 @@ class _HomepagePageState extends State<HomepagePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 16),
-
-                        // ================= HEADER =================
                         _buildHeader(userName),
-
                         const SizedBox(height: 20),
-
-                        // ================= CARD SAPAAN MINDY =================
                         _buildMindyGreetingCard(state.mascotGreeting),
-
                         const SizedBox(height: 16),
-
-                        // ================= BACKGROUND + STATS =================
                         _buildStatisticsSection(state),
-
                         const SizedBox(height: 20),
-
-                        // ================= REKAPAN EMOSI (DESAIN BARU) =================
                         _buildEmotionProgressSection(state),
-
                         const SizedBox(height: 20),
-
-                        // ================= TUGAS HARI INI =================
                         _buildTasksSection(state),
-
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -69,8 +54,6 @@ class _HomepagePageState extends State<HomepagePage> {
               ],
             ),
           ),
-
-          // ================= BOTTOM NAVIGATION BAR =================
           bottomNavigationBar: _buildBottomNavBar(context),
         );
       },
@@ -115,6 +98,13 @@ class _HomepagePageState extends State<HomepagePage> {
           child: Container(
             width: 44,
             height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                width: 2,
+              ),
+            ),
             child: const Icon(
               Icons.edit_outlined,
               color: Color.fromARGB(255, 16, 16, 16),
@@ -130,10 +120,7 @@ class _HomepagePageState extends State<HomepagePage> {
   Widget _buildMindyGreetingCard(String mascotGreeting) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -142,7 +129,7 @@ class _HomepagePageState extends State<HomepagePage> {
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          ),
+        ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: const Color(0xffB8D4E8),
@@ -276,11 +263,7 @@ class _HomepagePageState extends State<HomepagePage> {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 20,
-                color: iconColor,
-              ),
+              Icon(icon, size: 20, color: iconColor),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -309,16 +292,14 @@ class _HomepagePageState extends State<HomepagePage> {
     );
   }
 
-// ================= REKAPAN EMOSI DENGAN INDIKATOR LEVEL (Frame 44418_2.png & image_83e9ef.png) =================
+  // ================= REKAPAN EMOSI DENGAN INDIKATOR LEVEL =================
   Widget _buildEmotionProgressSection(HomepageState state) {
-    // Mengambil jumlah emosi yang sudah dikumpulkan dari state Cubit (Default: 1 jika belum ada data)
-    final int collectedEmotions = 1; 
+    final int collectedEmotions = 1;
     const int totalLevels = 6;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header Section: Judul Rekapan + Badge Level Berdampingan Sejajar
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -330,27 +311,24 @@ class _HomepagePageState extends State<HomepagePage> {
                 color: AppColors.primary,
               ),
             ),
-            // Badge Kapsul Biru Muda Sesuai Gambar image_83e9ef.png
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFFE6F2FF), // Latar belakang biru muda soft
-                borderRadius: BorderRadius.circular(20), // Sudut kapsul melengkung sempurna
+                color: const Color(0xFFE6F2FF),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 '$collectedEmotions dari $totalLevels level',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2B92E4), // Teks biru kontras
+                  color: Color(0xFF2B92E4),
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-
-        // Card Container Utama (Frame 44418_2.png)
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -360,10 +338,8 @@ class _HomepagePageState extends State<HomepagePage> {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // Membuat list widget secara dinamis berdasarkan jumlah level yang terkumpul
             children: List.generate(totalLevels, (index) {
               if (index < collectedEmotions) {
-                // Tampilkan emosimu yang aktif/terisi (Mindy)
                 return Image.asset(
                   'assets/images/homepage/awan.png',
                   width: 44,
@@ -374,7 +350,6 @@ class _HomepagePageState extends State<HomepagePage> {
                   },
                 );
               } else {
-                // Sisanya tampilkan placeholder awan abu-abu misteri (?)
                 return _buildEmptyEmotionPlaceholder();
               }
             }),
@@ -384,26 +359,14 @@ class _HomepagePageState extends State<HomepagePage> {
     );
   }
 
-  // Helper Widget untuk membuat boks placeholder awan abu-abu (?) secara konsisten
   Widget _buildEmptyEmotionPlaceholder() {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Icon(
-          Icons.cloud_rounded,
-          size: 46,
-          color: Colors.grey.shade300,
-        ),
+        Icon(Icons.cloud_rounded, size: 46, color: Colors.grey.shade300),
         const Padding(
           padding: EdgeInsets.only(top: 2),
-          child: Text(
-            '?',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2B92E4),
-            ),
-          ),
+          child: Text('?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2B92E4))),
         ),
       ],
     );
@@ -421,11 +384,7 @@ class _HomepagePageState extends State<HomepagePage> {
           children: [
             const Text(
               'Tugas Hari Ini',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
             ),
             TextButton(
               onPressed: () {
@@ -438,11 +397,7 @@ class _HomepagePageState extends State<HomepagePage> {
               ),
               child: const Text(
                 'Lihat Semua',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.primary),
               ),
             ),
           ],
@@ -451,10 +406,7 @@ class _HomepagePageState extends State<HomepagePage> {
         if (tasks.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              'Belum ada tugas untuk hari ini.',
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-            ),
+            child: Text('Belum ada tugas untuk hari ini.', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
           )
         else
           ...tasks.map((task) => Padding(
@@ -484,16 +436,9 @@ class _HomepagePageState extends State<HomepagePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.15),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15), width: 1),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Row(
@@ -506,12 +451,7 @@ class _HomepagePageState extends State<HomepagePage> {
               borderRadius: BorderRadius.circular(14),
             ),
             child: Center(
-              child: Image.asset(
-                iconPath,
-                width: 28,
-                height: 28,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.assignment, color: AppColors.primary),
-              ),
+              child: Image.asset(iconPath, width: 28, height: 28, errorBuilder: (context, error, stackTrace) => const Icon(Icons.assignment, color: AppColors.primary)),
             ),
           ),
           const SizedBox(width: 14),
@@ -519,42 +459,16 @@ class _HomepagePageState extends State<HomepagePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3748),
-                  ),
-                ),
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2D3748))),
                 const SizedBox(height: 2),
-                Text(
-                  duration,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
+                Text(duration, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: categoryColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              category,
-              style: TextStyle(
-                color: categoryColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 11,
-              ),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(color: categoryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
+            child: Text(category, style: TextStyle(color: categoryColor, fontWeight: FontWeight.w600, fontSize: 11)),
           ),
         ],
       ),
@@ -566,13 +480,7 @@ class _HomepagePageState extends State<HomepagePage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, -4))],
       ),
       child: SafeArea(
         child: Padding(
@@ -580,50 +488,11 @@ class _HomepagePageState extends State<HomepagePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(
-                context: context,
-                icon: Icons.home_rounded,
-                label: 'Beranda',
-                isActive: _currentNavIndex == 0,
-                onTap: () => setState(() => _currentNavIndex = 0),
-              ),
-              _buildNavItem(
-                context: context,
-                icon: Icons.timer_outlined,
-                label: 'Fokus',
-                isActive: _currentNavIndex == 1,
-                onTap: () {
-                  setState(() => _currentNavIndex = 1);
-                  Navigator.pushNamed(context, AppRoutes.timer);
-                },
-              ),
-              _buildNavItem(
-                context: context,
-                icon: Icons.map_outlined,
-                label: 'Journey',
-                isActive: _currentNavIndex == 2,
-                onTap: () {
-                  setState(() => _currentNavIndex = 2);
-                  Navigator.pushNamed(context, AppRoutes.journey);
-                },
-              ),
-              _buildNavItem(
-                context: context,
-                icon: Icons.local_fire_department_outlined,
-                label: 'Streak',
-                isActive: _currentNavIndex == 3,
-                onTap: () {
-                  setState(() => _currentNavIndex = 3);
-                  Navigator.pushNamed(context, AppRoutes.streak);
-                },
-              ),
-              _buildNavItem(
-                context: context,
-                icon: Icons.person_outline,
-                label: 'Profil',
-                isActive: _currentNavIndex == 4,
-                onTap: () => setState(() => _currentNavIndex = 4),
-              ),
+              _buildNavItem(context: context, icon: Icons.home_rounded, label: 'Beranda', isActive: _currentNavIndex == 0, onTap: () => setState(() => _currentNavIndex = 0)),
+              _buildNavItem(context: context, icon: Icons.timer_outlined, label: 'Fokus', isActive: _currentNavIndex == 1, onTap: () { setState(() => _currentNavIndex = 1); Navigator.pushNamed(context, AppRoutes.timer); }),
+              _buildNavItem(context: context, icon: Icons.map_outlined, label: 'Journey', isActive: _currentNavIndex == 2, onTap: () { setState(() => _currentNavIndex = 2); Navigator.pushNamed(context, AppRoutes.journey); }),
+              _buildNavItem(context: context, icon: Icons.local_fire_department_outlined, label: 'Streak', isActive: _currentNavIndex == 3, onTap: () { setState(() => _currentNavIndex = 3); Navigator.pushNamed(context, AppRoutes.streak); }),
+              _buildNavItem(context: context, icon: Icons.person_outline, label: 'Profil', isActive: _currentNavIndex == 4, onTap: () { Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())); }),
             ],
           ),
         ),
@@ -631,13 +500,7 @@ class _HomepagePageState extends State<HomepagePage> {
     );
   }
 
-  Widget _buildNavItem({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildNavItem({required BuildContext context, required IconData icon, required String label, required bool isActive, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -645,20 +508,9 @@ class _HomepagePageState extends State<HomepagePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 26,
-              color: isActive ? AppColors.primary : Colors.grey.shade400,
-            ),
+            Icon(icon, size: 26, color: isActive ? AppColors.primary : Colors.grey.shade400),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                color: isActive ? AppColors.primary : Colors.grey.shade500,
-              ),
-            ),
+            Text(label, style: TextStyle(fontSize: 10, fontWeight: isActive ? FontWeight.w600 : FontWeight.normal, color: isActive ? AppColors.primary : Colors.grey.shade500)),
           ],
         ),
       ),

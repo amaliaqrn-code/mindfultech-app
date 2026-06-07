@@ -3,6 +3,7 @@ import 'package:mindfultech_app/core/constants/colors.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
 import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
+import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
@@ -24,10 +25,9 @@ class _MainPageState extends State<MainPage> {
 
   /// List halaman pages
   final List<Widget> _pages = [
-    HomepagePage(),
-    JourneyPage(),
-    StreakPage(),
-    // Add more pages here as needed
+    const HomepagePage(),
+    const JourneyPage(),
+    const StreakPage(),
   ];
 
   @override
@@ -90,7 +90,12 @@ class _MainPageState extends State<MainPage> {
                 icon: Icons.person_outline,
                 label: 'Profil',
                 isActive: _currentNavIndex == 4,
-                onTap: () => _onNavTap(4),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
+                },
               ),
             ],
           ),

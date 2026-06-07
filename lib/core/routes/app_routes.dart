@@ -26,4 +26,5 @@ class AppRoutes {
   static const String createTaskCategory = '/create-task-category';
   static const String createCustomTask = '/create-custom-task';
   static const String passwordSuccess = '/password-success';
+  static const String profile = '/profile';
 }

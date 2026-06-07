@@ -31,21 +31,16 @@ class MindfulTechApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (_) => AuthCubit(authRepository: authRepository),
         ),
-        BlocProvider<JourneyCubit>(
-          create: (_) => JourneyCubit(),
-        ),
-        BlocProvider<HomepageCubit>(
-          create: (_) => HomepageCubit(),
-        ),
-        BlocProvider<TaskBloc>(
-          create: (_) => TaskBloc(),
-        ),
+        BlocProvider<JourneyCubit>(create: (_) => JourneyCubit()),
+        BlocProvider<HomepageCubit>(create: (_) => HomepageCubit()),
+        BlocProvider<TaskBloc>(create: (_) => TaskBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'MindfulTech',
         initialRoute: AppRoutes.splash,
-        onGenerateRoute: (settings) => AppRouter.generateRoute(settings, authRepository),
+        onGenerateRoute: (settings) =>
+            AppRouter.generateRoute(settings, authRepository),
       ),
     );
   }
