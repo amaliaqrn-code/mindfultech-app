@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
 import 'cubit/homepage_cubit.dart';
 import 'cubit/homepage_state.dart';
 
@@ -108,23 +109,23 @@ class _HomepageScreenState extends State<HomepageScreen> {
           ),
         ),
         const SizedBox(width: 12),
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              width: 2,
-            ),
-          ),
-          child: const ClipOval(
-            child: Image(
-              image: AssetImage('assets/images/profile.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        // Container(
+        //   width: 48,
+        //   height: 48,
+        //   decoration: BoxDecoration(
+        //     shape: BoxShape.circle,
+        //     border: Border.all(
+        //       color: AppColors.primary.withValues(alpha: 0.3),
+        //       width: 2,
+        //     ),
+        //   ),
+        //   // child: const ClipOval(
+        //   //   child: Image(
+        //   //     image: AssetImage('assets/images/profile.png'),
+        //   //     fit: BoxFit.cover,
+        //   //   ),
+        //   // ),
+        // ),
       ],
     );
   }
@@ -133,10 +134,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   Widget _buildBannerCard(String mascotGreeting) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 18,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
         color: const Color(0xffEAF0FA),
         borderRadius: BorderRadius.circular(24),
@@ -180,10 +178,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(28),
-              child: Image.asset(
-                state.backgroundImagePath,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(state.backgroundImagePath, fit: BoxFit.cover),
             ),
           ),
           // Overlay Cards
@@ -242,11 +237,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         children: [
           Row(
             children: [
-              Image.asset(
-                iconPath,
-                width: 22,
-                height: 22,
-              ),
+              Image.asset(iconPath, width: 22, height: 22),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -311,10 +302,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           gradient: const LinearGradient(
-            colors: [
-              Color(0xff4597E6),
-              Color(0xff83DFC6),
-            ],
+            colors: [Color(0xff4597E6), Color(0xff83DFC6)],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
@@ -378,10 +366,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
@@ -398,16 +383,18 @@ class _HomepageScreenState extends State<HomepageScreen> {
           ],
         ),
         const SizedBox(height: 14),
-        ...tasks.map((task) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildTaskCard(
-            iconPath: task.iconPath,
-            title: task.title,
-            duration: task.duration,
-            category: task.category,
-            categoryColor: task.categoryColor,
+        ...tasks.map(
+          (task) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildTaskCard(
+              iconPath: task.iconPath,
+              title: task.title,
+              duration: task.duration,
+              category: task.category,
+              categoryColor: task.categoryColor,
+            ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -425,10 +412,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -446,13 +430,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
               color: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Center(
-              child: Image.asset(
-                iconPath,
-                width: 26,
-                height: 26,
-              ),
-            ),
+            child: Center(child: Image.asset(iconPath, width: 26, height: 26)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -470,19 +448,13 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 const SizedBox(height: 2),
                 Text(
                   duration,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: categoryColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
@@ -559,7 +531,12 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 icon: Icons.person_outline,
                 label: 'Profil',
                 isActive: _currentNavIndex == 4,
-                onTap: () => setState(() => _currentNavIndex = 4),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
+                },
               ),
             ],
           ),

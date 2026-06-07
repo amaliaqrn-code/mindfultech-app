@@ -20,4 +20,5 @@ class AppRoutes {
   static const String mindyBantuAkuGeneric = '/mindy-bantu-aku-generic';
   static const String timer = '/timer';
   static const String passwordSuccess = '/password-success';
+  static const String profile = '/profile';
 }

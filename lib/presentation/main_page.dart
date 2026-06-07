@@ -3,6 +3,7 @@ import 'package:mindfultech_app/core/constants/colors.dart';
 import 'package:mindfultech_app/presentation/homepage/homepage_screen.dart';
 import 'package:mindfultech_app/presentation/journey/screens/journey_screen.dart';
 import 'package:mindfultech_app/presentation/streak/screens/streak_screen.dart';
+import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
@@ -24,10 +25,11 @@ class _MainPageState extends State<MainPage> {
 
   /// List halaman screens
   final List<Widget> _screens = const [
-    HomepageScreen(),
-    JourneyMapScreen(),
-    StreakScreen(),
-    // Add more screens here as needed
+    HomepageScreen(), // Beranda
+    HomepageScreen(), // Fokus (sementara)
+    JourneyMapScreen(), // Journey
+    StreakScreen(), // Streak
+    ProfileScreen(), // Profil
   ];
 
   @override
@@ -35,10 +37,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: IndexedStack(
-          index: _currentNavIndex,
-          children: _screens,
-        ),
+        child: IndexedStack(index: _currentNavIndex, children: _screens),
       ),
       bottomNavigationBar: _buildBottomNavBar(),
     );

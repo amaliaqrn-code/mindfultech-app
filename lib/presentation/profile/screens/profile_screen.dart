@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mindfultech_app/presentation/splash/splash_screen.dart';
+import 'notification_screen.dart';
+import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
+import 'privacy_policy_screen.dart';
 
 import 'edit_profile_screen.dart';
 
@@ -15,6 +19,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   File? profileImage;
   final ImagePicker picker = ImagePicker();
+
+  String userName = "Aluna";
+  String userUsername = "@aluna.id";
 
   Future<void> pickImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source, imageQuality: 80);
@@ -81,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: size.height * 0.68,
+              height: size.height * 0.65,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               decoration: const BoxDecoration(
@@ -90,18 +97,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 90),
+                  const SizedBox(height: 80),
 
-                  const Text(
-                    "Aluna",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  Text(
+                    userName,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
                   const SizedBox(height: 4),
 
-                  const Text(
-                    "@aluna.id",
-                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                  Text(
+                    userUsername,
+                    style: const TextStyle(color: Colors.grey, fontSize: 15),
                   ),
 
                   const SizedBox(height: 30),
@@ -110,13 +120,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   buildMenuButton(
                     icon: Icons.person,
                     title: "Edit Profil",
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const EditProfileScreen(),
                         ),
                       );
+
+                      if (result != null) {
+                        setState(() {
+                          userName = result['name'];
+                          userUsername = result['username'];
+                        });
+                      }
                     },
                   ),
 
@@ -126,7 +143,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   buildMenuButton(
                     icon: Icons.notifications,
                     title: "Notifikasi",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 14),
@@ -135,7 +159,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   buildMenuButton(
                     icon: Icons.lock,
                     title: "Kebijakan Privasi",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PrivacyPolicyScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 35),
@@ -145,7 +176,106 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.warning_rounded,
+                                    color: Colors.red,
+                                    size: 70,
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  const Text(
+                                    "Are you sure you\nwant to log out?",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 10),
+
+                                  const Text(
+                                    "You can always come back anytime to continue your healthy journey.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 24),
+
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          child: const Text("Cancel"),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 12),
+
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    const SplashScreen(),
+                                              ),
+                                              (route) => false,
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFF4D96E8,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            "Log Out",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4D96E8),
                         elevation: 4,
@@ -177,18 +307,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           /// AVATAR
           Positioned(
-            top: size.height * 0.25,
+            top: size.height * 0.28,
             left: 0,
             right: 0,
             child: Center(
               child: GestureDetector(
-                onTap: () {},
+                onTap: showImagePicker,
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
+                        border: Border.all(color: Colors.white, width: 5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: CircleAvatar(
                         radius: 60,
@@ -201,7 +339,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
 
-                    /// ICON CAMERA
+                    // Overlay gelap transparan
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(0.25),
+                      ),
+                    ),
+
+                    // Icon kamera di tengah
+                    const Icon(Icons.camera_alt, color: Colors.white, size: 32),
                   ],
                 ),
               ),

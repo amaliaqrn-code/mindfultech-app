@@ -24,6 +24,8 @@ dependencies:
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
   image_picker: ^1.2.2
+  confetti: ^0.8.0
+
 
 dev_dependencies:
   flutter_test:
