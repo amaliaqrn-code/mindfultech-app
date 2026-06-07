@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
-import 'package:mindfultech_app/presentation/homepage/homepage_screen.dart';
-import 'package:mindfultech_app/presentation/journey/screens/journey_screen.dart';
-import 'package:mindfultech_app/presentation/streak/screens/streak_screen.dart';
+import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
+import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
+import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
@@ -22,12 +22,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentNavIndex = 0;
 
-  /// List halaman screens
-  final List<Widget> _screens = const [
-    HomepageScreen(),
-    JourneyMapScreen(),
-    StreakScreen(),
-    // Add more screens here as needed
+  /// List halaman pages
+  final List<Widget> _pages = [
+    HomepagePage(),
+    JourneyPage(),
+    StreakPage(),
+    // Add more pages here as needed
   ];
 
   @override
@@ -37,7 +37,7 @@ class _MainPageState extends State<MainPage> {
       body: SafeArea(
         child: IndexedStack(
           index: _currentNavIndex,
-          children: _screens,
+          children: _pages,
         ),
       ),
       bottomNavigationBar: _buildBottomNavBar(),

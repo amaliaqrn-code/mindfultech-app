@@ -1,89 +1,105 @@
 import 'package:flutter/material.dart';
 
-/// Achievement Level Model
+/// Model level pencapaian berdasarkan data gambar UI
 class AchievementLevel {
   final String name;
   final String description;
   final int requiredDays;
-  final Color torchColor;
-  final IconData icon;
-  final bool isUnlocked;
+  final Color activeColor;
 
   const AchievementLevel({
     required this.name,
     required this.description,
     required this.requiredDays,
-    required this.torchColor,
-    required this.icon,
-    required this.isUnlocked,
+    required this.activeColor,
   });
 
-  static List<AchievementLevel> getAchievements(int currentStreak) {
+  static List<AchievementLevel> getAchievements() {
     return [
-      AchievementLevel(name: 'Pemula', description: 'Mulai perjalananmu', requiredDays: 5, torchColor: const Color(0xFFFFC107), icon: Icons.local_fire_department_rounded, isUnlocked: currentStreak >= 5),
-      AchievementLevel(name: 'Konsisten', description: 'Terus berlatih ya!', requiredDays: 10, torchColor: const Color(0xFFFF9800), icon: Icons.local_fire_department_rounded, isUnlocked: currentStreak >= 10),
-      AchievementLevel(name: 'Bersemangat', description: 'Semangatmu luar biasa!', requiredDays: 15, torchColor: const Color(0xFFFF5722), icon: Icons.local_fire_department_rounded, isUnlocked: currentStreak >= 15),
-      AchievementLevel(name: 'Fokus', description: 'Kamu sangat fokus!', requiredDays: 20, torchColor: const Color(0xFF9C27B0), icon: Icons.local_fire_department_rounded, isUnlocked: currentStreak >= 20),
-      AchievementLevel(name: 'Master', description: 'Kamu sangat konsisten!', requiredDays: 25, torchColor: const Color(0xFF3F51B5), icon: Icons.local_fire_department_rounded, isUnlocked: currentStreak >= 25),
-      AchievementLevel(name: 'Legend', description: 'Legenda MindfulTech!', requiredDays: 30, torchColor: const Color(0xFF00BCD4), icon: Icons.local_fire_department_rounded, isUnlocked: currentStreak >= 30),
+      const AchievementLevel(
+        name: 'Pemula',
+        description: 'Pertahankan fokusmu selama 5 hari berturut-turut.',
+        requiredDays: 5,
+        activeColor: Color(0xFFFFB74D), // Oranye Muda/Kuning hangat
+      ),
+      const AchievementLevel(
+        name: 'Konsisten',
+        description: 'Pertahankan fokusmu selama 10 hari berturut-turut.',
+        requiredDays: 10,
+        activeColor: Color(0xFFF57C00), // Oranye Tua
+      ),
+      const AchievementLevel(
+        name: 'Bersemangat',
+        description: 'Pertahankan fokusmu selama 15 hari berturut-turut.',
+        requiredDays: 15,
+        activeColor: Color(0xFFE53935), // Merah
+      ),
+      const AchievementLevel(
+        name: 'Fokus',
+        description: 'Pertahankan fokusmu selama 20 hari berturut-turut.',
+        requiredDays: 20,
+        activeColor: Color(0xFFB388FF), // Ungu
+      ),
+      const AchievementLevel(
+        name: 'Hebat',
+        description: 'Pertahankan fokusmu selama 25 hari berturut-turut.',
+        requiredDays: 25,
+        activeColor: Color(0xFF4DD0E1), // Biru Toska Muda
+      ),
+      const AchievementLevel(
+        name: 'Legend',
+        description: 'Pertahankan fokusmu selama 30 hari berturut-turut.',
+        requiredDays: 30,
+        activeColor: Color(0xFF00E5FF), // Biru Cyan/Neon
+      ),
     ];
   }
 }
 
+/// Tema dinamis yang mengontrol seluruh warna UI berdasarkan jumlah hari
 class StreakTheme {
   final int streakDays;
-  final Color primaryColor;
-  final Color secondaryColor;
-  final Color flameColor;
+  final Color mainColor;
   final List<Color> progressGradient;
 
   StreakTheme({required this.streakDays})
-      : primaryColor = _getPrimaryColor(streakDays),
-        secondaryColor = _getSecondaryColor(streakDays),
-        flameColor = _getFlameColor(streakDays),
-        progressGradient = _getProgressGradient(streakDays);
+      : mainColor = _determineColor(streakDays),
+        progressGradient = _determineGradient(streakDays);
 
-  static Color _getPrimaryColor(int days) {
-    if (days >= 25) return const Color(0xFF00BCD4);
-    if (days >= 20) return const Color(0xFF3F51B5);
-    if (days >= 15) return const Color(0xFF9C27B0);
-    if (days >= 10) return const Color(0xFFFF5722);
-    if (days >= 5) return const Color(0xFFFF9800);
-    return const Color(0xFFFFC107);
+  static Color _determineColor(int days) {
+    if (days >= 30) return const Color(0xFF00E5FF);
+    if (days >= 25) return const Color(0xFF4DD0E1);
+    if (days >= 20) return const Color(0xFFB388FF);
+    if (days >= 15) return const Color(0xFFE53935);
+    if (days >= 10) return const Color(0xFFF57C00);
+    return const Color(0xFFFFB74D);
   }
 
-  static Color _getSecondaryColor(int days) {
-    if (days >= 25) return const Color(0xFF00E5FF);
-    if (days >= 20) return const Color(0xFF7986CB);
-    if (days >= 15) return const Color(0xFFBA68C8);
-    if (days >= 10) return const Color(0xFFFF7043);
-    if (days >= 5) return const Color(0xFFFFB74D);
-    return const Color(0xFFFFD54F);
+  static List<Color> _determineGradient(int days) {
+    if (days >= 30) return [const Color(0xFF26C6DA), const Color(0xFF00E5FF)];
+    if (days >= 25) return [const Color(0xFF4DD0E1), const Color(0xFF26A69A)];
+    if (days >= 20) return [const Color(0xFFCE93D8), const Color(0xFFB388FF)];
+    if (days >= 15) return [const Color(0xFFFF8A80), const Color(0xFFE53935)];
+    if (days >= 10) return [const Color(0xFFFFCC80), const Color(0xFFF57C00)];
+    return [const Color(0xFFFFE082), const Color(0xFFFFB74D)];
   }
 
-  static Color _getFlameColor(int days) {
-    if (days >= 25) return const Color(0xFF00E5FF);
-    if (days >= 20) return const Color(0xFF5C6BC0);
-    if (days >= 15) return const Color(0xFFE040FB);
-    if (days >= 10) return const Color(0xFFFF5252);
-    if (days >= 5) return const Color(0xFFFFAB40);
-    return const Color(0xFFFFD740);
+  double get progressPercent {
+    if (streakDays >= 30) return 1.0;
+    return streakDays / 30.0;
   }
-
-  static List<Color> _getProgressGradient(int days) {
-    if (days >= 25) return [const Color(0xFF00E5FF), const Color(0xFF00BCD4)];
-    if (days >= 20) return [const Color(0xFF7986CB), const Color(0xFF3F51B5)];
-    if (days >= 15) return [const Color(0xFFE040FB), const Color(0xFF9C27B0)];
-    if (days >= 10) return [const Color(0xFFFF5252), const Color(0xFFFF5722)];
-    if (days >= 5) return [const Color(0xFFFFAB40), const Color(0xFFFF9800)];
-    return [const Color(0xFFFFD740), const Color(0xFFFFC107)];
-  }
-
-  double get progressPercent => streakDays >= 30 ? 1.0 : streakDays / 30.0;
 
   String getNextLevelInfo() {
     if (streakDays >= 30) return 'Level maksimal tercapai!';
-    final nextDays = ((streakDays / 5 + 1) * 5).toInt();
-    return '${nextDays - streakDays} hari lagi ke level selanjutnya';
+    int nextMilestone = ((streakDays / 5).floor() + 1) * 5;
+    if (nextMilestone > 30) nextMilestone = 30;
+    
+    // Jika posisi pas di milestone (misal hari ke 5), cari milestone berikutnya
+    if (streakDays == nextMilestone - 5 && streakDays > 0) {
+       nextMilestone = streakDays + 5;
+    }
+    
+    final daysRemaining = nextMilestone - streakDays;
+    return '$daysRemaining hari lagi ke level selanjutnya';
   }
 }

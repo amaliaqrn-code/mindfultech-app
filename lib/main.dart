@@ -5,8 +5,9 @@ import 'package:mindfultech_app/core/routes/app_router.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/auth/cubit/auth_cubit.dart';
-import 'package:mindfultech_app/presentation/journey/cubit/journey_cubit.dart';
-import 'package:mindfultech_app/presentation/homepage/cubit/homepage_cubit.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey_cubit.dart';
+import 'package:mindfultech_app/presentation/homepage/bloc/homepage_cubit.dart';
+import 'package:mindfultech_app/blocs/task/task_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,9 @@ class MindfulTechApp extends StatelessWidget {
         ),
         BlocProvider<HomepageCubit>(
           create: (_) => HomepageCubit(),
+        ),
+        BlocProvider<TaskBloc>(
+          create: (_) => TaskBloc(),
         ),
       ],
       child: MaterialApp(
