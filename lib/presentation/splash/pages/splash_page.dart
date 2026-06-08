@@ -7,8 +7,7 @@ import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 /// Fungsi utama:
 /// 1. Menampilkan animasi splash
 /// 2. Mengecek apakah user sudah login (auto-login)
-/// 3. Navigasi ke halaman yang sesuai berdasarkan status login
-///
+/// 3. Navigasi ke halaman yang sesuai berdasarkan status loging
 /// Alur:
 /// - Token ada & valid → Homepage
 /// - Token tidak ada → Onboarding (kemudian login)
@@ -19,8 +18,7 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
-    with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   int _step = 0;
 
   late AnimationController _fadeCtrl;
