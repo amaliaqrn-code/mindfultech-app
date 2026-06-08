@@ -3,9 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
-import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
-import '../bloc/homepage_cubit.dart';
-import '../bloc/homepage_state.dart';
+import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
+import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
+import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_state.dart';
+import 'package:mindfultech_app/blocs/task/task_bloc.dart';
+import 'package:mindfultech_app/blocs/task/task_event.dart';
+import 'package:mindfultech_app/blocs/task/task_state.dart';
+import 'package:mindfultech_app/models/task_model.dart';
 
 class HomepagePage extends StatefulWidget {
   const HomepagePage({super.key});
@@ -16,6 +20,13 @@ class HomepagePage extends StatefulWidget {
 
 class _HomepagePageState extends State<HomepagePage> {
   int _currentNavIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load user tasks from SQLite on page open
+    context.read<TaskBloc>().add(const FetchTasksEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +103,13 @@ class _HomepagePageState extends State<HomepagePage> {
         ),
         const SizedBox(width: 12),
         GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, AppRoutes.createTaskCategory);
+          onTap: () async {
+            // Await return from task creation flow so we can refresh on pop
+            await Navigator.pushNamed(context, AppRoutes.createTaskCategory);
+            // Re-fetch tasks when user returns, in case a new task was added
+            if (mounted) {
+              context.read<TaskBloc>().add(const FetchTasksEvent());
+            }
           },
           child: Container(
             width: 44,
@@ -371,6 +387,7 @@ class _HomepagePageState extends State<HomepagePage> {
       ],
     );
   }
+
 
   // ================= TUGAS HARI INI =================
   Widget _buildTasksSection(HomepageState state) {

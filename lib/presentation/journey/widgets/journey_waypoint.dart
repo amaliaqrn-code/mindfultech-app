@@ -25,7 +25,7 @@ class JourneyWaypoint extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: SizedBox(
         height: 100,
         child: Stack(
           alignment: Alignment.center,

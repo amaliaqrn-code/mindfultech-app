@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
-import 'package:mindfultech_app/presentation/journey/bloc/journey_cubit.dart';
-import 'package:mindfultech_app/presentation/journey/bloc/journey_state.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_state.dart';
 import '../data/journey_data.dart';
 
 class JourneyPage extends StatefulWidget {
@@ -14,16 +14,16 @@ class JourneyPage extends StatefulWidget {
 }
 
 class _JourneyPageState extends State<JourneyPage> {
-  int _currentNavIndex = 2;
+  final int _currentNavIndex = 2;
 
-  // Koordinat presisi berdasarkan gambar "Journey Map 2.png" dari bawah ke atas
+  // Koordinat presisi meliuk dari bawah (level 1) menuju atas (level 6) sesuai alur denah asli
   final List<Map<String, double>> _levelPositions = [
-    {'x': 0.31, 'y': 0.79}, // Level 1 (Dekat rumah biru bawah)
-    {'x': 0.56, 'y': 0.65}, // Level 2 (Setelah jembatan cokelat)
-    {'x': 0.68, 'y': 0.56}, // Level 3 (Tikungan tengah bukit hijau)
-    {'x': 0.70, 'y': 0.49}, // Level 4 (Awal jalan kelabu menanjak)
-    {'x': 0.74, 'y': 0.43}, // Level 5 (Tengah tanjakan kelabu)
-    {'x': 0.82, 'y': 0.39}, // Level 6 (Dekat gerbang kastil atas)
+    {'x': 0.31, 'y': 0.79}, // Level 1 (Dekat rumah mulai awal)
+    {'x': 0.50, 'y': 0.68}, // Level 2 (Area Grassland / Setelah Jembatan)
+    {'x': 0.65, 'y': 0.58}, // Level 3 (Tikungan bawah Sunny Hill)
+    {'x': 0.48, 'y': 0.46}, // Level 4 (Area Calm Lake / Tengah)
+    {'x': 0.62, 'y': 0.34}, // Level 5 (Menanjak Focus Mountain)
+    {'x': 0.78, 'y': 0.22}, // Level 6 (Puncak Kastil Ketenangan)
   ];
 
   @override
@@ -63,7 +63,7 @@ class _JourneyPageState extends State<JourneyPage> {
                 style: GoogleFonts.merriweather(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF5CA3E6), // Warna biru soft sesuai gambar
+                  color: const Color(0xFF5CA3E6),
                 ),
               ),
               const Spacer(),
@@ -100,7 +100,6 @@ class _JourneyPageState extends State<JourneyPage> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Kartu Utama
         Container(
           margin: const EdgeInsets.only(top: 25),
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
@@ -114,7 +113,6 @@ class _JourneyPageState extends State<JourneyPage> {
           ),
           child: Row(
             children: [
-              // Kolom Kiri: Progress Perjalanan
               Expanded(
                 child: Row(
                   children: [
@@ -160,14 +158,12 @@ class _JourneyPageState extends State<JourneyPage> {
                   ],
                 ),
               ),
-              // Garis Pembatas Tengah
               Container(
                 width: 1,
                 height: 45,
                 color: Colors.grey.shade300,
                 margin: const EdgeInsets.symmetric(horizontal: 12),
               ),
-              // Kolom Kanan: Hadiah Spesial
               Expanded(
                 child: Row(
                   children: [
@@ -196,7 +192,6 @@ class _JourneyPageState extends State<JourneyPage> {
             ],
           ),
         ),
-        // Maskot Mindy & Balon Teks di Atas Kartu (Presisi Kanan Atas)
         Positioned(
           top: -24,
           right: 20,
@@ -210,7 +205,6 @@ class _JourneyPageState extends State<JourneyPage> {
     return Row(
       textBaseline: TextBaseline.alphabetic,
       children: [
-        // Balon Percakapan Biru Mini
         Stack(
           alignment: Alignment.center,
           children: [
@@ -230,7 +224,6 @@ class _JourneyPageState extends State<JourneyPage> {
                 ),
               ),
             ),
-            // Ekor balon percakapan kecil
             Positioned(
               bottom: 4,
               right: 12,
@@ -242,7 +235,6 @@ class _JourneyPageState extends State<JourneyPage> {
           ],
         ),
         const SizedBox(width: 4),
-        // Awan Mindy Lucu
         Image.asset(
           'assets/images/journey/awan.png', 
           width: 65, 
@@ -255,6 +247,10 @@ class _JourneyPageState extends State<JourneyPage> {
   }
 
   Widget _buildMapArea(JourneyState state, int currentCycle) {
+    // Menghitung persentase kejenuhan warna denah berdasarkan progress hari (Maksimal 30 hari)
+    // Hari ke-0 = Full Grayscale (0.0), Hari ke-30 = Full Color (1.0)
+    final double saturationProgress = (state.totalDays / JourneyData.maxDays).clamp(0.0, 1.0);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return SizedBox(
@@ -262,17 +258,40 @@ class _JourneyPageState extends State<JourneyPage> {
           height: constraints.maxHeight,
           child: Stack(
             children: [
-              // Gambar Latar Denah Peta Petualangan
+              // Efek Animasi Perubahan Denah dari Abu-Abu menjadi Berwarna Cerah secara perlahan
               Positioned.fill(
-                child: Image.asset(
-                  'assets/images/journey/denah.png', 
-                  fit: BoxFit.cover,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.0, end: saturationProgress),
+                  duration: const Duration(milliseconds: 1000),
+                  builder: (context, saturation, child) {
+                    // Menggunakan matriks filter warna untuk saturasi dinamis
+                    final double invSat = 1 - saturation;
+                    final double r = 0.2126 * invSat;
+                    final double g = 0.7152 * invSat;
+                    final double b = 0.0722 * invSat;
+
+                    return ColorFiltered(
+                      colorFilter: ColorFilter.matrix([
+                        r + saturation, g, b, 0, 0,
+                        r, g + saturation, b, 0, 0,
+                        r, g, b + saturation, 0, 0,
+                        0, 0, 0, 1, 0,
+                      ]),
+                      child: Image.asset(
+                        'assets/images/journey/journey_map.png', 
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
                 ),
               ),
+              
               // Render Semua Node Pin (1 sampai 6)
               ..._buildLevelNodes(constraints, currentCycle),
-              // Render Maskot Bergerak & Balon Teks Statis di Atas Map
-              _buildCurrentLevelMascot(constraints, currentCycle),
+              
+              // Render Maskot Bergerak secara Halus & Balon Teks di Atas Map
+              _buildAnimatedMascot(constraints, currentCycle),
+              
               // Render Kotak Peti Harta Karun Samping
               _buildTreasureChestCard(constraints, currentCycle),
             ],
@@ -297,8 +316,16 @@ class _JourneyPageState extends State<JourneyPage> {
           top: pos['y']! * constraints.maxHeight - 40,
           child: GestureDetector(
             onTap: () {
+              // Pengguna bisa mengklik level yang aktif saat ini atau level yang sudah selesai dilewati
               if (level <= currentCycle) {
                 Navigator.pushNamed(context, AppRoutes.chooseEnergy);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Selesaikan level sebelumnya terlebih dahulu!'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
               }
             },
             child: _buildMapPin(
@@ -314,12 +341,11 @@ class _JourneyPageState extends State<JourneyPage> {
   }
 
   Widget _buildMapPin({required int level, required bool isCompleted, required bool isCurrent}) {
-    // Menyesuaikan warna pin dengan gambar "Journey Map 2.png"
-    Color pinColor = const Color(0xFF9E9E9E); // Abu-abu default (terkunci)
+    Color pinColor = const Color(0xFF9E9E9E); // Abu-abu default (Terkunci)
     if (isCompleted) {
-      pinColor = const Color(0xFF4CAF50); // Hijau sukses
+      pinColor = const Color(0xFF4CAF50); // Hijau solid jika level sudah tuntas selesai
     } else if (isCurrent) {
-      pinColor = const Color(0xFF81C784); // Hijau muda pin aktif saat ini
+      pinColor = const Color(0xFF81C784); // Hijau cerah menyala menandakan level aktif saat ini
     }
 
     return Column(
@@ -351,7 +377,6 @@ class _JourneyPageState extends State<JourneyPage> {
             ),
           ),
         ),
-        // Kaki segitiga pin penunjuk peta
         CustomPaint(
           size: const Size(10, 6),
           painter: _TrianglePainter(color: Colors.white),
@@ -360,19 +385,26 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  Widget _buildCurrentLevelMascot(BoxConstraints constraints, int currentCycle) {
-    if (currentCycle < 1 || currentCycle > _levelPositions.length) return const SizedBox.shrink();
+  // Menggunakan AnimatedPositioned agar perpindahan tempat Mindy (Awan) berjalan halus/smooth saat berganti level
+  Widget _buildAnimatedMascot(BoxConstraints constraints, int currentCycle) {
+    int activeIndex = currentCycle;
+    if (activeIndex < 1) activeIndex = 1;
+    if (activeIndex > _levelPositions.length) activeIndex = _levelPositions.length;
     
-    final pinPos = _levelPositions[currentCycle - 1];
+    final pinPos = _levelPositions[activeIndex - 1];
 
-    // Mengatur posisi relatif Maskot Awan agar berdiri tepat di sisi kiri Pin Aktif
-    return Positioned(
-      left: (pinPos['x']! * constraints.maxWidth) - 65,
-      top: (pinPos['y']! * constraints.maxHeight) - 15,
+    // Menghitung koordinat berdiri Mindy tepat di samping kiri Pin Level yang dituju
+    final double targetLeft = (pinPos['x']! * constraints.maxWidth) - 65;
+    final double targetTop = (pinPos['y']! * constraints.maxHeight) - 15;
+
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+      left: targetLeft,
+      top: targetTop,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Maskot Awan Kecil Berjalan
           Image.asset(
             'assets/images/journey/awan1.png', 
             width: 42, 
@@ -381,7 +413,6 @@ class _JourneyPageState extends State<JourneyPage> {
             errorBuilder: (context, error, stackTrace) => const Text('☁️'),
           ),
           const SizedBox(width: 4),
-          // Balon Dialog Putih Berisi Ajakan
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
@@ -441,7 +472,7 @@ class _JourneyPageState extends State<JourneyPage> {
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFC67D3D), // Warna teks cokelat jingga hangat
+                    color: const Color(0xFFC67D3D),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -461,14 +492,13 @@ class _JourneyPageState extends State<JourneyPage> {
                   style: GoogleFonts.inter(
                     fontSize: 8,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF2B69A9), // Warna biru info teks bawah
+                    color: const Color(0xFF2B69A9),
                     height: 1.3,
                   ),
                 ),
               ],
             ),
           ),
-          // Indikator Gembok Lingkaran di Atas Kartu Hadiah
           if (!isTreasureUnlocked)
             Positioned(
               top: -8,

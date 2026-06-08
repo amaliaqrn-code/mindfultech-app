@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
 import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
-import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart';
+import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
@@ -14,7 +15,7 @@ import 'package:mindfultech_app/presentation/profile/screens/profile_screen.dart
 /// ============================================================
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({super.key, required AuthRepository authRepository});
 
   @override
   State<MainPage> createState() => _MainPageState();

@@ -59,13 +59,9 @@ class LogoutDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
-                      print('=== LOGOUT BUTTON CLICKED ===');
-
                       Navigator.pop(context);
 
                       await AuthLocalDataSource().clearAuth();
-
-                      print('=== GO TO SPLASH ===');
 
                       if (!context.mounted) return;
 

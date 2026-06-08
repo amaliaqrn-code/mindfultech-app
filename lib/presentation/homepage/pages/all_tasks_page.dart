@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
-import 'package:mindfultech_app/presentation/homepage/bloc/homepage_state.dart';
+import 'package:mindfultech_app/blocs/task/task_bloc.dart';
+import 'package:mindfultech_app/blocs/task/task_state.dart';
+import 'package:mindfultech_app/models/task_model.dart';
 
 class AllTasksPage extends StatelessWidget {
   const AllTasksPage({super.key});
+
+  // Menentukan warna tag kategori berdasarkan nama kategorinya
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'belajar':
+        return const Color(0xFF4597E6);
+      case 'pekerjaan':
+        return const Color(0xFF7B68EE);
+      case 'kesehatan':
+        return const Color(0xFFFF6B6B);
+      case 'pribadi':
+        return const Color(0xFFFF9F43);
+      case 'rumah':
+        return const Color(0xFF26DE81);
+      default:
+        return const Color(0xFFA55EEA); // Warna default untuk kategori kustom tambahan
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,69 +39,145 @@ class AllTasksPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Eksplorasi Semua Tugas',
+          'Semua Tugas Kategori',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A202C)),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          itemCount: HomepageState.levelConfigs.length,
-          itemBuilder: (context, index) {
-            final levelKey = index + 1;
-            final levelData = HomepageState.levelConfigs[levelKey]!;
+        child: BlocBuilder<TaskBloc, TaskState>(
+          builder: (context, state) {
+            // Mengambil list tasks asli yang dimuat dari database lokal HP melalui BLoC
+            final List<TaskModel> allTasks = state.tasks;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (index > 0) const SizedBox(height: 28),
-                Row(
+            if (state.status == TaskStatus.loading) {
+              return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            }
+
+            if (allTasks.isEmpty) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(2))),
-                    const SizedBox(width: 8),
+                    Icon(Icons.assignment_late_outlined, size: 48, color: Colors.grey),
+                    SizedBox(height: 12),
                     Text(
-                      levelData.levelText,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF1A202C), letterSpacing: -0.2),
+                      'Belum ada tugas yang disimpan',
+                      style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                ...levelData.tasks.map((task) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _buildTaskCard(
-                    iconPath: task.iconPath,
-                    title: task.title,
-                    duration: task.duration,
-                    category: task.category,
-                    categoryColor: task.categoryColor,
-                  ),
-                )),
-              ],
+              );
+            }
+
+            // MENGELOMPOKKAN TUGAS BERDASARKAN KATEGORI ASLI USER
+            final Map<String, List<TaskModel>> groupedTasks = {};
+            for (var task in allTasks) {
+              final String categoryName = task.kategori.displayName;
+              if (!groupedTasks.containsKey(categoryName)) {
+                groupedTasks[categoryName] = [];
+              }
+              groupedTasks[categoryName]!.add(task);
+            }
+
+            final List<String> categoryKeys = groupedTasks.keys.toList();
+
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              itemCount: categoryKeys.length,
+              itemBuilder: (context, index) {
+                final String currentCategoryName = categoryKeys[index];
+                final List<TaskModel> tasksInCategory = groupedTasks[currentCategoryName]!;
+                final Color categoryColor = _getCategoryColor(currentCategoryName);
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (index > 0) const SizedBox(height: 28),
+                    // Header Nama Kategori
+                    Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            color: categoryColor,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          currentCategoryName.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: categoryColor,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '(${tasksInCategory.length})',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Daftar item tugas di dalam kelompok kategori ini
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: tasksInCategory.length,
+                      itemBuilder: (context, taskIndex) {
+                        final TaskModel singleTask = tasksInCategory[taskIndex];
+                        return _TaskItemCard(
+                          title: singleTask.namaTugas,
+                          duration: '${singleTask.estimasiWaktu} Menit',
+                          category: currentCategoryName,
+                          categoryColor: categoryColor,
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),
       ),
     );
   }
+}
 
-  Widget _buildTaskCard({
-    required String iconPath,
-    required String title,
-    required String duration,
-    required String category,
-    required Color categoryColor,
-  }) {
+class _TaskItemCard extends StatelessWidget {
+  final String title;
+  final String duration;
+  final String category;
+  final Color categoryColor;
+
+  const _TaskItemCard({
+    required this.title,
+    required this.duration,
+    required this.category,
+    required this.categoryColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFEDF2F7)),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
@@ -88,19 +185,14 @@ class AllTasksPage extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(16),
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF1F5F9),
+              shape: BoxShape.circle,
             ),
-            child: Center(
-              child: Image.asset(
-                iconPath,
-                width: 24,
-                height: 24,
-                errorBuilder: (_, __, ___) => const Icon(Icons.bolt_rounded, color: AppColors.primary),
-              ),
+            child: const Center(
+              child: Icon(Icons.bolt_rounded, color: AppColors.primary, size: 20),
             ),
           ),
           const SizedBox(width: 14),

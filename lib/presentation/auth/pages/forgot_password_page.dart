@@ -73,9 +73,7 @@ class _ForgotPasswordPageState
                   'assets/images/mindy_lupa_password.png',
                   height: 170,
 
-                  errorBuilder:
-                      (_, __, ___) {
-
+                  errorBuilder: (_, _, _) {
                     return const Icon(
                       Icons.cloud,
                       size: 120,

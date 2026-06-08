@@ -56,7 +56,6 @@ class _PrivacySuccessScreenState extends State<PrivacySuccessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
     return Scaffold(
       body: Stack(
         alignment: Alignment.center,

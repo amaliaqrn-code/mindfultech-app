@@ -1,29 +1,8 @@
 import '../models/journey_level_model.dart';
 
 class JourneyData {
-  static const int totalDaysInLevel = 7;
+  static const int totalDaysInLevel = 5; // Dibagi merata 5 hari per siklus level untuk siklus 30 hari
   static const int maxDays = 30; // 30-day journey cycle
-
-  /// Each waypoint on the map corresponds to a day (1-7).
-  /// The denah.png background shows 6 numbered pins + castle at top.
-  /// Positions are relative to the denah image (percentage from top-left).
-  /// These map the winding path from bottom-left (house) to top-right (castle).
-  static const List<Map<String, double>> waypointPositions = [
-    // Day 1 - Bottom, near the house
-    {'x': 0.22, 'y': 0.88},
-    // Day 2 - Lower middle area
-    {'x': 0.45, 'y': 0.74},
-    // Day 3 - Middle area, slightly right
-    {'x': 0.52, 'y': 0.60},
-    // Day 4 - Upper middle, slightly left
-    {'x': 0.42, 'y': 0.46},
-    // Day 5 - Upper area, middle-right
-    {'x': 0.55, 'y': 0.35},
-    // Day 6 - Near top, right area
-    {'x': 0.62, 'y': 0.24},
-    // Day 7 - Castle/top destination (flag)
-    {'x': 0.72, 'y': 0.14},
-  ];
 
   static List<JourneyLevelModel> getLevels() {
     return [
@@ -32,35 +11,42 @@ class JourneyData {
         requiredDays: 1,
         areaName: 'Mulai Perjalanan',
         emoji: '🏠',
-        backgroundImage: 'assets/images/journey/denah.png',
+        backgroundImage: 'assets/images/journey/journey_map.png',
       ),
       JourneyLevelModel(
         level: 2,
-        requiredDays: 7,
-        areaName: 'Hutan Pinus',
-        emoji: '🌲',
-        backgroundImage: 'assets/images/journey/denah.png',
+        requiredDays: 6,
+        areaName: 'Grassland',
+        emoji: '🌿',
+        backgroundImage: 'assets/images/journey/journey_map.png',
       ),
       JourneyLevelModel(
         level: 3,
-        requiredDays: 14,
-        areaName: 'Dataran Tinggi',
-        emoji: '⛰️',
-        backgroundImage: 'assets/images/journey/denah.png',
+        requiredDays: 11,
+        areaName: 'Sunny Hill',
+        emoji: '☀️',
+        backgroundImage: 'assets/images/journey/journey_map.png',
       ),
       JourneyLevelModel(
         level: 4,
-        requiredDays: 21,
-        areaName: 'Puncak Gunung',
-        emoji: '🏔',
-        backgroundImage: 'assets/images/journey/denah.png',
+        requiredDays: 16,
+        areaName: 'Calm Lake',
+        emoji: '🌊',
+        backgroundImage: 'assets/images/journey/journey_map.png',
       ),
       JourneyLevelModel(
         level: 5,
-        requiredDays: 30,
+        requiredDays: 21,
+        areaName: 'Focus Mountain',
+        emoji: '🏔️',
+        backgroundImage: 'assets/images/journey/journey_map.png',
+      ),
+      JourneyLevelModel(
+        level: 6,
+        requiredDays: 26,
         areaName: 'Kastil Ketenangan',
         emoji: '🏰',
-        backgroundImage: 'assets/images/journey/denah.png',
+        backgroundImage: 'assets/images/journey/journey_map.png',
       ),
     ];
   }
@@ -76,21 +62,26 @@ class JourneyData {
         break;
       }
     }
-
     return currentLevel;
   }
 
-  /// Get which day in the current 7-day cycle the user is on (1-7)
   static int getDayInCurrentCycle(int totalDays) {
     if (totalDays <= 0) return 0;
-    int dayInCycle = totalDays % 7;
-    return dayInCycle == 0 ? 7 : dayInCycle;
+    int dayInCycle = totalDays % 5;
+    return dayInCycle == 0 ? 5 : dayInCycle;
   }
 
-  /// Get the current cycle number (1-based)
   static int getCurrentCycle(int totalDays) {
     if (totalDays <= 0) return 1;
-    return ((totalDays - 1) ~/ 7) + 1;
+    // Menghitung siklus level (1-6) berdasarkan total hari fokus yang dicapai
+    int cycle = 1;
+    final levels = getLevels();
+    for (var level in levels) {
+      if (totalDays >= level.requiredDays) {
+        cycle = level.level;
+      }
+    }
+    return cycle;
   }
 
   static int getCurrentLevelProgress(int totalDays) {
@@ -108,9 +99,7 @@ class JourneyData {
     final previousLevelDays = currentLevelIndex > 0
         ? levels[currentLevelIndex - 1].requiredDays
         : 0;
-    final daysInCurrentLevel = totalDays - previousLevelDays;
-
-    return daysInCurrentLevel;
+    return totalDays - previousLevelDays;
   }
 
   static double getOverallProgress(int totalDays) {

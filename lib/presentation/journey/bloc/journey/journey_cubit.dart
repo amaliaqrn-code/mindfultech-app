@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
-import '../data/journey_data.dart';
+import '../../data/journey_data.dart';
 import 'journey_state.dart';
 
 class JourneyCubit extends Cubit<JourneyState> {

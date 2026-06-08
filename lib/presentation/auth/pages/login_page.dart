@@ -5,7 +5,7 @@ import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_event.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_state.dart';
-import 'package:mindfultech_app/presentation/auth/cubit/auth_cubit.dart';
+import 'package:mindfultech_app/presentation/auth/bloc/auth/auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

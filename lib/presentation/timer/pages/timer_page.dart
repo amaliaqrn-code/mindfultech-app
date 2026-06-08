@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/timer_cubit.dart';
-import '../bloc/timer_state.dart';
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_cubit.dart';
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_state.dart';
 import '../theme/timer_theme.dart';
 import '../widgets/goal_card.dart';
 import '../widgets/circular_timer_widget.dart';

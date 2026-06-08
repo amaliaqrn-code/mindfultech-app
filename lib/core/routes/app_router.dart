@@ -8,7 +8,7 @@ import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/pages/login_page.dart';
-import 'package:mindfultech_app/presentation/auth/pages/register/register_page.dart';
+import 'package:mindfultech_app/presentation/auth/pages/register_page.dart';
 import 'package:mindfultech_app/presentation/auth/pages/forgot_password_page.dart';
 import 'package:mindfultech_app/presentation/auth/pages/password_success_page.dart';
 import 'package:mindfultech_app/presentation/splash/pages/splash_page.dart';
@@ -17,7 +17,7 @@ import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/all_tasks_page.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/create_task_category_page.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/create_custom_task_page.dart';
-import 'package:mindfultech_app/presentation/homepage/bloc/homepage_cubit.dart';
+import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/main_page.dart';
 import 'package:mindfultech_app/presentation/tutorial/pages/tutorial_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
@@ -34,7 +34,7 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_altern
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_confirmation_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
 import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
-import 'package:mindfultech_app/presentation/timer/bloc/timer_cubit.dart';
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_cubit.dart';
 
 /// App Router - Centralized routing configuration using Flutter Navigator
 class AppRouter {
@@ -78,7 +78,7 @@ class AppRouter {
           ),
         );
       case AppRoutes.mainPage:
-        return _buildPageRoute(settings, const MainPage());
+        return _buildPageRoute(settings, MainPage(authRepository: authRepository));
       case AppRoutes.journey:
         return _buildPageRoute(settings, JourneyPage());
       case AppRoutes.streak:

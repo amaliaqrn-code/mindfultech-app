@@ -44,15 +44,8 @@ class AuthLocalDataSource {
 
   // Clear all auth data (logout)
   Future<void> clearAuth() async {
-    print('=== CLEAR AUTH START ===');
-
     await _storage.remove(_tokenKey);
     await _storage.remove(_userKey);
     await _storage.write(_isLoggedInKey, false);
-
-    print('Token setelah hapus: ${_storage.read(_tokenKey)}');
-    print('Login status: ${_storage.read(_isLoggedInKey)}');
-
-    print('=== CLEAR AUTH END ===');
   }
 }

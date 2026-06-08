@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/journey_level_model.dart';
+import '../../models/journey_level_model.dart';
 
 class JourneyState extends Equatable {
   final int totalDays;

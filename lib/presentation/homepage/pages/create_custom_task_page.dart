@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mindfultech_app/blocs/task/task_bloc.dart';
+import 'package:mindfultech_app/blocs/task/task_event.dart';
+import 'package:mindfultech_app/blocs/task/task_state.dart';
+import 'package:mindfultech_app/models/task_model.dart';
+import 'package:mindfultech_app/presentation/homepage/pages/task_success_page.dart';
 
 class CreateCustomTaskPage extends StatefulWidget {
   const CreateCustomTaskPage({super.key});
@@ -9,459 +16,578 @@ class CreateCustomTaskPage extends StatefulWidget {
 
 class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
   final TextEditingController _taskNameController = TextEditingController();
-  // 1. TAMBAHAN: Controller untuk teks durasi kustom
   final TextEditingController _customDurationController = TextEditingController();
 
-  int _selectedEnergyIndex = 1; // Default: Sedang
-  int _selectedDurationIndex = 0; // Default: 5 Menit
-  int _selectedPriorityIndex = 0; // Default: Mendesak
+  TaskModel? _createdTask;
+
+  int _selectedEnergyIndex = 0; // Mengikuti gambar: Default Rendah terpilih
+  int _selectedDurationIndex = 2; // Mengikuti gambar: Default 15 Menit terpilih
+  int _selectedPriorityIndex = 0; // Mengikuti gambar: Default Mendesak terpilih
   Map<String, dynamic>? _selectedCategory;
 
-  // Konfigurasi Pilihan Sesuai Gambar UI
+  // Opsi Tingkat Energi berdasarkan jalur SVG dan skema warna gambar rujukan
   final List<Map<String, dynamic>> _energyOptions = [
     {
-      'name': 'Rendah', 
-      'icon': Icons.warning_amber_rounded, 
-      'activeBg': const Color(0xFFE8F5E9), 
-      'activeText': const Color(0xFF4CAF50)
+      'name': 'Rendah',
+      'icon': 'assets/icon/input_tugas/rendah.svg',
+      'activeBg': const Color(0xFF6D9E62),
+      'activeText': Colors.white,
+      'inactiveBg': const Color(0xFFEDF4EC),
+      'inactiveText': const Color(0xFF6D9E62),
     },
     {
-      'name': 'Sedang', 
-      'icon': Icons.stars_rounded, 
-      'activeBg': const Color(0xFFE3F2FD), 
-      'activeText': const Color(0xFF1E88E5)
+      'name': 'Sedang',
+      'icon': 'assets/icon/input_tugas/sedang.svg',
+      'activeBg': const Color(0xFF4FA5FF),
+      'activeText': Colors.white,
+      'inactiveBg': const Color(0xFFEBF4FF),
+      'inactiveText': const Color(0xFF4FA5FF),
     },
     {
-      'name': 'Tinggi', 
-      'icon': Icons.spa_rounded, 
-      'activeBg': const Color(0xFFF3E5F5), 
-      'activeText': const Color(0xFF8E24AA)
+      'name': 'Tinggi',
+      'icon': 'assets/icon/input_tugas/tinggi.svg',
+      'activeBg': const Color(0xFFB9A0EB),
+      'activeText': Colors.white,
+      'inactiveBg': const Color(0xFFF5F0FF),
+      'inactiveText': const Color(0xFFB9A0EB),
     },
   ];
 
-  // 2. PERUBAHAN: Menambah variasi data durasi awal agar enak di-scroll
-  final List<int> _durations = [5, 10, 15, 20, 25, 30, 45, 60];
+  // Durasi disesuaikan persis dengan opsi grid pada gambar rujukan
+  final List<int> _durations = [5, 10, 15, 20, 25, 30];
 
-  final List<Map<String, dynamic>> _priorities = [
+  // Opsi Prioritas berdasarkan jalur SVG dan skema warna gambar rujukan
+  final List<Map<String, dynamic>> _priorityOptions = [
     {
-      'name': 'Mendesak', 
-      'icon': Icons.report_problem_rounded, 
-      'activeBg': const Color(0xFFFFCDD2), 
-      'activeText': const Color(0xFFE53935)
+      'name': 'Mendesak',
+      'icon': 'assets/icon/input_tugas/mendesak.svg',
+      'activeBg': const Color(0xFFFF0000),
+      'activeText': Colors.white,
+      'inactiveBg': const Color(0xFFFFEBEB),
+      'inactiveText': const Color(0xFFFF0000),
     },
     {
-      'name': 'Penting', 
-      'icon': Icons.star_rate_rounded, 
-      'activeBg': const Color(0xFFFFF3E0), 
-      'activeText': const Color(0xFFFB8C00)
+      'name': 'Penting',
+      'icon': 'assets/icon/input_tugas/penting.svg',
+      'activeBg': const Color(0xFFFFB84D),
+      'activeText': Colors.white,
+      'inactiveBg': const Color(0xFFFFF6E6),
+      'inactiveText': const Color(0xFFFFB84D),
     },
     {
-      'name': 'Santai', 
-      'icon': Icons.spa_rounded, 
-      'activeBg': const Color(0xFFE8F5E9), 
-      'activeText': const Color(0xFF4CAF50)
+      'name': 'Santai',
+      'icon': 'assets/icon/input_tugas/santai.svg',
+      'activeBg': const Color(0xFF2EAA42),
+      'activeText': Colors.white,
+      'inactiveBg': const Color(0xFFEAF8EC),
+      'inactiveText': const Color(0xFF2EAA42),
     },
   ];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    if (args != null && _selectedCategory == null) {
-      _selectedCategory = args['category'] as Map<String, dynamic>?;
+    if (_selectedCategory == null) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null && args.containsKey('category')) {
+        _selectedCategory = args['category'] as Map<String, dynamic>;
+      }
     }
   }
 
   @override
   void dispose() {
     _taskNameController.dispose();
-    // 3. TAMBAHAN: Dispose controller custom duration agar tidak memakan memori
     _customDurationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF2D3748), size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeaderSection(),
-                    const SizedBox(height: 24),
-                    _buildCategoryBadge(),
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Nama Tugas'),
-                    const SizedBox(height: 12),
-                    _buildInputField(),
-                    const SizedBox(height: 28),
-                    _buildSectionTitle('Tingkat Energi Hari Ini'),
-                    const SizedBox(height: 12),
-                    _buildEnergySelector(),
-                    const SizedBox(height: 28),
-                    _buildSectionTitle('Estimasi Waktu'),
-                    const SizedBox(height: 12),
-                    _buildDurationSelector(), // Memanggil komponen scrollable baru
-                    const SizedBox(height: 28),
-                    _buildSectionTitle('Prioritas'),
-                    const SizedBox(height: 12),
-                    _buildPrioritySelector(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            ),
-            _buildSaveButton(),
-          ],
-        ),
-      ),
-    );
-  }
+    final categoryName = _selectedCategory?['name'] as String? ?? 'Belajar';
+    const primaryBlue = Color(0xFF4191FF);
 
-  Widget _buildHeaderSection() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'Buat Tugasmu\nSendiri',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF4597E6), height: 1.2),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Isi detail tugas sesuai kebutuhanmu.',
-                style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-        ),
-        Image.asset(
-          'assets/images/homepage/awan.png',
-          width: 80,
-          height: 80,
-          errorBuilder: (_, __, ___) => const Icon(Icons.cloud, size: 60, color: Color(0xFF4597E6)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCategoryBadge() {
-    String categoryName = _selectedCategory != null ? _selectedCategory!['name'] : 'Belajar';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEBF3FC),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.style_rounded, color: Color(0xFF1E6091), size: 18),
-          const SizedBox(width: 8),
-          Text(
-            'Kategori: $categoryName',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E6091), fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String text) => Text(
-        text, 
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF4597E6))
-      );
-
-  Widget _buildInputField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF90CAF9), width: 1.5),
-      ),
-      child: TextField(
-        controller: _taskNameController,
-        style: const TextStyle(fontSize: 14, color: Colors.black87),
-        decoration: const InputDecoration(
-          hintText: 'Apa yang ingin kamu kerjakan?',
-          hintStyle: TextStyle(color: Colors.black26, fontSize: 14),
-          suffixIcon: Icon(Icons.edit, color: Colors.black26, size: 18),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEnergySelector() {
-    return Row(
-      children: _energyOptions.asMap().entries.map((entry) {
-        final idx = entry.key; final opt = entry.value; final isSel = _selectedEnergyIndex == idx;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => setState(() => _selectedEnergyIndex = idx),
-            child: Container(
-              margin: EdgeInsets.only(right: idx < 2 ? 12 : 0),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: isSel ? opt['activeBg'] : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  Icon(opt['icon'], color: isSel ? opt['activeText'] : Colors.grey, size: 28),
-                  const SizedBox(height: 8),
-                  Text(
-                    opt['name'], 
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isSel ? opt['activeText'] : Colors.grey)
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  // 4. PERUBAHAN TOTAL: Mengubah pemilih durasi statis menjadi Horizontal Scrollable + Tombol Kustom
-  Widget _buildDurationSelector() {
-    return SizedBox(
-      height: 68, // Menentukan tinggi area scroll
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: _durations.length + 1, // Ditambah 1 untuk tombol Kustom paling ujung
-        itemBuilder: (context, index) {
-          final isCustomBtn = index == _durations.length;
-          final isSel = _selectedDurationIndex == index;
-          
-          final String minutesText = isCustomBtn ? '+' : '${_durations[index]}';
-          final String labelText = isCustomBtn ? 'Kustom' : 'Menit';
-
-          return GestureDetector(
-            onTap: isCustomBtn 
-                ? _showCustomDurationSheet 
-                : () => setState(() => _selectedDurationIndex = index),
-            child: Container(
-              width: 64, // Mempertahankan boks persegi proporsional
-              margin: const EdgeInsets.only(right: 10),
-              decoration: BoxDecoration(
-                color: isSel ? const Color(0xFFE3F2FD) : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(16),
-                border: isSel 
-                    ? Border.all(color: const Color(0xFF1E88E5), width: 1.5) 
-                    : null,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.access_time_filled_rounded, 
-                    color: isSel ? const Color(0xFF1E88E5) : Colors.grey.shade400, 
-                    size: 18,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    minutesText, 
-                    style: TextStyle(
-                      fontSize: 14, 
-                      fontWeight: FontWeight.bold, 
-                      color: isSel ? const Color(0xFF1E88E5) : Colors.black87,
-                    ),
-                  ),
-                  Text(
-                    labelText, 
-                    style: TextStyle(
-                      fontSize: 10, 
-                      color: isSel ? const Color(0xFF1E88E5) : Colors.grey, 
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
+    return BlocListener<TaskBloc, TaskState>(
+      listener: (context, state) {
+        if (state.status == TaskStatus.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tugas berhasil disimpan!'),
+              backgroundColor: primaryBlue,
+              duration: Duration(seconds: 2),
             ),
           );
-        },
+          if (_createdTask != null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TaskSuccessPage(task: _createdTask!),
+              ),
+            );
+          }
+        } else if (state.status == TaskStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'Gagal menyimpan tugas ke server'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Tombol Back Kustom agar menyatu dengan body halaman tanpa AppBar kaku
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 22),
+                  ),
+                ),
+                
+                // Elemen Header Utama: Ilustrasi Awan Mindy & Teks
+                Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/input_tugas_mindy.png',
+                        height: 90,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Buat Tugasmu Sendiri',
+                        style: TextStyle(
+                          fontSize: 26, 
+                          fontWeight: FontWeight.bold, 
+                          color: primaryBlue,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Isi detail tugas sesuai kebutuhan mu',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Card Badge Penanda Kategori Pilihan
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEBF3FF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.menu_book_rounded, color: Color(0xFF1A56B1), size: 28),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Kategori', style: TextStyle(fontSize: 11, color: Color(0xFF709CE0))),
+                            Text(
+                              categoryName, 
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1A56B1)),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Bagian Input Nama Tugas
+                const Text(
+                  'Nama Tugas', 
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _taskNameController,
+                  style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
+                  decoration: InputDecoration(
+                    hintText: 'Masukkan nama tugas...',
+                    hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.normal),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                    suffixIcon: const Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: Icon(Icons.edit, color: Colors.black87, size: 22),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18), 
+                      borderSide: const BorderSide(color: Color(0xFF4FA5FF), width: 1.2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18), 
+                      borderSide: const BorderSide(color: primaryBlue, width: 2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Bagian Tingkat Energi (Label teks di gambar rujukan tertulis "Prioritas")
+                const Text(
+                  'Prioritas', 
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: List.generate(_energyOptions.length, (index) {
+                    final opt = _energyOptions[index];
+                    final isSelected = _selectedEnergyIndex == index;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedEnergyIndex = index),
+                        child: Container(
+                          margin: EdgeInsets.only(right: index == 2 ? 0 : 10),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: isSelected ? opt['activeBg'] : opt['inactiveBg'],
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                opt['icon'], 
+                                colorFilter: ColorFilter.mode(
+                                  isSelected ? opt['activeText'] : opt['inactiveText'], 
+                                  BlendMode.srcIn,
+                                ),
+                                width: 18,
+                                height: 18,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                opt['name'], 
+                                style: TextStyle(
+                                  color: isSelected ? opt['activeText'] : opt['inactiveText'], 
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 24),
+
+                // Bagian Estimasi Waktu (Susunan 3 Kolom Grid Berjajar)
+                const Text(
+                  'Estimasi Waktu', 
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
+                ),
+                const SizedBox(height: 12),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _durations.length + 1,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 2.6,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemBuilder: (context, index) {
+                    if (index < _durations.length) {
+                      final minutes = _durations[index];
+                      final isSelected = _selectedDurationIndex == index;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedDurationIndex = index),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSelected ? primaryBlue : const Color(0xFFEBF4FF),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icon/input_tugas/timer.svg',
+                                colorFilter: ColorFilter.mode(
+                                  isSelected ? Colors.white : primaryBlue, 
+                                  BlendMode.srcIn,
+                                ),
+                                width: 16,
+                                height: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '$minutes Menit', 
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : primaryBlue, 
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Opsi Tombol Durasi Kustom
+                      final isSelected = _selectedDurationIndex == _durations.length;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() => _selectedDurationIndex = _durations.length);
+                          _showCustomDurationBottomSheet();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSelected ? primaryBlue : const Color(0xFFEBF4FF),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icon/input_tugas/timer.svg',
+                                colorFilter: ColorFilter.mode(
+                                  isSelected ? Colors.white : primaryBlue, 
+                                  BlendMode.srcIn,
+                                ),
+                                width: 16,
+                                height: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _customDurationController.text.isNotEmpty 
+                                    ? '${_customDurationController.text} Mnt' 
+                                    : 'Kustom +',
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : primaryBlue, 
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // Bagian Opsi Manajemen Prioritas Bawah
+                const Text(
+                  'Prioritas', 
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: List.generate(_priorityOptions.length, (index) {
+                    final opt = _priorityOptions[index];
+                    final isSelected = _selectedPriorityIndex == index;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedPriorityIndex = index),
+                        child: Container(
+                          margin: EdgeInsets.only(right: index == 2 ? 0 : 10),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: isSelected ? opt['activeBg'] : opt['inactiveBg'],
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                opt['icon'],
+                                colorFilter: ColorFilter.mode(
+                                  isSelected ? opt['activeText'] : opt['inactiveText'],
+                                  BlendMode.srcIn,
+                                ),
+                                width: 16,
+                                height: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                opt['name'],
+                                style: TextStyle(
+                                  color: isSelected ? opt['activeText'] : opt['inactiveText'], 
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 44),
+
+                // Tombol Simpan dengan Gradasi Linear Sesuai Gambar Rujukan
+                BlocBuilder<TaskBloc, TaskState>(
+                  builder: (context, state) {
+                    if (state.status == TaskStatus.loading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    return GestureDetector(
+                      onTap: () {
+                        
+                        final taskName = _taskNameController.text.trim();
+                        if (taskName.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Nama tugas tidak boleh kosong!'), backgroundColor: Colors.amber),
+                          );
+                          return;
+                        }
+
+                        final energyMap = {
+                          0: EnergyLevel.rendah,
+                          1: EnergyLevel.sedang,
+                          2: EnergyLevel.tinggi,
+                        };
+
+                        final priorityMap = {
+                          0: TaskPriority.mendesak,
+                          1: TaskPriority.penting,
+                          2: TaskPriority.santai,
+                        };
+
+                        final categoryNameMap = {
+                          'Belajar': TaskCategory.belajar,
+                          'Pekerjaan': TaskCategory.pekerjaan,
+                          'Kesehatan': TaskCategory.kesehatan,
+                          'Pribadi': TaskCategory.pribadi,
+                          'Rumah': TaskCategory.rumah,
+                          'Lainnya': TaskCategory.lainnya,
+                        };
+
+                        final category = categoryNameMap[categoryName] ?? TaskCategory.lainnya;
+                        final energy = energyMap[_selectedEnergyIndex]!;
+                        final priority = priorityMap[_selectedPriorityIndex]!;
+                        
+                        
+                        int duration;
+                        if (_selectedDurationIndex == _durations.length) {
+                          duration = int.tryParse(_customDurationController.text) ?? 5;
+                        } else {
+                          duration = _durations[_selectedDurationIndex];
+                        }
+
+                        final newTask = TaskModel(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          namaTugas: taskName,
+                          kategori: category,
+                          energi: energy,
+                          estimasiWaktu: duration,
+                          prioritas: priority,
+                          createdAt: DateTime.now(),
+                        );
+
+                        // TAMBAHKAN BARIS INI: Simpan ke variabel global sebelum dikirim ke Bloc
+                        _createdTask = newTask;
+
+                        context.read<TaskBloc>().add(AddTaskEvent(newTask));
+                      },
+
+                      child: Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF42A5F5), Color(0xFF76E4CE)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Simpan Tugas',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  // 5. TAMBAHAN: Fungsi Bottom Sheet untuk memasukkan angka kustom secara interaktif
-  void _showCustomDurationSheet() {
+  void _showCustomDurationBottomSheet() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom, 
-          top: 20, 
-          left: 24, 
-          right: 24,
-        ),
-        decoration: const BoxDecoration(
-          color: Colors.white, 
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40, 
-              height: 5, 
-              decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(3)),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Masukkan Durasi Fokus (Menit)', 
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2D3748)),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _customDurationController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1E88E5)),
-              decoration: InputDecoration(
-                hintText: '45', 
-                hintStyle: TextStyle(color: Colors.grey.shade300),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFF90CAF9), width: 1.5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Masukkan Durasi Kustom', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _customDurationController,
+                  keyboardType: TextInputType.number,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Contoh: 25 (dalam menit)',
+                    filled: true,
+                    fillColor: const Color(0xFFF1F5F9),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFF1E88E5), width: 2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {
-                final text = _customDurationController.text.trim();
-                if (text.isNotEmpty) {
-                  final parsedDuration = int.tryParse(text);
-                  if (parsedDuration != null && parsedDuration > 0) {
-                    setState(() {
-                      if (!_durations.contains(parsedDuration)) {
-                        _durations.add(parsedDuration);
-                        _durations.sort(); 
-                      }
-                      _selectedDurationIndex = _durations.indexOf(parsedDuration);
-                    });
-                    _customDurationController.clear();
+                const SizedBox(height: 24),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {});
                     Navigator.pop(context);
-                  }
-                }
-              },
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF42A5F5), Color(0xFF80DEEA)]),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Terapkan Sesi', 
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF42A5F5),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: const Center(
+                      child: Text('Terapkan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrioritySelector() {
-    return Row(
-      children: _priorities.asMap().entries.map((entry) {
-        final idx = entry.key; final opt = entry.value; final isSel = _selectedPriorityIndex == idx;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => setState(() => _selectedPriorityIndex = idx),
-            child: Container(
-              margin: EdgeInsets.only(right: idx < 2 ? 12 : 0),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: isSel ? opt['activeBg'] : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  Icon(opt['icon'], color: isSel ? opt['activeText'] : Colors.grey, size: 26),
-                  const SizedBox(height: 8),
-                  Text(
-                    opt['name'], 
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isSel ? opt['activeText'] : Colors.grey)
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         );
-      }).toList(),
-    );
-  }
-
-  Widget _buildSaveButton() {
-    return Container(
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 20, top: 10),
-      color: Colors.white,
-      child: GestureDetector(
-        onTap: () {
-          if (_taskNameController.text.trim().isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Mohon isi nama tugas terlebih dahulu!'), backgroundColor: Colors.orange)
-            );
-            return;
-          }
-          Navigator.pop(context);
-        },
-        child: Container(
-          width: double.infinity,
-          height: 54,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF42A5F5), Color(0xFF80DEEA)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(27),
-            boxShadow: [
-              BoxShadow(color: const Color(0xFF42A5F5).withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))
-            ],
-          ),
-          child: const Center(
-            child: Text(
-              'Simpan Tugas', 
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)
-            )
-          ),
-        ),
-      ),
+      },
     );
   }
 }
