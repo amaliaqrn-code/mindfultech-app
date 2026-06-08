@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:mindfultech_app/blocs/task/task_bloc.dart';
 import 'package:mindfultech_app/core/routes/app_router.dart';
@@ -17,8 +16,6 @@ Future<void> main() async {
   // Initialize sqflite FFI for database operations.
   // This is required for sqflite_common_ffi package.
   // On Android/iOS, it will use the native SQLite driver automatically.
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
 
   await GetStorage.init();
 
