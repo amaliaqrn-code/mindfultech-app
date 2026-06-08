@@ -20,7 +20,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool _isSecond = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
