@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
-import 'package:mindfultech_app/presentation/splash/splash_screen.dart';
+import 'package:mindfultech_app/presentation/splash/pages/splash_page.dart';
 
 class LogoutDialog extends StatelessWidget {
   final VoidCallback onLogout;
@@ -59,19 +59,15 @@ class LogoutDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
-                      print('=== LOGOUT BUTTON CLICKED ===');
-
                       Navigator.pop(context);
 
                       await AuthLocalDataSource().clearAuth();
-
-                      print('=== GO TO SPLASH ===');
 
                       if (!context.mounted) return;
 
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => const SplashScreen()),
+                        MaterialPageRoute(builder: (_) => const SplashPage()),
                         (route) => false,
                       );
                     },

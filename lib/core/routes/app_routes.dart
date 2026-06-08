@@ -12,13 +12,19 @@ class AppRoutes {
   static const String journey = '/journey';
   static const String streak = '/streak';
   static const String chooseEnergy = '/choose-energy';
-  static const String mindyBantuAku = '/mindy-bantu-aku';
-  static const String mindyBantuAkuBlue = '/mindy-bantu-aku-blue';
-  static const String mindyBantuAkuPurple = '/mindy-bantu-aku-purple';
-  static const String mindyBantuAkuGreen = '/mindy-bantu-aku-green';
-  static const String mindyTaskRecommendation = '/mindy-task-recommendation';
-  static const String mindyBantuAkuGeneric = '/mindy-bantu-aku-generic';
+  static const String greenTaskRecommendation = '/green-task-recommendation';
+  static const String greenAlternativeTaskList = '/green-alternative-task-list';
+  static const String greenTaskConfirmation = '/green-task-confirmation';
+  static const String blueTaskRecommendation = '/blue-task-recommendation';
+  static const String blueAlternativeTaskList = '/blue-alternative-task-list';
+  static const String blueTaskConfirmation = '/blue-task-confirmation';
+  static const String purpleTaskRecommendation = '/purple-task-recommendation';
+  static const String purpleAlternativeTaskList = '/purple-alternative-task-list';
+  static const String purpleTaskConfirmation = '/purple-task-confirmation';
   static const String timer = '/timer';
+  static const String allTasks = '/all-tasks';
+  static const String createTaskCategory = '/create-task-category';
+  static const String createCustomTask = '/create-custom-task';
   static const String passwordSuccess = '/password-success';
   static const String profile = '/profile';
 }

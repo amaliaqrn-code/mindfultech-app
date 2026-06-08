@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'task_model.dart' show EnergyLevel;
 
 /// Konfigurasi tema untuk setiap level energi
 class MindyTheme {
@@ -59,25 +60,17 @@ class MindyTheme {
     showBottomNav: true,
     hasButtonIcon: true,
   );
-}
 
-/// Enum untuk level energi
-enum EnergyLevel {
-  low(0, 'Rendah', MindyTheme.green),
-  medium(1, 'Sedang', MindyTheme.blue),
-  high(2, 'Tinggi', MindyTheme.purple);
-
-  final int value;
-  final String label;
-  final MindyTheme theme;
-
-  const EnergyLevel(this.value, this.label, this.theme);
-
-  static EnergyLevel fromValue(int value) {
-    return EnergyLevel.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => EnergyLevel.low,
-    );
+  /// Get theme by energy level
+  static MindyTheme fromEnergyLevel(EnergyLevel level) {
+    switch (level) {
+      case EnergyLevel.low:
+        return green;
+      case EnergyLevel.medium:
+        return blue;
+      case EnergyLevel.high:
+        return purple;
+    }
   }
 }
 

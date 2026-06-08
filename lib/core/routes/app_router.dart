@@ -7,30 +7,34 @@ import 'package:mindfultech_app/data/datasources/auth_remote_datasource.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
-import 'package:mindfultech_app/presentation/auth/login_page.dart';
-import 'package:mindfultech_app/presentation/auth/register/register_page.dart';
-import 'package:mindfultech_app/presentation/auth/forgot_password.dart';
-import 'package:mindfultech_app/presentation/auth/password_success_page.dart';
-import 'package:mindfultech_app/presentation/splash/splash_screen.dart';
-import 'package:mindfultech_app/presentation/onboarding/onboarding_screen.dart';
-import 'package:mindfultech_app/presentation/homepage/homepage_screen.dart';
-import 'package:mindfultech_app/presentation/homepage/cubit/homepage_cubit.dart';
+import 'package:mindfultech_app/presentation/auth/pages/login_page.dart';
+import 'package:mindfultech_app/presentation/auth/pages/register_page.dart';
+import 'package:mindfultech_app/presentation/auth/pages/forgot_password_page.dart';
+import 'package:mindfultech_app/presentation/auth/pages/password_success_page.dart';
+import 'package:mindfultech_app/presentation/splash/pages/splash_page.dart';
+import 'package:mindfultech_app/presentation/onboarding/pages/onboarding_page.dart';
+import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
+import 'package:mindfultech_app/presentation/homepage/pages/all_tasks_page.dart';
+import 'package:mindfultech_app/presentation/homepage/pages/create_task_category_page.dart';
+import 'package:mindfultech_app/presentation/homepage/pages/create_custom_task_page.dart';
+import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/main_page.dart';
-import 'package:mindfultech_app/presentation/tutorial/screens/totorial_screen.dart';
-import 'package:mindfultech_app/presentation/journey/screens/journey_screen.dart';
-import 'package:mindfultech_app/presentation/streak/screens/streak_screen.dart';
-import 'package:mindfultech_app/presentation/choose_energy/choose_energy_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_blue_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_purple_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_green_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_bantu_aku_generic_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/mindy_task_recommendation_screen.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/mindy_theme.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart' hide EnergyLevel;
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/choose_energy_cubit.dart';
-import 'package:mindfultech_app/presentation/timer/screens/timer_screen.dart';
-import 'package:mindfultech_app/presentation/timer/cubit/timer_cubit.dart';
+import 'package:mindfultech_app/presentation/tutorial/pages/tutorial_page.dart';
+import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
+import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
+import 'package:mindfultech_app/presentation/choose_energy/pages/choose_energy_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/green_task_recommendation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/green_alternative_task_list_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/green_task_confirmation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/blue_task_recommendation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/blue_alternative_task_list_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/blue_task_confirmation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_recommendation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_alternative_task_list_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_confirmation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
+import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_cubit.dart';
 
 /// App Router - Centralized routing configuration using Flutter Navigator
 class AppRouter {
@@ -40,9 +44,9 @@ class AppRouter {
 
     switch (uri.path) {
       case AppRoutes.splash:
-        return _buildPageRoute(settings, SplashScreen());
+        return _buildPageRoute(settings, SplashPage());
       case AppRoutes.onboarding:
-        return _buildPageRoute(settings, OnBoardingScreen());
+        return _buildPageRoute(settings, OnBoardingPage());
       case AppRoutes.login:
         return _buildPageRoute(
           settings,
@@ -64,49 +68,170 @@ class AppRouter {
       case AppRoutes.passwordSuccess:
         return _buildPageRoute(settings, PasswordSuccessPage());
       case AppRoutes.tutorial:
-        return _buildPageRoute(settings, TutorialScreen());
+        return _buildPageRoute(settings, TutorialPage());
       case AppRoutes.homepage:
         return _buildPageRoute(
           settings,
           BlocProvider(
             create: (_) => HomepageCubit(),
-            child: const HomepageScreen(),
+            child: const HomepagePage(),
           ),
         );
       case AppRoutes.mainPage:
-        return _buildPageRoute(settings, const MainPage());
+        return _buildPageRoute(settings, MainPage(authRepository: authRepository));
       case AppRoutes.journey:
-        return _buildPageRoute(settings, JourneyMapScreen());
+        return _buildPageRoute(settings, JourneyPage());
       case AppRoutes.streak:
-        return _buildPageRoute(settings, const StreakScreen());
+        return _buildPageRoute(settings, const StreakPage());
       case AppRoutes.chooseEnergy:
-        return _buildPageRoute(settings, ChooseEnergyScreen());
-      case AppRoutes.mindyBantuAku:
+        return _buildPageRoute(settings, ChooseEnergyPage());
+      case AppRoutes.greenTaskRecommendation:
         final args = settings.arguments as Map<String, dynamic>?;
-        final energyValue = args?['energy'] as int? ?? 0;
-        final energy = EnergyLevelExtension.fromValue(energyValue);
+        final category = args?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final recommendedTask = args?['recommendedTask'] as TaskModel? ??
+            const TaskModel(
+              id: 'default_green_task',
+              title: 'Menulis Jurnal',
+              description: 'Menuangkan isi pikiran dan perasaan melalui tulisan',
+              category: TaskCategory.selfCare,
+              energyLevel: EnergyLevel.low,
+              iconName: 'edit',
+              estimatedMinutes: 10,
+            );
         return _buildPageRoute(
           settings,
-          BlocProvider(
-            create: (_) => ChooseEnergyCubit(energy: energy),
-            child: const MindyBantuAkuScreen(),
+          GreenTaskRecommendationPage(
+            selectedCategory: category,
+            recommendedTask: recommendedTask,
           ),
         );
-      case AppRoutes.mindyBantuAkuBlue:
-        return _buildPageRoute(settings, MindyBantuAkuBlueScreen());
-      case AppRoutes.mindyBantuAkuPurple:
-        return _buildPageRoute(settings, MindyBantuAkuPurpleScreen());
-      case AppRoutes.mindyBantuAkuGreen:
-        return _buildPageRoute(settings, const MindyBantuAkuGreenScreen());
-      case AppRoutes.mindyBantuAkuGeneric:
+      case AppRoutes.greenAlternativeTaskList:
         final args = settings.arguments as Map<String, dynamic>?;
-        final energyLevel = args?['energy'] as int?;
-        final level = energyLevel != null
-            ? EnergyLevel.fromValue(energyLevel)
-            : EnergyLevel.low;
-        return _buildPageRoute(settings, MindyBantuAkuGenericScreen(energyLevel: level));
-      case AppRoutes.mindyTaskRecommendation:
-        return _buildPageRoute(settings, const MindyTaskRecommendationScreen());
+        final category = args?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final excludeTaskId = args?['excludeTaskId'] as String?;
+        return _buildPageRoute(
+          settings,
+          GreenAlternativeTaskListPage(
+            category: category,
+            excludeTaskId: excludeTaskId,
+          ),
+        );
+      case AppRoutes.greenTaskConfirmation:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final selectedTask = args?['selectedTask'] as TaskModel? ??
+            const TaskModel(
+              id: 'default_confirm_task',
+              title: 'Menulis Jurnal',
+              description: 'Menuangkan isi pikiran dan perasaan melalui tulisan',
+              category: TaskCategory.selfCare,
+              energyLevel: EnergyLevel.low,
+              iconName: 'edit',
+              estimatedMinutes: 10,
+            );
+        return _buildPageRoute(
+          settings,
+          GreenTaskConfirmationPage(
+            selectedTask: selectedTask,
+          ),
+        );
+      case AppRoutes.blueTaskRecommendation:
+        final blueArgs = settings.arguments as Map<String, dynamic>?;
+        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final blueRecommendedTask = blueArgs?['recommendedTask'] as TaskModel? ??
+            const TaskModel(
+              id: 'default_blue_task',
+              title: 'Meditasi 15 menit',
+              description: 'Menenangkan pikiran dengan guided meditation',
+              category: TaskCategory.selfCare,
+              energyLevel: EnergyLevel.medium,
+              iconName: 'self_improvement',
+              estimatedMinutes: 15,
+            );
+        return _buildPageRoute(
+          settings,
+          BlueTaskRecommendationPage(
+            selectedCategory: blueCategory,
+            recommendedTask: blueRecommendedTask,
+          ),
+        );
+      case AppRoutes.blueAlternativeTaskList:
+        final blueArgs = settings.arguments as Map<String, dynamic>?;
+        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final blueExcludeTaskId = blueArgs?['excludeTaskId'] as String?;
+        return _buildPageRoute(
+          settings,
+          BlueAlternativeTaskListPage(
+            category: blueCategory,
+            excludeTaskId: blueExcludeTaskId,
+          ),
+        );
+      case AppRoutes.blueTaskConfirmation:
+        final blueArgs = settings.arguments as Map<String, dynamic>?;
+        final blueSelectedTask = blueArgs?['selectedTask'] as TaskModel? ??
+            const TaskModel(
+              id: 'default_blue_confirm',
+              title: 'Meditasi 15 menit',
+              description: 'Menenangkan pikiran dengan guided meditation',
+              category: TaskCategory.selfCare,
+              energyLevel: EnergyLevel.medium,
+              iconName: 'self_improvement',
+              estimatedMinutes: 15,
+            );
+        return _buildPageRoute(
+          settings,
+          BlueTaskConfirmationPage(
+            selectedTask: blueSelectedTask,
+          ),
+        );
+      case AppRoutes.purpleTaskRecommendation:
+        final purpleArgs = settings.arguments as Map<String, dynamic>?;
+        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final purpleRecommendedTask = purpleArgs?['recommendedTask'] as TaskModel? ??
+            const TaskModel(
+              id: 'default_purple_task',
+              title: 'Belajar coding intensif',
+              description: 'Belajar coding intensif selama 2 jam',
+              category: TaskCategory.belajar,
+              energyLevel: EnergyLevel.high,
+              iconName: 'computer',
+              estimatedMinutes: 120,
+            );
+        return _buildPageRoute(
+          settings,
+          PurpleTaskRecommendationPage(
+            selectedCategory: purpleCategory,
+            recommendedTask: purpleRecommendedTask,
+          ),
+        );
+      case AppRoutes.purpleAlternativeTaskList:
+        final purpleArgs = settings.arguments as Map<String, dynamic>?;
+        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final purpleExcludeTaskId = purpleArgs?['excludeTaskId'] as String?;
+        return _buildPageRoute(
+          settings,
+          PurpleAlternativeTaskListPage(
+            category: purpleCategory,
+            excludeTaskId: purpleExcludeTaskId,
+          ),
+        );
+      case AppRoutes.purpleTaskConfirmation:
+        final purpleArgs = settings.arguments as Map<String, dynamic>?;
+        final purpleSelectedTask = purpleArgs?['selectedTask'] as TaskModel? ??
+            const TaskModel(
+              id: 'default_purple_confirm',
+              title: 'Belajar coding intensif',
+              description: 'Belajar coding intensif selama 2 jam',
+              category: TaskCategory.belajar,
+              energyLevel: EnergyLevel.high,
+              iconName: 'computer',
+              estimatedMinutes: 120,
+            );
+        return _buildPageRoute(
+          settings,
+          PurpleTaskConfirmationPage(
+            selectedTask: purpleSelectedTask,
+          ),
+        );
       case AppRoutes.timer:
         final args = settings.arguments as Map<String, dynamic>?;
         final taskName = args?['taskName'] as String? ?? 'Tugas Fokus';
@@ -114,9 +239,15 @@ class AppRouter {
           settings,
           BlocProvider(
             create: (_) => TimerCubit(taskName: taskName),
-            child: const TimerScreen(),
+            child: const TimerPage(),
           ),
         );
+      case AppRoutes.allTasks:
+        return _buildPageRoute(settings, const AllTasksPage());
+      case AppRoutes.createTaskCategory:
+        return _buildPageRoute(settings, const CreateTaskCategoryPage());
+      case AppRoutes.createCustomTask:
+        return _buildPageRoute(settings, const CreateCustomTaskPage());
       default:
         return null;
     }
@@ -132,9 +263,10 @@ class AppRouter {
     );
   }
 
+  /// Helper to convert int value to EnergyLevel
   /// Initialize dependencies and return AuthRepository
   static AuthRepository initDependencies() {
-    // Network & Data layer
+    // Network& Data layer
     final dioClient = DioClient();
     final localDataSource = AuthLocalDataSource();
     final remoteDataSource = AuthRemoteDataSource(dioClient);

@@ -5,11 +5,11 @@ import '../widgets/task_card.dart';
 import '../widgets/focus_card.dart';
 import '../widgets/journey_card.dart';
 
-class TutorialPage extends StatelessWidget {
+class TutorialContent extends StatelessWidget {
   final TutorialModel data;
   final int index;
 
-  const TutorialPage({
+  const TutorialContent({
     super.key,
     required this.data,
     required this.index,

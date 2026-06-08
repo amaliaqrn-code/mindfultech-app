@@ -23,9 +23,12 @@ dependencies:
   equatable: ^2.0.5
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  sqflite: ^2.4.2
+  path: ^1.9.0
   image_picker: ^1.2.2
   confetti: ^0.8.0
-
+  sqflite_common_ffi: ^2.3.4
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
@@ -66,12 +69,15 @@ flutter:
 
     # Onboarding icons
     - assets/icon/onboarding/
+    - assets/icon/onboarding/low.svg
+    - assets/icon/onboarding/medium.svg
+    - assets/icon/onboarding/high.svg
 
     # Journey images
     - assets/images/journey/awan.png
     - assets/images/journey/awan1.png
     - assets/images/journey/bendera.png
-    - assets/images/journey/denah.png
+    - assets/images/journey/journey_map.png
     - assets/images/journey/hadiah.png
     - assets/images/journey/hartaKarun.png
     - assets/images/journey/obrolanChat.png
@@ -80,6 +86,15 @@ flutter:
     - assets/images/homepage/awan.png
     - assets/images/homepage/background.png
 
+    # Homepage cloud icons
+    - assets/icon/homepage/Cloud1.png
+    - assets/icon/homepage/Cloud2.png
+    - assets/icon/homepage/Cloud3.png
+    - assets/icon/homepage/Cloud4.png
+    - assets/icon/homepage/Cloud5.png
+    - assets/icon/homepage/Cloud6.png
+    - assets/icon/homepage/CloudQuetion.png
+
     # Pilih Energi images
     - assets/images/pilihenergi/energi_rendah.png
     - assets/images/pilihenergi/energi_sedang.png
@@ -87,12 +102,18 @@ flutter:
 
 
     # Energi Rendah images
-    - assets/images/energirendah/awanmindy1.png
-    - assets/images/energirendah/awanmindy2.png
+    - assets/images/energirendah/energi_rendah_alternative.png
+    - assets/images/energirendah/energi_rendah_rekomendasi.png
     # Energi Sedang images
-    - assets/images/energisedang/mindy.png
+    - assets/images/energisedang/energi_alternative.png
+    - assets/images/energisedang/energi_rekomendasi.png
     # Energi Tinggi images
     - assets/images/energitinggi/mindy.png
+    - assets/images/energitinggi/energi_alternative.png
+    - assets/images/energitinggi/energi_rekomendasi.png
+
+    # Input Tugas images
+    - assets/images/input_tugas_mindy.png
 
     # Tutorial images
     - assets/images/tutorial/slide1.png
@@ -111,6 +132,14 @@ flutter:
     - assets/images/tutorial/bersihkankamar.png
     - assets/images/tutorial/belajaruiuxdesign.png
     - assets/images/tutorial/tugasposter.png
+
+    # Streak images
+    - assets/images/streak/streak_pemula.png
+    - assets/images/streak/streak_konsisten.png
+    - assets/images/streak/streak_bersemangat.png
+    - assets/images/streak/streak_fokus.png
+    - assets/images/streak/streak_hebat.png
+    - assets/images/streak/streak_legend.png
 
     # Timer page images
     - assets/images/timerpage/background.jpg
@@ -134,6 +163,15 @@ flutter:
     # Timer page icons (SVG)
     - assets/icon/timerpage/bahaya.svg
     - assets/icon/timerpage/papanpanah.svg
+
+    # Input Tugas icons (SVG)
+    - assets/icon/input_tugas/rendah.svg
+    - assets/icon/input_tugas/sedang.svg
+    - assets/icon/input_tugas/tinggi.svg
+    - assets/icon/input_tugas/timer.svg
+    - assets/icon/input_tugas/mendesak.svg
+    - assets/icon/input_tugas/penting.svg
+    - assets/icon/input_tugas/santai.svg
 
     # Energi Rendah icons (SVG)
     - assets/icon/energirendah/jalansantai.svg
