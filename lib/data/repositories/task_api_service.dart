@@ -1,109 +1,302 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:mindfultech_app/models/task_model.dart';
+import 'package:dio/dio.dart';
+import 'package:mindfultech_app/core/network/dio_client.dart';
+import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
+import 'package:mindfultech_app/data/models/task_request.dart';
+import 'package:mindfultech_app/data/models/task_response.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
+/// Service untuk berkomunikasi dengan Laravel API untuk operasi Task
+/// Menggunakan DioClient yang sudah memiliki auth token injection dan error handling
 class TaskApiService {
-  // Ganti dengan URL Laravel kamu. 
-  // Jika pakai emulator Android dan Laravel jalan di localhost:8000, gunakan 10.0.2.2
-  // Jika pakai device asli, gunakan IP Address WiFi laptop kamu (misal: 192.168.1.5)
-  final String baseUrl = 'http://10.0.2.2:8000/api'; 
+  final DioClient _dioClient;
+  final AuthLocalDataSource _authLocalDataSource;
 
-  // Fungsi untuk mengirim POST request (Membuat tugas)
-  Future<void> createTask(TaskModel task) async {
-    final url = Uri.parse('$baseUrl/tasks');
+  TaskApiService({
+    DioClient? dioClient,
+    AuthLocalDataSource? authLocalDataSource,
+  })  : _dioClient = dioClient ?? DioClient(),
+        _authLocalDataSource = authLocalDataSource ?? AuthLocalDataSource();
 
-    // MENGUBAH FORMAT FLUTTER (TaskModel) MENJADI FORMAT LARAVEL (JSON)
-    // Berdasarkan file TaskController.php milikmu
-    String mappedDifficulty = 'easy';
-    if (task.energi == EnergyLevel.sedang) mappedDifficulty = 'medium';
-    if (task.energi == EnergyLevel.tinggi) mappedDifficulty = 'hard';
+  /// Ambil userId dari user yang sedang login
+  /// Returns 0 jika tidak ada user yang login (task tidak akan tersimpan di server)
+  int _getCurrentUserId() {
+    final user = _authLocalDataSource.getUser();
+    return user?.id ?? 0;
+  }
 
-    final body = jsonEncode({
-      'title': task.namaTugas,
-      'category_id': 1, // CATATAN: Ini masih di-hardcode 1. Nanti harus diambil dari ID kategori asli
-      'difficulty': mappedDifficulty,
-      'deadline': task.createdAt.toIso8601String(),
-    });
+  /// Cek apakah ada user yang login
+  bool get isUserLoggedIn => _authLocalDataSource.isLoggedIn();
+
+  // ============================================================
+  // CREATE TASK - Membuat task baru
+  // ============================================================
+
+  /// Membuat task baru di Laravel API
+  ///
+  /// Throws [TaskApiException] jika gagal
+  /// Jika user belum login, akan throw exception
+  Future<TaskResponse> createTask(TaskModel task) async {
+    // Validasi: pastikan user sudah login
+    if (!isUserLoggedIn) {
+      throw TaskApiException(
+        message: 'User belum login. Task tidak dapat dikirim ke server.',
+        statusCode: null,
+      );
+    }
 
     try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // Jika Laravel kamu pakai token login (Sanctum), wajib tambahkan ini:
-          // 'Authorization': 'Bearer TOKEN_USER_DISINI',
-        },
-        body: body,
+      // Buat request DTO dari TaskModel dengan userId dari session login
+      final userId = _getCurrentUserId();
+      final request = TaskRequest.fromTaskModel(
+        task,
+        userId: userId,
       );
 
-      // Status 201 berarti 'Created' di Laravel
-      if (response.statusCode != 201) {
-        throw Exception('Gagal menyimpan ke server. Status: ${response.statusCode}, Body: ${response.body}');
+      // Kirim POST request ke Laravel
+      final response = await _dioClient.post(
+        '/tasks',
+        data: request.toMap(),
+      );
+
+      // Parse response
+      final taskResponse = TaskResponse.fromMap(response.data);
+
+      // Validasi response dari server
+      if (taskResponse.data.id <= 0) {
+        throw TaskApiException(
+          message: 'Server mengembalikan response tidak valid',
+          statusCode: response.statusCode,
+          response: taskResponse,
+        );
       }
-    } catch (e) {
-      throw Exception('Terjadi kesalahan jaringan: $e');
+
+      return taskResponse;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
-  // Fungsi untuk mengirim PUT request (Memperbarui tugas)
-  Future<void> updateTask(TaskModel task) async {
-    final url = Uri.parse('$baseUrl/tasks/${task.id}');
+  // ============================================================
+  // UPDATE TASK - Memperbarui task yang sudah ada
+  // ============================================================
 
-    // MENGUBAH FORMAT FLUTTER (TaskModel) MENJADI FORMAT LARAVEL (JSON)
-    String mappedDifficulty = 'easy';
-    if (task.energi == EnergyLevel.sedang) mappedDifficulty = 'medium';
-    if (task.energi == EnergyLevel.tinggi) mappedDifficulty = 'hard';
-
-    final body = jsonEncode({
-      'title': task.namaTugas,
-      'category_id': 1, // CATATAN: Ini masih di-hardcode 1. Nanti harus diambil dari ID kategori asli
-      'difficulty': mappedDifficulty,
-      'deadline': task.createdAt.toIso8601String(),
-    });
+  /// Memperbarui task yang sudah ada di Laravel API
+  Future<TaskResponse> updateTask(TaskModel task) async {
+    // Validasi: pastikan user sudah login
+    if (!isUserLoggedIn) {
+      throw TaskApiException(
+        message: 'User belum login. Task tidak dapat diupdate di server.',
+        statusCode: null,
+      );
+    }
 
     try {
-      final response = await http.put(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // Jika Laravel kamu pakai token login (Sanctum), wajib tambahkan ini:
-          // 'Authorization': 'Bearer TOKEN_USER_DISINI',
-        },
-        body: body,
+      // Buat request untuk update dengan userId dari session login
+      final userId = _getCurrentUserId();
+      final request = TaskRequest.fromTaskModel(
+        task,
+        userId: userId,
       );
 
-      // Status 200 berarti 'OK' di Laravel
-      if (response.statusCode != 200) {
-        throw Exception('Gagal mengupdate di server. Status: ${response.statusCode}, Body: ${response.body}');
+      // Kirim PUT request ke Laravel
+      final response = await _dioClient.put(
+        '/tasks/${task.id}',
+        data: request.toMap(),
+      );
+
+      final taskResponse = TaskResponse.fromMap(response.data);
+
+      if (taskResponse.data.id <= 0) {
+        throw TaskApiException(
+          message: 'Server mengembalikan response tidak valid saat update',
+          statusCode: response.statusCode,
+          response: taskResponse,
+        );
       }
-    } catch (e) {
-      throw Exception('Terjadi kesalahan jaringan: $e');
+
+      return taskResponse;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
-  // Fungsi untuk mengirim DELETE request (Menghapus tugas)
-  Future<void> deleteTask(String taskId) async {
-    final url = Uri.parse('$baseUrl/tasks/$taskId');
+  // ============================================================
+  // DELETE TASK - Menghapus task
+  // ============================================================
+
+  /// Menghapus task dari Laravel API
+  Future<bool> deleteTask(String taskId) async {
+    // Validasi: pastikan user sudah login
+    if (!isUserLoggedIn) {
+      throw TaskApiException(
+        message: 'User belum login. Task tidak dapat dihapus dari server.',
+        statusCode: null,
+      );
+    }
 
     try {
-      final response = await http.delete(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // Jika Laravel kamu pakai token login (Sanctum), wajib tambahkan ini:
-          // 'Authorization': 'Bearer TOKEN_USER_DISINI',
-        },
-      );
+      final response = await _dioClient.delete('/tasks/$taskId');
 
-      // Status 200 atau 204 berarti 'OK' atau 'No Content' di Laravel
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Gagal menghapus di server. Status: ${response.statusCode}, Body: ${response.body}');
+      // Laravel biasanya mengembalikan 200 atau 204 untuk delete success
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
       }
-    } catch (e) {
-      throw Exception('Terjadi kesalahan jaringan: $e');
+
+      throw TaskApiException(
+        message: 'Gagal menghapus task di server',
+        statusCode: response.statusCode,
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
+
+  // ============================================================
+  // FETCH TASKS - Mengambil semua task dari server
+  // ============================================================
+
+  /// Mengambil semua task dari Laravel API
+  Future<List<TaskResponse>> fetchTasks() async {
+    // Validasi: pastikan user sudah login
+    if (!isUserLoggedIn) {
+      throw TaskApiException(
+        message: 'User belum login. Tidak dapat mengambil task dari server.',
+        statusCode: null,
+      );
+    }
+
+    try {
+      final response = await _dioClient.get('/tasks');
+
+      // Laravel mengembalikan: {'message': '...', 'task': [...]} atau {'data': [...]}
+      if (response.data is Map<String, dynamic>) {
+        final responseMap = response.data as Map<String, dynamic>;
+
+        // Cek field 'task' (Laravel standard)
+        if (responseMap.containsKey('task')) {
+          final taskData = responseMap['task'];
+          if (taskData is List) {
+            return taskData
+                .map((json) => TaskResponse.fromMap(json as Map<String, dynamic>))
+                .toList();
+          }
+        }
+
+        // Cek field 'data' (alternative)
+        if (responseMap.containsKey('data')) {
+          final data = responseMap['data'];
+          if (data is List) {
+            return data
+                .map((json) => TaskResponse.fromMap(json as Map<String, dynamic>))
+                .toList();
+          }
+        }
+      }
+
+      // Jika response adalah array langsung
+      if (response.data is List) {
+        return (response.data as List)
+            .map((json) => TaskResponse.fromMap(json as Map<String, dynamic>))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  // ============================================================
+  // ERROR HANDLING - Helper untuk menangani DioException
+  // ============================================================
+
+  /// Konversi DioException ke TaskApiException yang lebih spesifik
+  TaskApiException _handleDioError(DioException e) {
+    String message;
+    int? statusCode = e.response?.statusCode;
+
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+        message = 'Koneksi timeout. Pastikan server Laravel berjalan.';
+        break;
+      case DioExceptionType.sendTimeout:
+        message = 'Send timeout. Coba lagi.';
+        break;
+      case DioExceptionType.receiveTimeout:
+        message = 'Receive timeout. Server terlalu lambat merespons.';
+        break;
+      case DioExceptionType.badResponse:
+        // Parse error message dari response Laravel
+        final responseData = e.response?.data;
+        if (responseData is Map<String, dynamic>) {
+          message = responseData['message'] ??
+                   responseData['error'] ??
+                   'Response error dari server';
+        } else {
+          message = 'Response tidak valid dari server';
+        }
+        break;
+      case DioExceptionType.cancel:
+        message = 'Request dibatalkan';
+        break;
+      case DioExceptionType.connectionError:
+        message = 'Tidak dapat terhubung ke server. '
+                  'Pastikan:\n'
+                  '1. Server Laravel berjalan\n'
+                  '2. URL base di ApiConstants sudah benar\n'
+                  '3. Device terhubung ke jaringan yang sama';
+        break;
+      default:
+        message = 'Terjadi kesalahan jaringan: ${e.message}';
+    }
+
+    return TaskApiException(
+      message: message,
+      statusCode: statusCode,
+      originalError: e,
+    );
+  }
+}
+
+// ============================================================
+// CUSTOM EXCEPTION - Untuk error handling yang lebih spesifik
+// ============================================================
+
+/// Exception khusus untuk Task API operations
+class TaskApiException implements Exception {
+  final String message;
+  final int? statusCode;
+  final TaskResponse? response;
+  final dynamic originalError;
+
+  TaskApiException({
+    required this.message,
+    this.statusCode,
+    this.response,
+    this.originalError,
+  });
+
+  @override
+  String toString() {
+    final buffer = StringBuffer('TaskApiException: $message');
+    if (statusCode != null) {
+      buffer.write(' (Status: $statusCode)');
+    }
+    if (originalError != null) {
+      buffer.write('\nOriginal: $originalError');
+    }
+    return buffer.toString();
+  }
+
+  /// Apakah ini error terkait koneksi
+  bool get isConnectionError =>
+      message.contains('koneksi') ||
+      message.contains('terhubung') ||
+      message.contains('timeout');
+
+  /// Apakah ini error validasi dari server
+  bool get isValidationError =>
+      statusCode == 422 ||
+      message.contains('validation') ||
+      message.contains('validasi');
 }

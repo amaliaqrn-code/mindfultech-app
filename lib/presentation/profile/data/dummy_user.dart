@@ -1,9 +1,11 @@
 import '../models/user_model.dart';
 
-UserModel currentUser = UserModel(
-  name: "Noura Vallen",
-  username: "@aluna.id",
-  gender: "Female",
-  phone: "+44 2345 7896",
-  email: "elinara@gmail.com",
+final currentUser = UserModel(
+  id: 1, // 🟢 Cukup tambahkan baris ini! (Bisa angka 1 atau berapapun)
+  name: 'Nama User',
+  username: 'nama_user',
+  email: 'user@email.com',
+  gender: 'female',
+  phone: '081234567890',
+  // ... field lainnya biarkan tetap sama
 );

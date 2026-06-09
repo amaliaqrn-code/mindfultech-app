@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:mindfultech_app/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 /// DatabaseHelper untuk mengelola operasi SQLite lokal
 class DatabaseHelper {
@@ -21,7 +21,7 @@ class DatabaseHelper {
   /// Inisialisasi database
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'mindfultech.db');
+    final path = join(dbPath, 'mindfultech_new.db');
 
     return await openDatabase(
       path,

@@ -4,7 +4,9 @@ import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/network/dio_client.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 import 'package:mindfultech_app/data/datasources/auth_remote_datasource.dart';
+import 'package:mindfultech_app/data/datasources/task_remote_datasource.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
+import 'package:mindfultech_app/data/repositories/task_repository.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/register/register_bloc.dart';
 import 'package:mindfultech_app/presentation/auth/pages/login_page.dart';
@@ -14,9 +16,6 @@ import 'package:mindfultech_app/presentation/auth/pages/password_success_page.da
 import 'package:mindfultech_app/presentation/splash/pages/splash_page.dart';
 import 'package:mindfultech_app/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
-import 'package:mindfultech_app/presentation/homepage/pages/all_tasks_page.dart';
-import 'package:mindfultech_app/presentation/homepage/pages/create_task_category_page.dart';
-import 'package:mindfultech_app/presentation/homepage/pages/create_custom_task_page.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/main_page.dart';
 import 'package:mindfultech_app/presentation/tutorial/pages/tutorial_page.dart';
@@ -35,6 +34,9 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_c
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
 import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
 import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_cubit.dart';
+import 'package:mindfultech_app/presentation/task/pages/all_tasks_page.dart';
+import 'package:mindfultech_app/presentation/task/pages/create_task_category_page.dart';
+import 'package:mindfultech_app/presentation/task/pages/create_custom_task_page.dart';
 
 /// App Router - Centralized routing configuration using Flutter Navigator
 class AppRouter {
@@ -264,17 +266,38 @@ class AppRouter {
   }
 
   /// Helper to convert int value to EnergyLevel
-  /// Initialize dependencies and return AuthRepository
-  static AuthRepository initDependencies() {
-    // Network& Data layer
+  /// Initialize dependencies and return both repositories
+  static AppDependencies initDependencies() {
+    // Network & Data layer
     final dioClient = DioClient();
     final localDataSource = AuthLocalDataSource();
-    final remoteDataSource = AuthRemoteDataSource(dioClient);
+    final authRemoteDataSource = AuthRemoteDataSource(dioClient);
+    final taskRemoteDataSource = TaskRemoteDataSource(dioClient);
+
+    // Repositories
     final authRepository = AuthRepository(
-      remoteDataSource: remoteDataSource,
+      remoteDataSource: authRemoteDataSource,
+      localDataSource: localDataSource,
+    );
+    final taskRepository = TaskRepository(
+      remoteDataSource: taskRemoteDataSource,
       localDataSource: localDataSource,
     );
 
-    return authRepository;
+    return AppDependencies(
+      authRepository: authRepository,
+      taskRepository: taskRepository,
+    );
   }
+}
+
+/// Container for app dependencies
+class AppDependencies {
+  final AuthRepository authRepository;
+  final TaskRepository taskRepository;
+
+  const AppDependencies({
+    required this.authRepository,
+    required this.taskRepository,
+  });
 }

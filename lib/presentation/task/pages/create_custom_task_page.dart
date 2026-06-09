@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mindfultech_app/blocs/task/task_bloc.dart';
-import 'package:mindfultech_app/blocs/task/task_event.dart';
-import 'package:mindfultech_app/blocs/task/task_state.dart';
-import 'package:mindfultech_app/models/task_model.dart';
-import 'package:mindfultech_app/presentation/homepage/pages/task_success_page.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_event.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_state.dart';
+import 'package:mindfultech_app/presentation/task/pages/task_success_page.dart';
 
 class CreateCustomTaskPage extends StatefulWidget {
   const CreateCustomTaskPage({super.key});

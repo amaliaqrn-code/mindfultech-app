@@ -267,11 +267,31 @@ class TaskModel extends Equatable {
     return {
       'id': id,
       'namaTugas': namaTugas,
-      'kategori': kategori.displayName,
+      'kategori': kategori.index,
       'energi': energi.value,
       'estimasiWaktu': estimasiWaktu,
       'prioritas': prioritas.value,
       'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  //// Mengubah data Task ke format JSON yang dimengerti oleh API Laravel
+  Map<String, dynamic> toApiMap({required int userId}) {
+    // 1. Konversi Energi Level Flutter ke String Difficulty Laravel
+    String difficultyLaravel = 'medium';
+    if (energi == EnergyLevel.rendah) difficultyLaravel = 'easy';
+    if (energi == EnergyLevel.tinggi) difficultyLaravel = 'hard';
+
+    // 2. Ambil ID Kategori secara dinamis berdasarkan index enum + 1
+    // Contoh: Jika user milih 'rumah' (index 0), maka laravelCategoryId = 1
+    int laravelCategoryId = kategori.index + 1;
+
+    return {
+      'user_id': userId,
+      'category_id': laravelCategoryId, // 🟢 ID Dinamis 1 sampai 6 aman!
+      'title': namaTugas,               // Sesuaikan dengan nama variabel properti tugasmu
+      'difficulty': difficultyLaravel,
+      'is_completed': 0,
     };
   }
 
