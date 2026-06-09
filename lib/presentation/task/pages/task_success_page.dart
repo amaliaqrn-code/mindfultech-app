@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/models/task_model.dart'; // Sesuaikan path modelmu
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 class TaskSuccessPage extends StatelessWidget {
   final TaskModel task; // Menerima data dari halaman sebelumnya
@@ -18,7 +18,7 @@ class TaskSuccessPage extends StatelessWidget {
             children: [
               // Ilustrasi Gambar
               Image.asset(
-                'assets/images/image_cefb85.png', // Sesuaikan dengan nama gambar awan suksesmu
+                'assets/images/input_tugas_mindy.png', // Sesuaikan dengan nama gambar awan suksesmu
                 height: 220,
                 fit: BoxFit.contain,
               ),

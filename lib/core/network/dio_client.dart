@@ -32,13 +32,16 @@ class DioClient {
       );
     }
 
-    // Add interceptor to add auth token
+    // Add interceptor to add auth token (fallback if not provided manually)
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          final token = _storage.read('auth_token');
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+          // Only add token if not already present
+          if (options.headers['Authorization'] == null) {
+            final token = _storage.read('auth_token');
+            if (token != null) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
           }
           return handler.next(options);
         },
@@ -53,20 +56,35 @@ class DioClient {
 
   Dio get dio => _dio;
 
-  // Helper methods for API calls
-  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
-    return await _dio.get(path, queryParameters: queryParameters);
+  // Helper methods for API calls with optional options
+  Future<Response> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    return await _dio.get(path, queryParameters: queryParameters, options: options);
   }
 
-  Future<Response> post(String path, {dynamic data}) async {
-    return await _dio.post(path, data: data);
+  Future<Response> post(
+    String path, {
+    dynamic data,
+    Options? options,
+  }) async {
+    return await _dio.post(path, data: data, options: options);
   }
 
-  Future<Response> put(String path, {dynamic data}) async {
-    return await _dio.put(path, data: data);
+  Future<Response> put(
+    String path, {
+    dynamic data,
+    Options? options,
+  }) async {
+    return await _dio.put(path, data: data, options: options);
   }
 
-  Future<Response> delete(String path) async {
-    return await _dio.delete(path);
+  Future<Response> delete(
+    String path, {
+    Options? options,
+  }) async {
+    return await _dio.delete(path, options: options);
   }
 }

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:mindfultech_app/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 /// Status untuk operasi task
 enum TaskStatus { initial, loading, success, failure }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../models/user_model.dart'; // Pastikan import model user sesuai path proyekmu
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final UserModel user; // Tambahkan parameter untuk menerima data user
+
+  const EditProfileScreen({super.key, required this.user});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -10,17 +13,35 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool obscurePassword = true;
 
-  final nameController = TextEditingController(text: "Noura Vallen");
+  // Inisialisasi controller menggunakan data dari widget.user
+  late final TextEditingController nameController;
+  late final TextEditingController usernameController;
+  late final TextEditingController genderController;
+  late final TextEditingController phoneController;
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
 
-  final usernameController = TextEditingController(text: "@aluna.id");
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.user.name);
+    usernameController = TextEditingController(text: widget.user.username);
+    genderController = TextEditingController(text: widget.user.gender);
+    phoneController = TextEditingController(text: widget.user.phone);
+    emailController = TextEditingController(text: widget.user.email);
+    passwordController = TextEditingController(text: "12345678"); // Default password placeholder
+  }
 
-  final genderController = TextEditingController(text: "Female");
-
-  final phoneController = TextEditingController(text: "+44 2345 7896");
-
-  final emailController = TextEditingController(text: "elinara@gmail.com");
-
-  final passwordController = TextEditingController(text: "12345678");
+  @override
+  void dispose() {
+    nameController.dispose();
+    usernameController.dispose();
+    genderController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +188,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Navigator.pop(context, {
-                                    'name': nameController.text,
-                                    'username': usernameController.text,
-                                  });
+                                  // Kembalikan objek UserModel yang sudah diperbarui nilainya
+                                  Navigator.pop(
+                                    context,
+                                    UserModel(
+                                      id: widget.user.id,
+                                      name: nameController.text,
+                                      username: usernameController.text,
+                                      gender: genderController.text,
+                                      phone: phoneController.text,
+                                      email: emailController.text,
+                                    ),
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,

@@ -6,10 +6,8 @@ import 'package:mindfultech_app/core/constants/colors.dart';
 import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_state.dart';
-import 'package:mindfultech_app/blocs/task/task_bloc.dart';
-import 'package:mindfultech_app/blocs/task/task_event.dart';
-import 'package:mindfultech_app/blocs/task/task_state.dart';
-import 'package:mindfultech_app/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_event.dart';
 
 class HomepagePage extends StatefulWidget {
   const HomepagePage({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
-import 'package:mindfultech_app/blocs/task/task_bloc.dart';
-import 'package:mindfultech_app/blocs/task/task_state.dart';
-import 'package:mindfultech_app/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_state.dart';
 
 class AllTasksPage extends StatelessWidget {
   const AllTasksPage({super.key});

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:mindfultech_app/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 /// Base class untuk semua event Task
 abstract class TaskEvent extends Equatable {

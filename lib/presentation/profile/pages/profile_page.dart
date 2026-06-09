@@ -1,8 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mindfultech_app/presentation/splash/pages/splash_page.dart';
+import '../data/dummy_user.dart'; // Sesuaikan dengan lokasi file dummy_user.dart
+import '../models/user_model.dart';
+import '../widgets/logout_dialog.dart'; // Sesuaikan dengan lokasi LogoutDialog kamu
 import 'notification_page.dart';
 import 'privacy_policy_page.dart';
 import 'edit_profile_page.dart';
@@ -17,9 +18,17 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   File? profileImage;
   final ImagePicker picker = ImagePicker();
+  late UserModel currentUserData;
 
-  String userName = "Aluna";
-  String userUsername = "@aluna.id";
+  // Ambil data langsung dari objek currentUser di dummy_user.dart
+  String userName = currentUser.name;
+  String userUsername = currentUser.username;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUserData = currentUser;
+  }
 
   Future<void> pickImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source, imageQuality: 80);
@@ -119,17 +128,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.person,
                     title: "Edit Profil",
                     onTap: () async {
+                      // Kirim data currentUserData ke EditProfileScreen
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const EditProfileScreen(),
+                          builder: (_) => EditProfileScreen(user: currentUserData),
                         ),
                       );
 
-                      if (result != null) {
+                      // Jika mendapatkan data balikan berupa UserModel yang baru
+                      if (result != null && result is UserModel) {
                         setState(() {
-                          userName = result['name'];
-                          userUsername = result['username'];
+                          currentUserData = result;
+                          userName = result.name;
+                          userUsername = result.username;
                         });
                       }
                     },
@@ -179,98 +191,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           context: context,
                           barrierDismissible: false,
                           builder: (context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.warning_rounded,
-                                    color: Colors.red,
-                                    size: 70,
-                                  ),
-
-                                  const SizedBox(height: 20),
-
-                                  const Text(
-                                    "Are you sure you\nwant to log out?",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 10),
-
-                                  const Text(
-                                    "You can always come back anytime to continue your healthy journey.",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 24),
-
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: OutlinedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          style: OutlinedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: const Text("Cancel"),
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 12),
-
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-
-                                            Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const SplashPage(),
-                                              ),
-                                              (route) => false,
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFF4D96E8,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            "Log Out",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
+                            // Memanggil komponen LogoutDialog yang sudah kamu sediakan
+                            return LogoutDialog(onLogout: () {});
                           },
                         );
                       },
@@ -331,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         backgroundImage: profileImage != null
                             ? FileImage(profileImage!)
                             : const AssetImage(
-                                    'assets/images/profile/avatar.jpg',
+                                    'assets/images/profile/avatar.png',
                                   )
                                   as ImageProvider,
                       ),
