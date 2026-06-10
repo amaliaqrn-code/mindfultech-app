@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/blue_theme.dart';
 
 /// Blue Recommendation Card Widget
@@ -14,73 +14,6 @@ class BlueRecommendationCard extends StatelessWidget {
     required this.onConfirm,
     required this.onTryAnother,
   });
-
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'email':
-        return Icons.email;
-      case 'schedule':
-        return Icons.schedule;
-      case 'assignment':
-        return Icons.assignment;
-      case 'trending_up':
-        return Icons.trending_up;
-      case 'slideshow':
-        return Icons.slideshow;
-      case 'description':
-        return Icons.description;
-      case 'folder':
-        return Icons.folder;
-      case 'event_note':
-        return Icons.event_note;
-      case 'school':
-        return Icons.school;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'article':
-        return Icons.article;
-      case 'quiz':
-        return Icons.quiz;
-      case 'translate':
-        return Icons.translate;
-      case 'video_library':
-        return Icons.video_library;
-      case 'directions_walk':
-        return Icons.directions_walk;
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'health_and_safety':
-        return Icons.health_and_safety;
-      case 'medication':
-        return Icons.medication;
-      case 'palette':
-        return Icons.palette;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'edit':
-        return Icons.edit;
-      case 'restaurant_menu':
-        return Icons.restaurant_menu;
-      case 'movie':
-        return Icons.movie;
-      case 'groups':
-        return Icons.groups;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'call':
-        return Icons.call;
-      case 'pets':
-        return Icons.pets;
-      case 'favorite':
-        return Icons.favorite;
-      case 'work':
-        return Icons.work;
-      default:
-        return Icons.task_alt;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +84,7 @@ class BlueRecommendationCard extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _taskIcon,
+                    task.kategori.icon,
                     color: BlueTheme.primaryBlue,
                     size: 40,
                   ),
@@ -160,7 +93,7 @@ class BlueRecommendationCard extends StatelessWidget {
 
                 // Task Title
                 Text(
-                  task.title,
+                  task.namaTugas,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 22,
@@ -173,7 +106,7 @@ class BlueRecommendationCard extends StatelessWidget {
 
                 // Task Description
                 Text(
-                  task.description,
+                  task.kategori.displayName,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 15,
@@ -189,12 +122,12 @@ class BlueRecommendationCard extends StatelessWidget {
                   children: [
                     _buildMetaChip(
                       icon: Icons.category_rounded,
-                      label: task.category.displayName,
+                      label: task.kategori.displayName,
                     ),
                     const SizedBox(width: 12),
                     _buildMetaChip(
                       icon: Icons.timer_outlined,
-                      label: '~${task.estimatedMinutes} menit',
+                      label: '~${task.estimasiWaktu} menit',
                     ),
                   ],
                 ),

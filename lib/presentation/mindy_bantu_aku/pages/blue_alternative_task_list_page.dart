@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/blue_theme.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/blue_alternative_task_list.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_state.dart';
 
 /// ============================================================
 /// BLUE ALTERNATIVE TASK LIST SCREEN
@@ -12,11 +15,13 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/blue_altern
 class BlueAlternativeTaskListPage extends StatefulWidget {
   final TaskCategory category;
   final String? excludeTaskId;
+  final EnergyLevel energyLevel;
 
   const BlueAlternativeTaskListPage({
     super.key,
     required this.category,
     this.excludeTaskId,
+    required this.energyLevel,
   });
 
   @override
@@ -28,153 +33,12 @@ class _BlueAlternativeTaskListPageState
     extends State<BlueAlternativeTaskListPage> {
   TaskModel? _selectedTask;
 
-  // Sample tasks for each category (medium energy tasks)
-  List<TaskModel> get _tasks {
-    final allTasks = _getTasksForCategory(widget.category);
-    if (widget.excludeTaskId != null) {
-      return allTasks.where((t) => t.id != widget.excludeTaskId).toList();
-    }
-    return allTasks;
-  }
-
-  List<TaskModel> _getTasksForCategory(TaskCategory category) {
-    switch (category) {
-      case TaskCategory.belajar:
-        return [
-          const TaskModel(
-            id: 'belajar_1',
-            title: 'Belajar coding 30 menit',
-            description: 'Belajar dasar pemrograman dengan materi interaktif',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'computer',
-            estimatedMinutes: 30,
-          ),
-          const TaskModel(
-            id: 'belajar_2',
-            title: 'Baca buku teknis',
-            description: 'Membaca satu bab dari buku pengembangan diri',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'menu_book',
-            estimatedMinutes: 30,
-          ),
-          const TaskModel(
-            id: 'belajar_3',
-            title: 'Ikuti tutorial online',
-            description: 'Menyelesaikan satu lesson dari course online',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'video_library',
-            estimatedMinutes: 25,
-          ),
-        ];
-      case TaskCategory.pekerjaan:
-        return [
-          const TaskModel(
-            id: 'pekerjaan_1',
-            title: 'Kerja project pertama',
-            description: 'Mengerjakan bagian pertama dari project',
-            category: TaskCategory.pekerjaan,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'work',
-            estimatedMinutes: 45,
-          ),
-          const TaskModel(
-            id: 'pekerjaan_2',
-            title: 'Meeting dengan tim',
-            description: 'Ikut meeting dan berikan kontribusi',
-            category: TaskCategory.pekerjaan,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'groups',
-            estimatedMinutes: 30,
-          ),
-        ];
-      case TaskCategory.kesehatan:
-        return [
-          const TaskModel(
-            id: 'kesehatan_1',
-            title: 'Jogging ringan 15 menit',
-            description: 'Lari ringan di sekitar kompleks untuk kesehatan',
-            category: TaskCategory.kesehatan,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'directions_walk',
-            estimatedMinutes: 15,
-          ),
-          const TaskModel(
-            id: 'kesehatan_2',
-            title: 'Gym 45 menit',
-            description: 'Latihan gym ringan dengan trainer',
-            category: TaskCategory.kesehatan,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'fitness_center',
-            estimatedMinutes: 45,
-          ),
-        ];
-      case TaskCategory.selfCare:
-        return [
-          const TaskModel(
-            id: 'selfcare_1',
-            title: 'Meditasi 15 menit',
-            description: 'Meditasi dengan guided meditation untuk ketenangan',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'self_improvement',
-            estimatedMinutes: 15,
-          ),
-          const TaskModel(
-            id: 'selfcare_2',
-            title: 'Journaling',
-            description: 'Menulis jurnal tentang perasaan dan goals',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'edit',
-            estimatedMinutes: 20,
-          ),
-        ];
-      case TaskCategory.rumah:
-        return [
-          const TaskModel(
-            id: 'rumah_1',
-            title: 'Bersihkan kamar',
-            description: 'Membersihkan dan merapikan kamar tidur',
-            category: TaskCategory.rumah,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'cleaning_services',
-            estimatedMinutes: 30,
-          ),
-          const TaskModel(
-            id: 'rumah_2',
-            title: 'Masak makanan sehat',
-            description: 'Memiapkan makanan sehat untuk minggu ini',
-            category: TaskCategory.rumah,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'restaurant',
-            estimatedMinutes: 45,
-          ),
-        ];
-      case TaskCategory.hubungan:
-        return [
-          const TaskModel(
-            id: 'hubungan_1',
-            title: 'Telepon teman',
-            description: 'Mengobrol dengan teman dekat selama 20 menit',
-            category: TaskCategory.hubungan,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'call',
-            estimatedMinutes: 20,
-          ),
-          const TaskModel(
-            id: 'hubungan_2',
-            title: 'Family time',
-            description: 'Berkualitas time bersama keluarga',
-            category: TaskCategory.hubungan,
-            energyLevel: EnergyLevel.medium,
-            iconName: 'family_restroom',
-            estimatedMinutes: 30,
-          ),
-        ];
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MindyBantuAkuCubit>().selectEnergyLevel(widget.energyLevel);
+    });
   }
 
   @override
@@ -224,13 +88,47 @@ class _BlueAlternativeTaskListPageState
                     const SizedBox(height: 20),
 
                     // Task list
-                    BlueAlternativeTaskList(
-                      tasks: _tasks,
-                      selectedTask: _selectedTask,
-                      onTaskSelected: (task) {
-                        setState(() {
-                          _selectedTask = task;
-                        });
+                    BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
+                      builder: (context, state) {
+                        if (state.isLoading) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: CircularProgressIndicator(
+                                color: BlueTheme.primaryBlue,
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (state.hasError) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: Text(
+                                state.errorMessage ?? 'Terjadi kesalahan',
+                                style: TextStyle(
+                                  color: BlueTheme.textGrey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        final tasks = widget.excludeTaskId != null
+                            ? state.recommendedTasks.where((t) => t.id != widget.excludeTaskId).toList()
+                            : state.recommendedTasks;
+
+                        return BlueAlternativeTaskList(
+                          tasks: tasks,
+                          selectedTask: _selectedTask,
+                          onTaskSelected: (task) {
+                            setState(() {
+                              _selectedTask = task;
+                            });
+                          },
+                        );
                       },
                     ),
 

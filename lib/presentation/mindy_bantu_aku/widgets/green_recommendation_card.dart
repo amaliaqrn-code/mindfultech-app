@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
 class GreenRecommendationCard extends StatelessWidget {
@@ -15,30 +15,8 @@ class GreenRecommendationCard extends StatelessWidget {
   });
 
   IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'edit':
-        return Icons.edit;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'spa':
-        return Icons.spa;
-      case 'self_improvement':
-        return Icons.self_improvement;
-      case 'email':
-        return Icons.email;
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'work':
-        return Icons.work;
-      case 'home':
-        return Icons.home;
-      case 'favorite':
-        return Icons.favorite;
-      case 'chat':
-        return Icons.chat;
-      default:
-        return Icons.edit;
-    }
+    // Gunakan icon dari kategori task
+    return task.kategori.icon;
   }
 
   @override
@@ -92,9 +70,9 @@ class GreenRecommendationCard extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Task Title
+            // Task Title - gunakan namaTugas
             Text(
-              task.title,
+              task.namaTugas,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 26,
@@ -105,17 +83,31 @@ class GreenRecommendationCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Task Description
+            // Task Info - kategori dan estimasi waktu
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                task.description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: GreenTheme.textGrey,
-                  height: 1.4,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    task.kategori.displayName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: GreenTheme.textGrey,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    task.formattedDuration,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: GreenTheme.sageGreen,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),

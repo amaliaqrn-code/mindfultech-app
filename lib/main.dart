@@ -50,7 +50,7 @@ class MindfulTechApp extends StatelessWidget {
         title: 'MindfulTech',
         initialRoute: AppRoutes.splash,
         onGenerateRoute: (settings) =>
-            AppRouter.generateRoute(settings, dependencies.authRepository),
+            AppRouter.generateRoute(settings, dependencies),
       ),
     );
   }

@@ -116,9 +116,98 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query(
       'tasks',
       where: 'kategori = ?',
-      whereArgs: [category.displayName],
+      whereArgs: [category.index], // Gunakan index int, bukan displayName
       orderBy: 'createdAt DESC',
     );
+
+    return List.generate(maps.length, (i) {
+      return TaskModel.fromMap(maps[i]);
+    });
+  }
+
+  // ============================================================
+  // MINDY BANTU AKU - Filter berdasarkan Energi
+  // ============================================================
+
+  /// Ambil task berdasarkan level energi
+  /// Digunakan untuk fitur "Mindy Bantu Aku"
+  ///
+  /// Logic rekomendasi:
+  /// - energi = 0 (Rendah/Low)    → Task dengan energi=0 (easy tasks)
+  /// - energi = 1 (Sedang/Medium) → Task dengan energi=0 atau 1
+  /// - energi = 2 (Tinggi/High)   → Semua task (energi=0, 1, atau 2)
+  Future<List<TaskModel>> getTasksByEnergyLevel(EnergyLevel energyLevel) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps;
+
+    switch (energyLevel) {
+      case EnergyLevel.rendah:
+        // Energi rendah: hanya task dengan difficulty rendah (energi=0)
+        maps = await db.query(
+          'tasks',
+          where: 'energi = ?',
+          whereArgs: [0],
+          orderBy: 'prioritas ASC, createdAt DESC',
+        );
+        break;
+      case EnergyLevel.sedang:
+        // Energi sedang: task dengan difficulty rendah-sedang (energi=0 atau 1)
+        maps = await db.query(
+          'tasks',
+          where: 'energi IN (?, ?)',
+          whereArgs: [0, 1],
+          orderBy: 'prioritas ASC, createdAt DESC',
+        );
+        break;
+      case EnergyLevel.tinggi:
+        // Energi tinggi: semua task tersedia
+        maps = await db.query(
+          'tasks',
+          orderBy: 'prioritas ASC, createdAt DESC',
+        );
+        break;
+    }
+
+    return List.generate(maps.length, (i) {
+      return TaskModel.fromMap(maps[i]);
+    });
+  }
+
+  /// Ambil task berdasarkan level energi DAN kategori
+  /// Untuk rekomendasi yang lebih spesifik
+  Future<List<TaskModel>> getTasksByEnergyAndCategory(
+    EnergyLevel energyLevel,
+    TaskCategory category,
+  ) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps;
+
+    switch (energyLevel) {
+      case EnergyLevel.rendah:
+        maps = await db.query(
+          'tasks',
+          where: 'energi = ? AND kategori = ?',
+          whereArgs: [0, category.index], // Gunakan index int
+          orderBy: 'prioritas ASC, createdAt DESC',
+        );
+        break;
+      case EnergyLevel.sedang:
+        maps = await db.query(
+          'tasks',
+          where: 'energi IN (?, ?) AND kategori = ?',
+          whereArgs: [0, 1, category.index], // Gunakan index int
+          orderBy: 'prioritas ASC, createdAt DESC',
+        );
+        break;
+      case EnergyLevel.tinggi:
+        maps = await db.query(
+          'tasks',
+          where: 'kategori = ?',
+          whereArgs: [category.index], // Gunakan index int
+          orderBy: 'prioritas ASC, createdAt DESC',
+        );
+        break;
+    }
 
     return List.generate(maps.length, (i) {
       return TaskModel.fromMap(maps[i]);

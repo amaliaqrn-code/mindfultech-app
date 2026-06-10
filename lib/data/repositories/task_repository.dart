@@ -157,4 +157,47 @@ class TaskRepository {
       // Sinkronisasi gagal, abaikan
     }
   }
+
+  // ============================================================
+  // MINDY BANTU AKU - Filter berdasarkan Energi
+  // ============================================================
+
+  /// Ambil task yang direkomendasikan berdasarkan level energi user
+  /// Digunakan untuk fitur "Mindy Bantu Aku"
+  ///
+  /// Logic:
+  /// - User dengan energi rendah → task dengan difficulty rendah
+  /// - User dengan energi sedang → task dengan difficulty rendah-sedang
+  /// - User dengan energi tinggi → semua task tersedia
+  Future<List<TaskModel>> getRecommendedTasks(EnergyLevel userEnergyLevel) async {
+    try {
+      return await _databaseHelper.getTasksByEnergyLevel(userEnergyLevel);
+    } catch (e) {
+      String message = e.toString();
+      if (message.startsWith('Exception: ')) {
+        message = message.replaceFirst('Exception: ', '');
+      }
+      throw Exception(message);
+    }
+  }
+
+  /// Ambil task yang direkomendasikan berdasarkan energi DAN kategori
+  /// Untuk rekomendasi yang lebih spesifik berdasarkan pilihan user
+  Future<List<TaskModel>> getRecommendedTasksByCategory(
+    EnergyLevel userEnergyLevel,
+    TaskCategory category,
+  ) async {
+    try {
+      return await _databaseHelper.getTasksByEnergyAndCategory(
+        userEnergyLevel,
+        category,
+      );
+    } catch (e) {
+      String message = e.toString();
+      if (message.startsWith('Exception: ')) {
+        message = message.replaceFirst('Exception: ', '');
+      }
+      throw Exception(message);
+    }
+  }
 }

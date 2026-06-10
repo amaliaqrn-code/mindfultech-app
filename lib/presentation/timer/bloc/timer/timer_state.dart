@@ -1,67 +1,37 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'timer_state.freezed.dart';
 
-class TimerState extends Equatable {
-  final int targetMinutes;
-  final int remainingSeconds;
-  final bool isRunning;
-  final String taskName;
+@freezed
+abstract class TimerState with _$TimerState {
+  const factory TimerState({
+    required int targetMinutes,
+    required int remainingSeconds,
+    required bool isRunning,
+  }) = _TimerState;
 
-  const TimerState({
-    required this.targetMinutes,
-    required this.remainingSeconds,
-    required this.isRunning,
-    required this.taskName,
-  });
+  // Nilai awal (Initial State) pengganti TimerState.initial()
+  factory TimerState.initial() => const TimerState(
+        targetMinutes: 25,
+        remainingSeconds: 25 * 60,
+        isRunning: false,
+      );
+}
 
-  factory TimerState.initial({String taskName = 'Tugas Fokus'}) {
-    return TimerState(
-      targetMinutes: 25,
-      remainingSeconds: 25 * 60,
-      isRunning: false,
-      taskName: taskName,
-    );
-  }
-
-  TimerState copyWith({
-    int? targetMinutes,
-    int? remainingSeconds,
-    bool? isRunning,
-    String? taskName,
-  }) {
-    return TimerState(
-      targetMinutes: targetMinutes ?? this.targetMinutes,
-      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
-      isRunning: isRunning ?? this.isRunning,
-      taskName: taskName ?? this.taskName,
-    );
-  }
-
-  String get formattedTime {
-    final minutes = remainingSeconds ~/ 60;
-    final seconds = remainingSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
-  }
-
-  double get progress {
-    final totalSeconds = targetMinutes * 60;
-    if (totalSeconds == 0) return 0;
-    return 1 - (remainingSeconds / totalSeconds);
-  }
-
-  bool get canEditTime => !isRunning && remainingSeconds == targetMinutes * 60;
-
+// 💡 Helper extension untuk memudahkan UI membaca kondisi khusus
+extension TimerStateX on TimerState {
   bool get isCompleted => remainingSeconds <= 0;
-
-  String get remainingTimeText {
+  
+  // Mengubah detik ke format String MM:SS (Contoh: "25:00")
+  String get timeString {
     final minutes = remainingSeconds ~/ 60;
     final seconds = remainingSeconds % 60;
-
-    if (minutes > 0) {
-      return '$minutes menit $seconds detik';
-    }
-    return '$seconds detik';
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  @override
-  List<Object?> get props => [targetMinutes, remainingSeconds, isRunning, taskName];
+  // Mengubah progress menjadi nilai double (0.0 sampai 1.0) untuk CircularProgress Indicator
+  double get progressValue {
+    final totalSeconds = targetMinutes * 60;
+    if (totalSeconds == 0) return 0.0;
+    return remainingSeconds / totalSeconds;
+  }
 }

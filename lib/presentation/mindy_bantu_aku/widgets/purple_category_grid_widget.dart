@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
 /// Purple Category Grid Widget
@@ -56,11 +56,11 @@ class PurpleCategoryCard extends StatelessWidget {
         return Icons.home_rounded;
       case TaskCategory.pekerjaan:
         return Icons.work_rounded;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return Icons.person_rounded;
       case TaskCategory.belajar:
         return Icons.menu_book_rounded;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return Icons.auto_awesome_rounded;
       case TaskCategory.kesehatan:
         return Icons.favorite_rounded;
@@ -75,11 +75,11 @@ class PurpleCategoryCard extends StatelessWidget {
         return PurpleTheme.categoryColors['pekerjaan']!;
       case TaskCategory.belajar:
         return PurpleTheme.categoryColors['belajar']!;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return PurpleTheme.categoryColors['hubungan']!;
       case TaskCategory.rumah:
         return PurpleTheme.backgroundCream;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return PurpleTheme.categoryColors['kesehatanMental']!;
     }
   }
@@ -92,11 +92,11 @@ class PurpleCategoryCard extends StatelessWidget {
         return PurpleTheme.categoryIconColors['pekerjaan']!;
       case TaskCategory.belajar:
         return PurpleTheme.categoryIconColors['belajar']!;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return PurpleTheme.categoryIconColors['hubungan']!;
       case TaskCategory.rumah:
         return PurpleTheme.primaryPurple;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return PurpleTheme.categoryIconColors['kesehatanMental']!;
     }
   }

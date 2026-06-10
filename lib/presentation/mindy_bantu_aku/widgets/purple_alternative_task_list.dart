@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
 /// Purple Alternative Task List Widget
@@ -34,7 +34,6 @@ class PurpleAlternativeTaskList extends StatelessWidget {
     );
   }
 }
-
 class PurpleAlternativeTaskCard extends StatelessWidget {
   final TaskModel task;
   final bool isSelected;
@@ -46,59 +45,6 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
-
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'directions_run':
-        return Icons.directions_run;
-      case 'pool':
-        return Icons.pool;
-      case 'sports':
-        return Icons.sports;
-      case 'directions_bike':
-        return Icons.directions_bike;
-      case 'self_improvement':
-        return Icons.self_improvement;
-      case 'school':
-        return Icons.school;
-      case 'checkroom':
-        return Icons.checkroom;
-      case 'edit_document':
-        return Icons.edit_document;
-      case 'assignment':
-        return Icons.assignment;
-      case 'code':
-        return Icons.code;
-      case 'computer':
-        return Icons.computer;
-      case 'palette':
-        return Icons.palette;
-      case 'videocam':
-        return Icons.videocam;
-      case 'music_note':
-        return Icons.music_note;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'article':
-        return Icons.article;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'cast_for_education':
-        return Icons.cast_for_education;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'groups':
-        return Icons.groups;
-      case 'volunteer_activism':
-        return Icons.volunteer_activism;
-      case 'favorite':
-        return Icons.favorite;
-      default:
-        return Icons.task_alt;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +83,7 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                _taskIcon,
+                task.kategori.icon,
                 color: isSelected ? Colors.white : PurpleTheme.primaryPurple,
                 size: 24,
               ),
@@ -150,7 +96,7 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    task.title,
+                    task.namaTugas,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -159,7 +105,7 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    task.description,
+                    task.kategori.displayName,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -181,7 +127,7 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '~${task.estimatedMinutes} menit',
+                        '~${task.estimasiWaktu} menit',
                         style: TextStyle(
                           fontSize: 11,
                           color: isSelected

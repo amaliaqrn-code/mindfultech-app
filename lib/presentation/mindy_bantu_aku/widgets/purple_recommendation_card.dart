@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
 /// Purple Recommendation Card Widget
@@ -14,59 +14,6 @@ class PurpleRecommendationCard extends StatelessWidget {
     required this.onConfirm,
     required this.onTryAnother,
   });
-
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'directions_run':
-        return Icons.directions_run;
-      case 'pool':
-        return Icons.pool;
-      case 'sports':
-        return Icons.sports;
-      case 'directions_bike':
-        return Icons.directions_bike;
-      case 'self_improvement':
-        return Icons.self_improvement;
-      case 'school':
-        return Icons.school;
-      case 'checkroom':
-        return Icons.checkroom;
-      case 'edit_document':
-        return Icons.edit_document;
-      case 'assignment':
-        return Icons.assignment;
-      case 'code':
-        return Icons.code;
-      case 'computer':
-        return Icons.computer;
-      case 'palette':
-        return Icons.palette;
-      case 'videocam':
-        return Icons.videocam;
-      case 'music_note':
-        return Icons.music_note;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'article':
-        return Icons.article;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'online':
-        return Icons.cast_for_education;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'groups':
-        return Icons.groups;
-      case 'volunteer_activism':
-        return Icons.volunteer_activism;
-      case 'favorite':
-        return Icons.favorite;
-      default:
-        return Icons.task_alt;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +84,7 @@ class PurpleRecommendationCard extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _taskIcon,
+                    task.kategori.icon,
                     color: PurpleTheme.primaryPurple,
                     size: 40,
                   ),
@@ -146,7 +93,7 @@ class PurpleRecommendationCard extends StatelessWidget {
 
                 // Task Title
                 Text(
-                  task.title,
+                  task.namaTugas,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 22,
@@ -159,7 +106,7 @@ class PurpleRecommendationCard extends StatelessWidget {
 
                 // Task Description
                 Text(
-                  task.description,
+                  task.kategori.displayName,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 15,
@@ -175,12 +122,12 @@ class PurpleRecommendationCard extends StatelessWidget {
                   children: [
                     _buildMetaChip(
                       icon: Icons.category_rounded,
-                      label: task.category.displayName,
+                      label: task.kategori.displayName,
                     ),
                     const SizedBox(width: 12),
                     _buildMetaChip(
                       icon: Icons.timer_outlined,
-                      label: '~${task.estimatedMinutes} menit',
+                      label: '~${task.estimasiWaktu} menit',
                     ),
                   ],
                 ),
