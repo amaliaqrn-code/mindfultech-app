@@ -5,7 +5,7 @@ import 'package:mindfultech_app/data/models/task_request.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 /// Repository untuk Task
-/// Mengikuti pola yang sama dengan AuthRepository
+/// Mendukung Multi-User Isolation dan Default System Tasks
 class TaskRepository {
   final TaskRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;
@@ -25,8 +25,89 @@ class TaskRepository {
     return user?.id ?? 0;
   }
 
+  /// Ambil userId sebagai String untuk database local
+  String? _getCurrentUserIdString() {
+    final user = _localDataSource.getUser();
+    return user?.id.toString();
+  }
+
   /// Cek apakah ada user yang login
   bool get isUserLoggedIn => _localDataSource.isLoggedIn();
+
+  // ============================================================
+  // DEFAULT TASKS - Seeding untuk daily default tasks
+  // ============================================================
+
+  /// Default system tasks untuk seeding harian
+  static final List<TaskModel> _defaultDailyTasks = [
+    TaskModel(
+      id: '', // Will be generated
+      namaTugas: 'Mengulang pembelajaran di kelas hari ini 30 menit',
+      kategori: TaskCategory.belajar,
+      energi: EnergyLevel.sedang,
+      estimasiWaktu: 30,
+      prioritas: TaskPriority.penting,
+      createdAt: DateTime.now(),
+      isDefault: true,
+    ),
+    TaskModel(
+      id: '',
+      namaTugas: 'Membersihkan kamar tidur',
+      kategori: TaskCategory.rumah,
+      energi: EnergyLevel.rendah,
+      estimasiWaktu: 15,
+      prioritas: TaskPriority.santai,
+      createdAt: DateTime.now(),
+      isDefault: true,
+    ),
+    TaskModel(
+      id: '',
+      namaTugas: 'Membuat laporan bulanan/harian',
+      kategori: TaskCategory.pekerjaan,
+      energi: EnergyLevel.tinggi,
+      estimasiWaktu: 45,
+      prioritas: TaskPriority.mendesak,
+      createdAt: DateTime.now(),
+      isDefault: true,
+    ),
+    TaskModel(
+      id: '',
+      namaTugas: 'Pengecekan kesehatan berkala/stretching',
+      kategori: TaskCategory.kesehatan,
+      energi: EnergyLevel.rendah,
+      estimasiWaktu: 10,
+      prioritas: TaskPriority.penting,
+      createdAt: DateTime.now(),
+      isDefault: true,
+    ),
+  ];
+
+  /// Seed default tasks jika belum ada untuk hari ini
+  /// Dipanggil saat user login atau saat pertama kali membuka app
+  Future<void> seedDefaultTasksIfNeeded() async {
+    final userId = _getCurrentUserIdString();
+    if (userId == null) return;
+
+    try {
+      // Cek apakah sudah ada default tasks hari ini
+      final hasDefaults = await _databaseHelper.hasDefaultTasksForToday(userId);
+      if (hasDefaults) return;
+
+      // Generate tasks dengan ID unik dan userId
+      final tasksToInsert = _defaultDailyTasks.map((task) {
+        return task.copyWith(
+          id: 'default_${DateTime.now().millisecondsSinceEpoch}_${task.kategori.index}',
+          userId: userId,
+          createdAt: DateTime.now(),
+        );
+      }).toList();
+
+      // Insert ke database
+      await _databaseHelper.insertDefaultTasks(tasksToInsert);
+    } catch (_) {
+      // Gagal seeding, tidak masalah - user tetap bisa pakai app
+    }
+  }
 
   // ============================================================
   // CREATE TASK - Membuat task baru
@@ -42,18 +123,26 @@ class TaskRepository {
     }
 
     try {
-      // 1. Simpan ke SQLite lokal terlebih dahulu
-      final id = await _databaseHelper.insertTask(task);
-      final savedTask = task.copyWith(id: id.toString());
+      final userId = _getCurrentUserIdString();
+
+      // 1. Simpan ke SQLite lokal dengan userId
+      final id = await _databaseHelper.insertTask(task.copyWith(
+        id: task.id.isEmpty ? DateTime.now().millisecondsSinceEpoch.toString() : task.id,
+        userId: userId,
+      ));
+      final savedTask = task.copyWith(
+        id: id.toString(),
+        userId: userId,
+      );
 
       // 2. Sinkronisasi ke server Laravel di background
       try {
-        final userId = _getCurrentUserId();
-        final request = TaskRequest.fromTaskModel(savedTask, userId: userId);
+        final apiUserId = _getCurrentUserId();
+        final request = TaskRequest.fromTaskModel(savedTask, userId: apiUserId);
         await _remoteDataSource.createTask(request);
       } catch (_) {
         // Sinkronisasi gagal, tapi data lokal tetap aman
- }
+      }
 
       return savedTask;
     } catch (e) {
@@ -130,13 +219,16 @@ class TaskRepository {
   }
 
   // ============================================================
-  // FETCH TASKS - Mengambil semua task
+  // FETCH TASKS - Mengambil semua task (dengan User Isolation)
   // ============================================================
 
-  /// Ambil semua task dari database lokal
+  /// Ambil semua task milik user yang sedang login
   Future<List<TaskModel>> getAllTasks() async {
+    final userId = _getCurrentUserIdString();
+    if (userId == null) return [];
+
     try {
-      return await _databaseHelper.getAllTasks();
+      return await _databaseHelper.getAllTasksForUser(userId);
     } catch (e) {
       String message = e.toString();
       if (message.startsWith('Exception: ')) {
@@ -159,19 +251,26 @@ class TaskRepository {
   }
 
   // ============================================================
-  // MINDY BANTU AKU - Filter berdasarkan Energi
+  // MINDY BANTU AKU - Filter berdasarkan Energi (dengan User Isolation)
   // ============================================================
 
   /// Ambil task yang direkomendasikan berdasarkan level energi user
   /// Digunakan untuk fitur "Mindy Bantu Aku"
+  /// Wajib menggunakan userId untuk security
   ///
   /// Logic:
   /// - User dengan energi rendah → task dengan difficulty rendah
   /// - User dengan energi sedang → task dengan difficulty rendah-sedang
   /// - User dengan energi tinggi → semua task tersedia
   Future<List<TaskModel>> getRecommendedTasks(EnergyLevel userEnergyLevel) async {
+    final userId = _getCurrentUserIdString();
+    if (userId == null) return [];
+
     try {
-      return await _databaseHelper.getTasksByEnergyLevel(userEnergyLevel);
+      return await _databaseHelper.getTasksByEnergyLevel(
+        userEnergyLevel,
+        userId: userId,
+      );
     } catch (e) {
       String message = e.toString();
       if (message.startsWith('Exception: ')) {
@@ -187,10 +286,14 @@ class TaskRepository {
     EnergyLevel userEnergyLevel,
     TaskCategory category,
   ) async {
+    final userId = _getCurrentUserIdString();
+    if (userId == null) return [];
+
     try {
       return await _databaseHelper.getTasksByEnergyAndCategory(
         userEnergyLevel,
         category,
+        userId: userId,
       );
     } catch (e) {
       String message = e.toString();

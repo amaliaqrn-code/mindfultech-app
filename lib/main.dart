@@ -9,7 +9,7 @@ import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cub
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
 import 'package:mindfultech_app/presentation/profile/bloc/profile/profile_bloc.dart';
 import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
-
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_bloc.dart'; // 💡 1. Import TimerBloc Baru
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +44,9 @@ class MindfulTechApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc()..add(const ProfileEvent.started()),
         ),
+        BlocProvider<TimerBloc>( // 💡 2. Daftarkan TimerBloc ke Global di sini
+          create: (_) => TimerBloc(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -55,4 +58,3 @@ class MindfulTechApp extends StatelessWidget {
     );
   }
 }
-

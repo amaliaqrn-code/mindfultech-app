@@ -117,7 +117,7 @@ class BlueRecommendationCard extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Meta info
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildMetaChip(
@@ -134,7 +134,7 @@ class BlueRecommendationCard extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Action Buttons
-                Row(
+                Column(
                   children: [
                     // Try Another Button (Outline)
                     Expanded(

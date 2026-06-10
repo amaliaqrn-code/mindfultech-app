@@ -222,6 +222,8 @@ class TaskModel extends Equatable {
   final int estimasiWaktu; // dalam menit
   final TaskPriority prioritas;
   final DateTime createdAt;
+  final String? userId; // User ID untuk multi-user isolation
+  final bool isDefault; // Flag untuk default system tasks
 
   const TaskModel({
     required this.id,
@@ -231,6 +233,8 @@ class TaskModel extends Equatable {
     required this.estimasiWaktu,
     required this.prioritas,
     required this.createdAt,
+    this.userId,
+    this.isDefault = false,
   });
 
   /// Membuat TaskModel dari Map (biasanya dari database)
@@ -250,6 +254,10 @@ class TaskModel extends Equatable {
     final namaTugasValue = _parseString(map['namaTugas']);
     // Parse createdAt - handle berbagai format tanggal
     final createdAtValue = _parseDateTime(map['createdAt']);
+    // Parse userId - nullable, untuk multi-user isolation
+    final userIdValue = map['userId'] != null ? _parseString(map['userId']) : null;
+    // Parse isDefault - boolean flag untuk default tasks
+    final isDefaultValue = map['isDefault'] == 1 || map['isDefault'] == true;
 
     return TaskModel(
       id: idValue.isEmpty ? DateTime.now().millisecondsSinceEpoch.toString() : idValue,
@@ -259,6 +267,8 @@ class TaskModel extends Equatable {
       estimasiWaktu: estimasiValue,
       prioritas: TaskPriorityExtension.fromValue(prioritasValue),
       createdAt: createdAtValue,
+      userId: userIdValue?.isNotEmpty == true ? userIdValue : null,
+      isDefault: isDefaultValue,
     );
   }
 
@@ -272,6 +282,8 @@ class TaskModel extends Equatable {
       'estimasiWaktu': estimasiWaktu,
       'prioritas': prioritas.value,
       'createdAt': createdAt.toIso8601String(),
+      'userId': userId,
+      'isDefault': isDefault ? 1 : 0,
     };
   }
 
@@ -292,6 +304,7 @@ class TaskModel extends Equatable {
       'title': namaTugas,               // Sesuaikan dengan nama variabel properti tugasmu
       'difficulty': difficultyLaravel,
       'is_completed': 0,
+      'is_default': isDefault ? 1 : 0,
     };
   }
 
@@ -304,6 +317,8 @@ class TaskModel extends Equatable {
     int? estimasiWaktu,
     TaskPriority? prioritas,
     DateTime? createdAt,
+    String? userId,
+    bool? isDefault,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -313,6 +328,8 @@ class TaskModel extends Equatable {
       estimasiWaktu: estimasiWaktu ?? this.estimasiWaktu,
       prioritas: prioritas ?? this.prioritas,
       createdAt: createdAt ?? this.createdAt,
+      userId: userId ?? this.userId,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 
@@ -321,12 +338,14 @@ class TaskModel extends Equatable {
 
   @override
   List<Object?> get props => [
- id,
+        id,
         namaTugas,
         kategori,
         energi,
         estimasiWaktu,
         prioritas,
         createdAt,
+        userId,
+        isDefault,
       ];
 }

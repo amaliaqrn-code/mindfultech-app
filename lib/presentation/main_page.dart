@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
@@ -11,7 +12,8 @@ import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
 ///
 /// Pattern: Shell Page
 /// - Membungkus halaman dengan Scaffold + BottomNavBar
-/// - Content berubah berdasarkan tab yang dipilih
+/// - Content berubah berdasarkan tab yang dipilih menggunakan IndexedStack
+/// - Setiap tab menjaga state-nya saat berpindah
 /// ============================================================
 
 class MainPage extends StatefulWidget {
@@ -24,11 +26,18 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentNavIndex = 0;
 
-  /// List halaman pages
+  /// List halaman pages - urutan harus sesuai dengan BottomNavigationBar items
+  /// 0: Beranda (HomepagePage)
+  /// 1: Fokus (SetupTimerPage) - navigasi via named route
+  /// 2: Journey (JourneyPage)
+  /// 3: Streak (StreakPage)
+  /// 4: Profil (ProfileScreen)
   final List<Widget> _pages = [
     const HomepagePage(),
+    const SizedBox(), // Placeholder untuk tab Fokus (navigasi via route)
     const JourneyPage(),
     const StreakPage(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -91,12 +100,7 @@ class _MainPageState extends State<MainPage> {
                 icon: Icons.person_outline,
                 label: 'Profil',
                 isActive: _currentNavIndex == 4,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  );
-                },
+                onTap: () => _onNavTap(4),
               ),
             ],
           ),
@@ -139,6 +143,15 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onNavTap(int index) {
+    // Tab Fokus (index 1) navigasi via named route ke SetupTimerPage dengan default 25 menit
+    if (index == 1) {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.setupTimer,
+        arguments: {'taskDurationMinutes': 25}, // Default durasi jika user langsung ke tab Fokus
+      );
+      return;
+    }
     setState(() => _currentNavIndex = index);
   }
 }

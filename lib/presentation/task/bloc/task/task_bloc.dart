@@ -5,6 +5,7 @@ import 'task_state.dart';
 
 /// BLoC untuk mengelola state tugas
 /// Menggunakan pola Repository seperti AuthRepository
+/// Mendukung Multi-User Isolation dan Default System Tasks
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final TaskRepository _taskRepository;
 
@@ -16,6 +17,18 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<UpdateTaskEvent>(_onUpdateTask);
     on<DeleteTaskEvent>(_onDeleteTask);
     on<RefreshTasksEvent>(_onRefreshTasks);
+
+    // Seed default tasks saat bloc pertama kali dibuat
+    _seedDefaultTasks();
+  }
+
+  /// Seed default tasks untuk user yang sedang login
+  Future<void> _seedDefaultTasks() async {
+    try {
+      await _taskRepository.seedDefaultTasksIfNeeded();
+    } catch (_) {
+      // Gagal seeding tidak masalah - app tetap bisa jalan
+    }
   }
 
   /// Handler untuk FetchTasksEvent
@@ -26,6 +39,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(state.copyWith(status: TaskStatus.loading));
 
     try {
+      // Ambil tasks milik user yang sedang login (user isolation)
       final tasks = await _taskRepository.getAllTasks();
       emit(state.copyWith(
         status: TaskStatus.success,

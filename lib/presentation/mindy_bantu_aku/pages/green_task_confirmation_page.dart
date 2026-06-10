@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/green_theme.dart';
 
@@ -28,7 +29,7 @@ class GreenTaskConfirmationPage extends StatelessWidget {
             const Text(
               'Tugas Dipilih',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: GreenTheme.sageGreen,
               ),
@@ -50,7 +51,7 @@ class GreenTaskConfirmationPage extends StatelessWidget {
             // Mascot Image - centered above card
             _buildMascotImage(),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             // Main Task Card
             Expanded(
@@ -170,7 +171,13 @@ class GreenTaskConfirmationPage extends StatelessWidget {
                     // Primary Button - "Yay, Lanjut Fokus!"
                     GestureDetector(
                       onTap: () {
-                        // Navigate to timer
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.setupTimer,
+                          arguments: {
+                            'task': selectedTask, // 'selectedTask' adalah objek tugas yang ingin dikirim
+                          },
+                        );
                       },
                       child: Container(
                         width: double.infinity,
@@ -198,38 +205,6 @@ class GreenTaskConfirmationPage extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 16), // primary -> secondary = 16
-
-                    // Secondary Button - "Buat Tugasmu Sendiri"
-                    GestureDetector(
-                      onTap: () {
-                        // Navigate to create task screen
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: GreenTheme.backgroundWhite,
-                          borderRadius: BorderRadius.circular(26),
-                          border: Border.all(
-                            color: GreenTheme.sageGreen,
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Buat Tugasmu Sendiri',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: GreenTheme.sageGreen,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
                     const SizedBox(height: 24),
                   ],
                 ),

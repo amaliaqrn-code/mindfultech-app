@@ -32,16 +32,12 @@ class _PurpleTaskRecommendationPageState
   @override
   void initState() {
     super.initState();
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<MindyBantuAkuCubit>();
-      // Gunakan argumen energyLevel dari halaman sebelumnya, atau default ke tinggi
-      final energyLevel = widget.energyLevel ?? EnergyLevel.tinggi;
-
-      if (widget.selectedCategory != null) {
-        cubit.selectCategory(widget.selectedCategory!);
-      } else {
-        cubit.selectEnergyLevel(energyLevel);
-      }
+      context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+            energyLevel: widget.energyLevel ?? EnergyLevel.tinggi,
+            category: widget.selectedCategory,
+          );
     });
   }
 
@@ -52,10 +48,19 @@ class _PurpleTaskRecommendationPageState
       body: SafeArea(
         child: BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
           builder: (context, state) {
+            // ✅ SOLUSI LUAR: Menggunakan gabungan Column dan Expanded + ListView di dalam kontrol state.
+            // Ini memisahkan Header & Footer tetap di tempatnya, sementara konten tengah bisa scroll mandiri.
             return Column(
               children: [
+                // Header tetap di atas
                 _buildHeader(context, state),
-                Expanded(child: _buildContent(context, state)),
+
+                // Area konten tengah yang fleksibel dan bisa di-scroll tanpa jebakan unbounded height
+                Expanded(
+                  child: _buildContent(context, state),
+                ),
+
+                // Dekorasi bawah tetap di bawah
                 _buildBottomDecoration(),
               ],
             );
@@ -112,7 +117,9 @@ class _PurpleTaskRecommendationPageState
 
   Widget _buildContent(BuildContext context, MindyBantuAkuState state) {
     if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: PurpleTheme.primaryPurple));
+      return const Center(
+        child: CircularProgressIndicator(color: PurpleTheme.primaryPurple),
+      );
     }
 
     if (state.hasError) {
@@ -122,10 +129,19 @@ class _PurpleTaskRecommendationPageState
           children: [
             const Icon(Icons.error_outline, size: 48, color: PurpleTheme.textGrey),
             const SizedBox(height: 16),
-            Text(state.errorMessage ?? 'Terjadi kesalahan', style: const TextStyle(color: PurpleTheme.textGrey)),
+            Text(
+              state.errorMessage ?? 'Terjadi kesalahan',
+              style: const TextStyle(color: PurpleTheme.textGrey, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
             GestureDetector(
-              onTap: () => context.read<MindyBantuAkuCubit>().selectEnergyLevel(EnergyLevel.tinggi),
+              onTap: () {
+                context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+                      energyLevel: widget.energyLevel ?? EnergyLevel.tinggi,
+                      category: widget.selectedCategory,
+                    );
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(color: PurpleTheme.primaryPurple, borderRadius: BorderRadius.circular(20)),
@@ -146,18 +162,33 @@ class _PurpleTaskRecommendationPageState
             children: [
               const Icon(Icons.inbox_rounded, size: 64, color: PurpleTheme.primaryPurple),
               const SizedBox(height: 16),
-              const Text('Belum ada tugas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: PurpleTheme.textDark)),
+              const Text(
+                'Belum ada tugas',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: PurpleTheme.textDark),
+              ),
               const SizedBox(height: 8),
-              const Text('Yuk buat tugas baru yang sesuai\ndengan energimu!', style: TextStyle(fontSize: 14, color: PurpleTheme.textGrey), textAlign: TextAlign.center),
+              const Text(
+                'Yuk buat tugas baru yang sesuai\ndengan energimu!',
+                style: TextStyle(fontSize: 14, color: PurpleTheme.textGrey),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 24),
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.createCustomTask),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.createCustomTask);
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
                     gradient: PurpleTheme.primaryButtonGradient,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: PurpleTheme.primaryPurple.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 6))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: PurpleTheme.primaryPurple.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: const Text('Buat Tugas Baru', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
@@ -168,35 +199,81 @@ class _PurpleTaskRecommendationPageState
       );
     }
 
-    final recommendedTask = state.primaryRecommendation ?? state.recommendedTasks.first;
-    return SingleChildScrollView(
+    final task = state.primaryRecommendation ?? state.recommendedTasks.firstOrNull;
+    if (task == null) {
+      return const Center(child: Text('Tidak ada rekomendasi tugas saat ini.'));
+    }    
+
+    // ✅ SOLUSI UTAMA: Mengganti SingleChildScrollView menjadi ListView bawaan.
+    // Ditambah dengan pembungkus IntrinsicHeight pada tingkat Stack, ini memotong total
+    // rantai 'unbounded height' dari widget card internal yang nakal tadi.
+    return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text('Mindy memilihkan\ntugas untukmu', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: PurpleTheme.textDark, height: 1.3)),
-          const SizedBox(height: 12),
-          const Text('Berdasarkan energimu hari ini dan kategori yang kamu pilih,\nini lah rekomendasi kegiatan terbaik buat kamu', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: PurpleTheme.textGrey, height: 1.4)),
-          const SizedBox(height: 24),
-          Stack(
+      children: [
+        const SizedBox(height: 20),
+
+        // Title
+        const Text(
+          'Mindy memilihkan\ntugas untukmu',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: PurpleTheme.textDark,
+            height: 1.3,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Subtitle
+        const Text(
+          'Berdasarkan energimu hari ini dan kategori\nyang kamu pilih, ini lah rekomendasi kegiatan\nterbaik buat kamu',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: PurpleTheme.textGrey,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Pengaman Stack agar anak-anaknya tahu tinggi aslinya tanpa dipaksa melar/SizedBox statis
+        IntrinsicHeight(
+          child: Stack(
             alignment: Alignment.topCenter,
             clipBehavior: Clip.none,
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 40),
                 child: PurpleRecommendationCard(
-                  task: recommendedTask,
-                  onConfirm: () => Navigator.pushNamed(context, AppRoutes.timer),
-                  onTryAnother: () => Navigator.pushNamed(context, AppRoutes.purpleAlternativeTaskList, arguments: {'category': state.selectedCategory ?? widget.selectedCategory, 'excludeTaskId': recommendedTask.id, 'energyLevel': widget.energyLevel ?? EnergyLevel.tinggi}),
+                  task: task,
+                  onConfirm: () {
+                    Navigator.pushNamed(context, AppRoutes.timer);
+                  },
+                  onTryAnother: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.purpleAlternativeTaskList,
+                      arguments: {
+                        'category': state.selectedCategory ?? widget.selectedCategory,
+                        'excludeTaskId': task.id,
+                        'energyLevel': widget.energyLevel ?? EnergyLevel.tinggi,
+                      },
+                    );
+                  },
                 ),
               ),
-              Positioned(top: -20, child: _buildMascotImage()),
+              Positioned(
+                top: -20,
+                child: _buildMascotImage(),
+              ),
             ],
           ),
-          const SizedBox(height: 24),
-        ],
-      ),
+        ),
+
+        const SizedBox(height: 24),
+      ],
     );
   }
 
@@ -206,14 +283,49 @@ class _PurpleTaskRecommendationPageState
       decoration: BoxDecoration(
         color: PurpleTheme.backgroundWhite,
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-        boxShadow: [BoxShadow(color: PurpleTheme.shadowColor.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -5))],
+        boxShadow: [
+          BoxShadow(
+            color: PurpleTheme.shadowColor.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
-      child: Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: PurpleTheme.borderLight, borderRadius: BorderRadius.circular(2)))),
+      child: Center(
+        child: Container(
+          width: 40,
+          height: 4,
+          decoration: BoxDecoration(
+            color: PurpleTheme.borderLight,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildMascotImage() {
-    return Image.asset('assets/images/energitinggi/energi_rekomendasi.png', width: 180, height: 90, fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => Container(width: 180, height: 90, decoration: BoxDecoration(color: PurpleTheme.primaryPurplePale, borderRadius: BorderRadius.circular(16)), child: const Center(child: Text('⚡', style: TextStyle(fontSize: 50)))));
+    return Image.asset(
+      'assets/images/energitinggi/energi_rekomendasi.png',
+      width: 180,
+      height: 90,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: 180,
+          height: 90,
+          decoration: BoxDecoration(
+            color: PurpleTheme.primaryPurplePale,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Text(
+              '⚡',
+              style: TextStyle(fontSize: 50),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

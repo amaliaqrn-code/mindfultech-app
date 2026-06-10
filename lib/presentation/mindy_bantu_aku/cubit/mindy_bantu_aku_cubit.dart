@@ -5,12 +5,22 @@ import 'mindy_bantu_aku_state.dart';
 
 /// Cubit untuk mengelola fitur "Mindy Bantu Aku"
 /// Memberikan rekomendasi tugas berdasarkan level energi user
+/// Mendukung Multi-User Isolation
 class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
   final TaskRepository _taskRepository;
 
   MindyBantuAkuCubit({required TaskRepository taskRepository})
       : _taskRepository = taskRepository,
         super(MindyBantuAkuState.initial());
+
+  // ============================================================
+  // INITIALIZATION - Seed default tasks saat pertama kali dibuka
+  // ============================================================
+
+  /// Initialize dan seed default tasks jika needed
+  Future<void> initialize() async {
+    await _taskRepository.seedDefaultTasksIfNeeded();
+  }
 
   // ============================================================
   // SET ENERGY LEVEL - Pilih level energi user
@@ -38,7 +48,7 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
         emit(state.copyWith(
           status: MindyBantuAkuStatus.success,
           recommendedTasks: tasks,
-          primaryRecommendation: tasks.first,
+          primaryRecommendation: tasks.firstOrNull,
         ));
       }
     } catch (e) {
@@ -79,7 +89,7 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
         emit(state.copyWith(
           status: MindyBantuAkuStatus.success,
           recommendedTasks: tasks,
-          primaryRecommendation: tasks.first,
+          primaryRecommendation: tasks.firstOrNull,
         ));
       }
     } catch (e) {
@@ -89,6 +99,53 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
       ));
     }
   }
+
+  // ============================================================
+// INITIAL FETCH - Untuk Halaman Rekomendasi
+// ============================================================
+
+/// Mengambil rekomendasi berdasarkan Energi DAN Kategori sekaligus tanpa konflik state
+Future<void> fetchInitialRecommendations({
+  required EnergyLevel energyLevel,
+  TaskCategory? category,
+}) async {
+  emit(state.copyWith(
+    status: MindyBantuAkuStatus.loading,
+    selectedEnergyLevel: energyLevel,
+    selectedCategory: category, // Langsung pasang jika ada, tidak di-clear
+    clearError: true,
+  ));
+
+  try {
+    List<TaskModel> tasks;
+    
+    // Jika ada kategori, cari spesifik. Jika tidak, cari berdasarkan energi saja.
+    if (category != null) {
+      tasks = await _taskRepository.getRecommendedTasksByCategory(energyLevel, category);
+    } else {
+      tasks = await _taskRepository.getRecommendedTasks(energyLevel);
+    }
+
+    if (tasks.isEmpty) {
+      emit(state.copyWith(
+        status: MindyBantuAkuStatus.empty,
+        recommendedTasks: [],
+        primaryRecommendation: null,
+      ));
+    } else {
+      emit(state.copyWith(
+        status: MindyBantuAkuStatus.success,
+        recommendedTasks: tasks,
+        primaryRecommendation: tasks.firstOrNull,
+      ));
+    }
+  } catch (e) {
+    emit(state.copyWith(
+      status: MindyBantuAkuStatus.failure,
+      errorMessage: 'Gagal memuat rekomendasi: ${e.toString()}',
+    ));
+  }
+}
 
   // ============================================================
   // SELECT RECOMMENDATION - Pilih tugas dari daftar

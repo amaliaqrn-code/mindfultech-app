@@ -85,7 +85,7 @@ class _BlueAlternativeTaskListPageState
                     // Main image dari assets
                     _buildMainImage(),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
 
                     // Task list
                     BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(

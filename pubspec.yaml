@@ -144,7 +144,16 @@ flutter:
     - assets/images/streak/streak_legend.png
 
     # Timer page images
-    - assets/images/timerpage/background.jpg
+    - assets/images/timerpage/tugas_selesai.png
+    - assets/images/timerpage/backcground.png
+
+    # Timer page icons (PNG)
+    - assets/icon/timerpage/Cloud1.png
+    - assets/icon/timerpage/Cloud2.png
+    - assets/icon/timerpage/Cloud4.png
+    - assets/icon/timerpage/Cloud5.png
+    - assets/icon/timerpage/Cloud6.png
+    - assets/icon/timerpage/Group3.png
 
     # Homepage icons
     - assets/icon/homepage/belajar.png

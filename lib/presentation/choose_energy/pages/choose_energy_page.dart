@@ -180,31 +180,14 @@ class _ChooseEnergyPageState extends State<ChooseEnergyPage> {
   }
 
   void _onContinue() {
-  // 1. Ambil nilai enum berdasarkan indeks pilihan user (0: rendah, 1: sedang, 2: tinggi)
-  final energyLevel = EnergyLevel.values[_selectedEnergy];                                                                                                      
+  // Ambil nilai enum berdasarkan indeks pilihan user (0: rendah, 1: sedang, 2: tinggi)
+  final energyLevel = EnergyLevel.values[_selectedEnergy];
 
-  switch (_selectedEnergy) {
-    case 0: // Rendah - Green
-      Navigator.pushNamed(
-        context,                             
-        AppRoutes.greenTaskRecommendation,
-        arguments: {'energyLevel': energyLevel}, // 💡 Diubah dari 'rendah' menjadi enum asli
-      );
-      break;
-    case 1: // Sedang - Blue
-      Navigator.pushNamed(
-        context,
-        AppRoutes.blueTaskRecommendation,
-        arguments: {'energyLevel': energyLevel}, // 💡 Diubah dari 'sedang' menjadi enum asli
-      );
-      break;
-    case 2: // Tinggi - Purple
-      Navigator.pushNamed(
-        context,
-        AppRoutes.purpleTaskRecommendation,
-        arguments: {'energyLevel': energyLevel}, // 💡 Diubah dari 'tinggi' menjadi enum asli
-      );
-      break;
-  }
+  // Navigasi ke halaman TaskCategoryPage yang menampilkan 3 CategoryGridWidget
+  Navigator.pushNamed(
+    context,
+    AppRoutes.taskCategory,
+    arguments: {'energyLevel': energyLevel},
+  );
 }
 }

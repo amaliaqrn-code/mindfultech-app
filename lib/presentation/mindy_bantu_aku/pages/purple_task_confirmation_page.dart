@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/purple_theme.dart';
 
@@ -170,7 +171,13 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                     // Primary Button - "Yay, Lanjut Fokus!"
                     GestureDetector(
                       onTap: () {
-                        // Navigate to timer
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.setupTimer,
+                          arguments: {
+                            'task': selectedTask, // 'selectedTask' adalah objek tugas yang ingin dikirim
+                          },
+                        );
                       },
                       child: Container(
                         width: double.infinity,
@@ -198,38 +205,6 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 16), // primary -> secondary = 16
-
-                    // Secondary Button - "Buat Tugasmu Sendiri"
-                    GestureDetector(
-                      onTap: () {
-                        // Navigate to create task screen
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: PurpleTheme.backgroundWhite,
-                          borderRadius: BorderRadius.circular(26),
-                          border: Border.all(
-                            color: PurpleTheme.primaryPurple,
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Buat Tugasmu Sendiri',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: PurpleTheme.primaryPurple,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
                     const SizedBox(height: 24),
                   ],
                 ),

@@ -55,16 +55,17 @@ extension TimerEventPatterns on TimerEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( TimerStarted value)?  start,TResult Function( TimerPaused value)?  pause,TResult Function( TimerToggled value)?  toggle,TResult Function( TimerReset value)?  reset,TResult Function( TimerTicked value)?  tick,TResult Function( TimerSetTarget value)?  setTarget,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( TimerSetup value)?  setupTimer,TResult Function( TimerStarted value)?  start,TResult Function( TimerPaused value)?  pause,TResult Function( TimerToggled value)?  toggle,TResult Function( TimerReset value)?  reset,TResult Function( TimerTicked value)?  tick,TResult Function( TimerNextSession value)?  nextSession,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case TimerStarted() when start != null:
+case TimerSetup() when setupTimer != null:
+return setupTimer(_that);case TimerStarted() when start != null:
 return start(_that);case TimerPaused() when pause != null:
 return pause(_that);case TimerToggled() when toggle != null:
 return toggle(_that);case TimerReset() when reset != null:
 return reset(_that);case TimerTicked() when tick != null:
-return tick(_that);case TimerSetTarget() when setTarget != null:
-return setTarget(_that);case _:
+return tick(_that);case TimerNextSession() when nextSession != null:
+return nextSession(_that);case _:
   return orElse();
 
 }
@@ -82,16 +83,17 @@ return setTarget(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( TimerStarted value)  start,required TResult Function( TimerPaused value)  pause,required TResult Function( TimerToggled value)  toggle,required TResult Function( TimerReset value)  reset,required TResult Function( TimerTicked value)  tick,required TResult Function( TimerSetTarget value)  setTarget,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( TimerSetup value)  setupTimer,required TResult Function( TimerStarted value)  start,required TResult Function( TimerPaused value)  pause,required TResult Function( TimerToggled value)  toggle,required TResult Function( TimerReset value)  reset,required TResult Function( TimerTicked value)  tick,required TResult Function( TimerNextSession value)  nextSession,}){
 final _that = this;
 switch (_that) {
-case TimerStarted():
+case TimerSetup():
+return setupTimer(_that);case TimerStarted():
 return start(_that);case TimerPaused():
 return pause(_that);case TimerToggled():
 return toggle(_that);case TimerReset():
 return reset(_that);case TimerTicked():
-return tick(_that);case TimerSetTarget():
-return setTarget(_that);case _:
+return tick(_that);case TimerNextSession():
+return nextSession(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -108,16 +110,17 @@ return setTarget(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( TimerStarted value)?  start,TResult? Function( TimerPaused value)?  pause,TResult? Function( TimerToggled value)?  toggle,TResult? Function( TimerReset value)?  reset,TResult? Function( TimerTicked value)?  tick,TResult? Function( TimerSetTarget value)?  setTarget,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( TimerSetup value)?  setupTimer,TResult? Function( TimerStarted value)?  start,TResult? Function( TimerPaused value)?  pause,TResult? Function( TimerToggled value)?  toggle,TResult? Function( TimerReset value)?  reset,TResult? Function( TimerTicked value)?  tick,TResult? Function( TimerNextSession value)?  nextSession,}){
 final _that = this;
 switch (_that) {
-case TimerStarted() when start != null:
+case TimerSetup() when setupTimer != null:
+return setupTimer(_that);case TimerStarted() when start != null:
 return start(_that);case TimerPaused() when pause != null:
 return pause(_that);case TimerToggled() when toggle != null:
 return toggle(_that);case TimerReset() when reset != null:
 return reset(_that);case TimerTicked() when tick != null:
-return tick(_that);case TimerSetTarget() when setTarget != null:
-return setTarget(_that);case _:
+return tick(_that);case TimerNextSession() when nextSession != null:
+return nextSession(_that);case _:
   return null;
 
 }
@@ -134,15 +137,16 @@ return setTarget(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  start,TResult Function()?  pause,TResult Function()?  toggle,TResult Function()?  reset,TResult Function( int remainingSeconds)?  tick,TResult Function( int minutes)?  setTarget,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int totalTarget,  int perSession,  int breakDuration)?  setupTimer,TResult Function()?  start,TResult Function()?  pause,TResult Function()?  toggle,TResult Function()?  reset,TResult Function( int remainingSeconds)?  tick,TResult Function()?  nextSession,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case TimerStarted() when start != null:
+case TimerSetup() when setupTimer != null:
+return setupTimer(_that.totalTarget,_that.perSession,_that.breakDuration);case TimerStarted() when start != null:
 return start();case TimerPaused() when pause != null:
 return pause();case TimerToggled() when toggle != null:
 return toggle();case TimerReset() when reset != null:
 return reset();case TimerTicked() when tick != null:
-return tick(_that.remainingSeconds);case TimerSetTarget() when setTarget != null:
-return setTarget(_that.minutes);case _:
+return tick(_that.remainingSeconds);case TimerNextSession() when nextSession != null:
+return nextSession();case _:
   return orElse();
 
 }
@@ -160,15 +164,16 @@ return setTarget(_that.minutes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  start,required TResult Function()  pause,required TResult Function()  toggle,required TResult Function()  reset,required TResult Function( int remainingSeconds)  tick,required TResult Function( int minutes)  setTarget,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int totalTarget,  int perSession,  int breakDuration)  setupTimer,required TResult Function()  start,required TResult Function()  pause,required TResult Function()  toggle,required TResult Function()  reset,required TResult Function( int remainingSeconds)  tick,required TResult Function()  nextSession,}) {final _that = this;
 switch (_that) {
-case TimerStarted():
+case TimerSetup():
+return setupTimer(_that.totalTarget,_that.perSession,_that.breakDuration);case TimerStarted():
 return start();case TimerPaused():
 return pause();case TimerToggled():
 return toggle();case TimerReset():
 return reset();case TimerTicked():
-return tick(_that.remainingSeconds);case TimerSetTarget():
-return setTarget(_that.minutes);case _:
+return tick(_that.remainingSeconds);case TimerNextSession():
+return nextSession();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -185,19 +190,90 @@ return setTarget(_that.minutes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  start,TResult? Function()?  pause,TResult? Function()?  toggle,TResult? Function()?  reset,TResult? Function( int remainingSeconds)?  tick,TResult? Function( int minutes)?  setTarget,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int totalTarget,  int perSession,  int breakDuration)?  setupTimer,TResult? Function()?  start,TResult? Function()?  pause,TResult? Function()?  toggle,TResult? Function()?  reset,TResult? Function( int remainingSeconds)?  tick,TResult? Function()?  nextSession,}) {final _that = this;
 switch (_that) {
-case TimerStarted() when start != null:
+case TimerSetup() when setupTimer != null:
+return setupTimer(_that.totalTarget,_that.perSession,_that.breakDuration);case TimerStarted() when start != null:
 return start();case TimerPaused() when pause != null:
 return pause();case TimerToggled() when toggle != null:
 return toggle();case TimerReset() when reset != null:
 return reset();case TimerTicked() when tick != null:
-return tick(_that.remainingSeconds);case TimerSetTarget() when setTarget != null:
-return setTarget(_that.minutes);case _:
+return tick(_that.remainingSeconds);case TimerNextSession() when nextSession != null:
+return nextSession();case _:
   return null;
 
 }
 }
+
+}
+
+/// @nodoc
+
+
+class TimerSetup implements TimerEvent {
+  const TimerSetup({required this.totalTarget, required this.perSession, required this.breakDuration});
+  
+
+ final  int totalTarget;
+ final  int perSession;
+ final  int breakDuration;
+
+/// Create a copy of TimerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TimerSetupCopyWith<TimerSetup> get copyWith => _$TimerSetupCopyWithImpl<TimerSetup>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimerSetup&&(identical(other.totalTarget, totalTarget) || other.totalTarget == totalTarget)&&(identical(other.perSession, perSession) || other.perSession == perSession)&&(identical(other.breakDuration, breakDuration) || other.breakDuration == breakDuration));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,totalTarget,perSession,breakDuration);
+
+@override
+String toString() {
+  return 'TimerEvent.setupTimer(totalTarget: $totalTarget, perSession: $perSession, breakDuration: $breakDuration)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TimerSetupCopyWith<$Res> implements $TimerEventCopyWith<$Res> {
+  factory $TimerSetupCopyWith(TimerSetup value, $Res Function(TimerSetup) _then) = _$TimerSetupCopyWithImpl;
+@useResult
+$Res call({
+ int totalTarget, int perSession, int breakDuration
+});
+
+
+
+
+}
+/// @nodoc
+class _$TimerSetupCopyWithImpl<$Res>
+    implements $TimerSetupCopyWith<$Res> {
+  _$TimerSetupCopyWithImpl(this._self, this._then);
+
+  final TimerSetup _self;
+  final $Res Function(TimerSetup) _then;
+
+/// Create a copy of TimerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? totalTarget = null,Object? perSession = null,Object? breakDuration = null,}) {
+  return _then(TimerSetup(
+totalTarget: null == totalTarget ? _self.totalTarget : totalTarget // ignore: cast_nullable_to_non_nullable
+as int,perSession: null == perSession ? _self.perSession : perSession // ignore: cast_nullable_to_non_nullable
+as int,breakDuration: null == breakDuration ? _self.breakDuration : breakDuration // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
 
 }
 
@@ -398,67 +474,33 @@ as int,
 /// @nodoc
 
 
-class TimerSetTarget implements TimerEvent {
-  const TimerSetTarget(this.minutes);
+class TimerNextSession implements TimerEvent {
+  const TimerNextSession();
   
 
- final  int minutes;
 
-/// Create a copy of TimerEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$TimerSetTargetCopyWith<TimerSetTarget> get copyWith => _$TimerSetTargetCopyWithImpl<TimerSetTarget>(this, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimerSetTarget&&(identical(other.minutes, minutes) || other.minutes == minutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimerNextSession);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,minutes);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'TimerEvent.setTarget(minutes: $minutes)';
+  return 'TimerEvent.nextSession()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $TimerSetTargetCopyWith<$Res> implements $TimerEventCopyWith<$Res> {
-  factory $TimerSetTargetCopyWith(TimerSetTarget value, $Res Function(TimerSetTarget) _then) = _$TimerSetTargetCopyWithImpl;
-@useResult
-$Res call({
- int minutes
-});
 
 
-
-
-}
-/// @nodoc
-class _$TimerSetTargetCopyWithImpl<$Res>
-    implements $TimerSetTargetCopyWith<$Res> {
-  _$TimerSetTargetCopyWithImpl(this._self, this._then);
-
-  final TimerSetTarget _self;
-  final $Res Function(TimerSetTarget) _then;
-
-/// Create a copy of TimerEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? minutes = null,}) {
-  return _then(TimerSetTarget(
-null == minutes ? _self.minutes : minutes // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-
-}
 
 // dart format on

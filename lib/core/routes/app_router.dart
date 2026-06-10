@@ -31,9 +31,11 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/blue_task_con
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_recommendation_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_alternative_task_list_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_confirmation_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/task_category_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
+import 'package:mindfultech_app/presentation/timer/pages/setup_timer_page.dart';
 import '../../presentation/timer/bloc/timer/timer_bloc.dart';
 import 'package:mindfultech_app/presentation/task/pages/all_tasks_page.dart';
 import 'package:mindfultech_app/presentation/task/pages/create_task_category_page.dart';
@@ -242,12 +244,37 @@ class AppRouter {
             child: const TimerPage(),
           ),
         );
+      case AppRoutes.setupTimer:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final task = args?['task'] as dynamic;
+        return _buildPageRoute(
+          settings,
+          BlocProvider(
+            create: (_) => TimerBloc(),
+            child: SetupTimerPage(task: task),
+          ),
+        );
+      case AppRoutes.activeTimer:
+        return _buildPageRoute(
+          settings,
+          BlocProvider(
+            create: (_) => TimerBloc(),
+            child: const TimerPage(),
+          ),
+        );
       case AppRoutes.allTasks:
         return _buildPageRoute(settings, const AllTasksPage());
       case AppRoutes.createTaskCategory:
         return _buildPageRoute(settings, const CreateTaskCategoryPage());
       case AppRoutes.createCustomTask:
         return _buildPageRoute(settings, const CreateCustomTaskPage());
+      case AppRoutes.taskCategory:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        return _buildPageRoute(
+          settings,
+          TaskCategoryPage(energyLevel: energyLevel),
+        );
       default:
         return null;
     }

@@ -30,21 +30,17 @@ class GreenTaskRecommendationPage extends StatefulWidget {
 class _GreenTaskRecommendationPageState
     extends State<GreenTaskRecommendationPage> {
   @override
-  void initState() {
-    super.initState();
-    // Fetch rekomendasi berdasarkan energi yang dipilih user
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<MindyBantuAkuCubit>();
-      // Gunakan argumen energyLevel dari halaman sebelumnya, atau default ke rendah
-      final energyLevel = widget.energyLevel ?? EnergyLevel.rendah;
-
-      if (widget.selectedCategory != null) {
-        cubit.selectCategory(widget.selectedCategory!);
-      } else {
-        cubit.selectEnergyLevel(energyLevel);
-      }
-    });
-  }
+void initState() {
+  super.initState();
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    // 💡 Cukup panggil satu fungsi gabungan yang baru kita buat
+    context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+          energyLevel: widget.energyLevel ?? EnergyLevel.rendah,
+          category: widget.selectedCategory,
+        );
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -250,41 +246,44 @@ class _GreenTaskRecommendationPageState
     }
 
     // Success state - tampilkan rekomendasi
-    final recommendedTask = state.primaryRecommendation ?? state.recommendedTasks.first;
-    return SingleChildScrollView(
+      final task = state.recommendedTasks.firstOrNull;
+      if (task == null) {
+        return const Center(child: Text('Tidak ada rekomendasi tugas saat ini.'));
+      }    
+      return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
+      children: [
+        const SizedBox(height: 20),
 
-          // Title
-          const Text(
-            'Mindy memilihkan\ntugas untukmu',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: GreenTheme.textDark,
-              height: 1.3,
-            ),
+        // Title
+        const Text(
+          'Mindy memilihkan\ntugas untukmu',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: GreenTheme.textDark,
+            height: 1.3,
           ),
-          const SizedBox(height: 12),
+        ),
+        const SizedBox(height: 12),
 
-          // Subtitle
-          const Text(
-            'Berdasarkan energimu hari ini dan kategori\nyang kamu pilih, ini lah rekomendasi kegiatan\nterbaik buat kamu',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: GreenTheme.textGrey,
-              height: 1.4,
-            ),
+        // Subtitle
+        const Text(
+          'Berdasarkan energimu hari ini dan kategori\nyang kamu pilih, ini lah rekomendasi kegiatan\nterbaik buat kamu',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: GreenTheme.textGrey,
+            height: 1.4,
           ),
-          const SizedBox(height: 24),
+        ),
+        const SizedBox(height: 24),
 
-          // Stack untuk overlap mascot dan card
-          Stack(
+        // Stack untuk overlap mascot dan card
+        IntrinsicHeight(
+          child: Stack(
             alignment: Alignment.topCenter,
             clipBehavior: Clip.none,
             children: [
@@ -292,7 +291,7 @@ class _GreenTaskRecommendationPageState
               Padding(
                 padding: const EdgeInsets.only(top: 40),
                 child: GreenRecommendationCard(
-                  task: recommendedTask,
+                  task: task,
                   onConfirm: () {
                     Navigator.pushNamed(context, AppRoutes.timer);
                   },
@@ -302,7 +301,7 @@ class _GreenTaskRecommendationPageState
                       AppRoutes.greenAlternativeTaskList,
                       arguments: {
                         'category': state.selectedCategory ?? widget.selectedCategory,
-                        'excludeTaskId': recommendedTask.id,
+                        'excludeTaskId': task.id,
                         'energyLevel': widget.energyLevel ?? EnergyLevel.rendah,
                       },
                     );
@@ -316,10 +315,10 @@ class _GreenTaskRecommendationPageState
               ),
             ],
           ),
+        ),
 
-          const SizedBox(height: 24),
-        ],
-      ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 

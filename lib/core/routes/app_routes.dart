@@ -22,8 +22,11 @@ class AppRoutes {
   static const String purpleAlternativeTaskList = '/purple-alternative-task-list';
   static const String purpleTaskConfirmation = '/purple-task-confirmation';
   static const String timer = '/timer';
+  static const String setupTimer = '/setup-timer';
+  static const String activeTimer = '/active-timer';
   static const String allTasks = '/all-tasks';
   static const String createTaskCategory = '/create-task-category';
+  static const String taskCategory = '/task-category';
   static const String createCustomTask = '/create-custom-task';
   static const String passwordSuccess = '/password-success';
   static const String profile = '/profile';

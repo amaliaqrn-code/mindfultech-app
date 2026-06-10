@@ -30,20 +30,17 @@ class BlueTaskRecommendationPage extends StatefulWidget {
 class _BlueTaskRecommendationPageState
     extends State<BlueTaskRecommendationPage> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<MindyBantuAkuCubit>();
-      // Gunakan argumen energyLevel dari halaman sebelumnya, atau default ke sedang
-      final energyLevel = widget.energyLevel ?? EnergyLevel.sedang;
-
-      if (widget.selectedCategory != null) {
-        cubit.selectCategory(widget.selectedCategory!);
-      } else {
-        cubit.selectEnergyLevel(energyLevel);
-      }
-    });
-  }
+    void initState() {
+      super.initState();
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // 💡 Panggil fungsi gabungan baru dengan default Energi SEDANG
+        context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+              energyLevel: widget.energyLevel ?? EnergyLevel.sedang,
+              category: widget.selectedCategory,
+            );
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -168,18 +165,36 @@ class _BlueTaskRecommendationPageState
       );
     }
 
-    final recommendedTask = state.primaryRecommendation ?? state.recommendedTasks.first;
-    return SingleChildScrollView(
+    final recommendedTask = state.primaryRecommendation ?? state.recommendedTasks.firstOrNull;
+
+    // Safety check: jika tidak ada task yang direkomendasikan, tampilkan placeholder
+    if (recommendedTask == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: BlueTheme.primaryBlue),
+              SizedBox(height: 16),
+              Text('Memuat rekomendasi...', style: TextStyle(fontSize: 14, color: BlueTheme.textGrey)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text('Mindy memilihkan\ntugas untukmu', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: BlueTheme.textDark, height: 1.3)),
-          const SizedBox(height: 12),
-          const Text('Berdasarkan energimu hari ini dan kategori yang kamu pilih,\nini lah rekomendasi kegiatan terbaik buat kamu', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: BlueTheme.textGrey, height: 1.4)),
-          const SizedBox(height: 24),
-          Stack(
+      children: [
+        const SizedBox(height: 20),
+        const Text('Mindy memilihkan\ntugas untukmu', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: BlueTheme.textDark, height: 1.3)),
+        const SizedBox(height: 12),
+        const Text('Berdasarkan energimu hari ini dan kategori yang kamu pilih,\nini lah rekomendasi kegiatan terbaik buat kamu', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: BlueTheme.textGrey, height: 1.4)),
+        const SizedBox(height: 24),
+        IntrinsicHeight(
+          child: Stack(
             alignment: Alignment.topCenter,
             clipBehavior: Clip.none,
             children: [
@@ -194,9 +209,9 @@ class _BlueTaskRecommendationPageState
               Positioned(top: -20, child: _buildMascotImage()),
             ],
           ),
-          const SizedBox(height: 24),
-        ],
-      ),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 

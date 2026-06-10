@@ -1,36 +1,43 @@
+// lib/presentation/timer/bloc/timer/timer_state.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'timer_state.freezed.dart';
 
 @freezed
 abstract class TimerState with _$TimerState {
   const factory TimerState({
-    required int targetMinutes,
-    required int remainingSeconds,
-    required bool isRunning,
+    required int totalTargetMinutes,     // Total target dari task (misal: 60)
+    required int durationPerSession,     // Durasi per sesi belajar (misal: 30)
+    required int breakDurationMinutes,   // Durasi istirahat (misal: 10)
+    required int totalSessions,          // Hasil hitung total target / per sesi (misal: 2)
+    required int currentSession,         // Sesi berjalan sekarang (mulai dari 1)
+    required int remainingSeconds,       // Hitung mundur detik yang aktif
+    required bool isRunning,             // Apakah timer berdetak
+    required bool isBreakTime,           // True jika sedang sesi istirahat, False jika sesi tugas
+    required bool isAllCompleted,        // True jika semua rangkaian sesi habis
   }) = _TimerState;
 
-  // Nilai awal (Initial State) pengganti TimerState.initial()
   factory TimerState.initial() => const TimerState(
-        targetMinutes: 25,
+        totalTargetMinutes: 25,
+        durationPerSession: 25,
+        breakDurationMinutes: 5,
+        totalSessions: 1,
+        currentSession: 1,
         remainingSeconds: 25 * 60,
         isRunning: false,
+        isBreakTime: false,
+        isAllCompleted: false,
       );
 }
 
-// 💡 Helper extension untuk memudahkan UI membaca kondisi khusus
 extension TimerStateX on TimerState {
-  bool get isCompleted => remainingSeconds <= 0;
-  
-  // Mengubah detik ke format String MM:SS (Contoh: "25:00")
   String get timeString {
     final minutes = remainingSeconds ~/ 60;
     final seconds = remainingSeconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  // Mengubah progress menjadi nilai double (0.0 sampai 1.0) untuk CircularProgress Indicator
   double get progressValue {
-    final totalSeconds = targetMinutes * 60;
+    final totalSeconds = (isBreakTime ? breakDurationMinutes : durationPerSession) * 60;
     if (totalSeconds == 0) return 0.0;
     return remainingSeconds / totalSeconds;
   }

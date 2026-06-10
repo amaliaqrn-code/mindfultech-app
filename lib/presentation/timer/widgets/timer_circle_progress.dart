@@ -1,15 +1,16 @@
 // lib/presentation/timer/widgets/timer_circle_progress.dart
 import 'package:flutter/material.dart';
-import '../theme/timer_theme.dart';
 
 class TimerCircleProgress extends StatelessWidget {
   final String timeString;
-  final double progressValue; // Nilai 0.0 sampai 1.0 untuk lingkaran
+  final double progressValue;
+  final String sessionText;
 
   const TimerCircleProgress({
     super.key,
     required this.timeString,
     required this.progressValue,
+    required this.sessionText,
   });
 
   @override
@@ -17,17 +18,50 @@ class TimerCircleProgress extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
+        // Lingkaran Progress Sesuai Gambar (Tebal & Berwarna Gradasi/Biru)
         SizedBox(
-          width: 250,
-          height: 250,
+          width: 280,
+          height: 280,
           child: CircularProgressIndicator(
             value: progressValue,
-            strokeWidth: 12,
-            backgroundColor: Colors.white.withOpacity(0.3),
-            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+            strokeWidth: 14,
+            backgroundColor: const Color(0xFFE0F7FA), // Warna dasar lingkaran (biru muda sekali)
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4A90E2)), // Warna isi progress
           ),
         ),
-        Text(timeString, style: TimerTheme.timerNumberStyle),
+        // Konten teks di dalam lingkaran (Disusun vertikal)
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Waktu tersisa",
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              timeString,
+              style: const TextStyle(
+                fontSize: 64,
+                fontWeight: FontWeight.bold,
+                color: Colors.black, // Warna hitam tebal sesuai gambar
+                letterSpacing: -1,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              sessionText,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

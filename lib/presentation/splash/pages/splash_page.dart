@@ -115,7 +115,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       if (isLoggedIn && token != null && token.isNotEmpty) {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          AppRoutes.homepage,
+          AppRoutes.mainPage,
           (route) => false,
         );
       } else {

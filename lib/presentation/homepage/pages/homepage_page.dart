@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
-import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_state.dart';
 import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
@@ -17,8 +16,6 @@ class HomepagePage extends StatefulWidget {
 }
 
 class _HomepagePageState extends State<HomepagePage> {
-  int _currentNavIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -63,8 +60,7 @@ class _HomepagePageState extends State<HomepagePage> {
               ],
             ),
           ),
-          bottomNavigationBar: _buildBottomNavBar(context),
-        );
+                  );
       },
     );
   }
@@ -490,45 +486,4 @@ class _HomepagePageState extends State<HomepagePage> {
     );
   }
 
-  // ================= BOTTOM NAVIGATION BAR =================
-  Widget _buildBottomNavBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, -4))],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context: context, icon: Icons.home_rounded, label: 'Beranda', isActive: _currentNavIndex == 0, onTap: () => setState(() => _currentNavIndex = 0)),
-              _buildNavItem(context: context, icon: Icons.timer_outlined, label: 'Fokus', isActive: _currentNavIndex == 1, onTap: () { setState(() => _currentNavIndex = 1); Navigator.pushNamed(context, AppRoutes.timer); }),
-              _buildNavItem(context: context, icon: Icons.map_outlined, label: 'Journey', isActive: _currentNavIndex == 2, onTap: () { setState(() => _currentNavIndex = 2); Navigator.pushNamed(context, AppRoutes.journey); }),
-              _buildNavItem(context: context, icon: Icons.local_fire_department_outlined, label: 'Streak', isActive: _currentNavIndex == 3, onTap: () { setState(() => _currentNavIndex = 3); Navigator.pushNamed(context, AppRoutes.streak); }),
-              _buildNavItem(context: context, icon: Icons.person_outline, label: 'Profil', isActive: _currentNavIndex == 4, onTap: () { Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())); }),
-            ],
-          ),
-        ),
-      ),
-    );
   }
-
-  Widget _buildNavItem({required BuildContext context, required IconData icon, required String label, required bool isActive, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 26, color: isActive ? AppColors.primary : Colors.grey.shade400),
-            const SizedBox(height: 4),
-            Text(label, style: TextStyle(fontSize: 10, fontWeight: isActive ? FontWeight.w600 : FontWeight.normal, color: isActive ? AppColors.primary : Colors.grey.shade500)),
-          ],
-        ),
-      ),
-    );
-  }
-}

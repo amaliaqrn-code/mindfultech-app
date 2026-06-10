@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
 import 'package:mindfultech_app/presentation/task/bloc/task/task_state.dart';
@@ -134,12 +135,7 @@ class AllTasksPage extends StatelessWidget {
                       itemCount: tasksInCategory.length,
                       itemBuilder: (context, taskIndex) {
                         final TaskModel singleTask = tasksInCategory[taskIndex];
-                        return _TaskItemCard(
-                          title: singleTask.namaTugas,
-                          duration: '${singleTask.estimasiWaktu} Menit',
-                          category: currentCategoryName,
-                          categoryColor: categoryColor,
-                        );
+                        return _TaskItemCard(task: singleTask);
                       },
                     ),
                   ],
@@ -154,82 +150,109 @@ class AllTasksPage extends StatelessWidget {
 }
 
 class _TaskItemCard extends StatelessWidget {
-  final String title;
-  final String duration;
-  final String category;
-  final Color categoryColor;
+  final TaskModel task;
 
-  const _TaskItemCard({
-    required this.title,
-    required this.duration,
-    required this.category,
-    required this.categoryColor,
-  });
+  const _TaskItemCard({required this.task});
+
+  /// Menentukan warna tag kategori berdasarkan nama kategorinya
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'belajar':
+        return const Color(0xFF4597E6);
+      case 'pekerjaan':
+        return const Color(0xFF7B68EE);
+      case 'kesehatan':
+        return const Color(0xFFFF6B6B);
+      case 'pribadi':
+        return const Color(0xFFFF9F43);
+      case 'rumah':
+        return const Color(0xFF26DE81);
+      default:
+        return const Color(0xFFA55EEA);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF1F5F9),
-              shape: BoxShape.circle,
+    final String category = task.kategori.displayName;
+    final Color categoryColor = _getCategoryColor(category);
+
+    return GestureDetector(
+      onTap: () {
+        // Navigasi ke SetupTimerPage dengan membawa durasi tugas (dalam menit)
+        Navigator.pushNamed(
+          context,
+          AppRoutes.setupTimer,
+          arguments: {
+            'taskDurationMinutes': task.estimasiWaktu,
+          },
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-            child: const Center(
-              child: Icon(Icons.bolt_rounded, color: AppColors.primary, size: 20),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF1F5F9),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(Icons.bolt_rounded, color: AppColors.primary, size: 20),
+              ),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2D3748), letterSpacing: -0.3),
-                ),
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time_rounded, size: 12, color: Color(0xFF718096)),
-                    const SizedBox(width: 4),
-                    Text(
-                      duration,
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF718096), fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    task.namaTugas,
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2D3748), letterSpacing: -0.3),
+                  ),
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time_rounded, size: 12, color: Color(0xFF718096)),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${task.estimasiWaktu} Menit',
+                        style: const TextStyle(fontSize: 11, color: Color(0xFF718096), fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: categoryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: categoryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                category,
+                style: TextStyle(color: categoryColor, fontWeight: FontWeight.w700, fontSize: 11),
+              ),
             ),
-            child: Text(
-              category,
-              style: TextStyle(color: categoryColor, fontWeight: FontWeight.w700, fontSize: 11),
-            ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 20),
+          ],
+        ),
       ),
     );
   }
