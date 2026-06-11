@@ -1,4 +1,4 @@
-// profile_page.dart (KODE YANG TELAH DIPERBAIKI)
+// profile_page.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -113,20 +113,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 return Column(
                   children: [
-                    // Header (Tombol Kembali dan Judul "Profil")
+                    // Header (Judul "Profil")
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       child: Row(
                         children: [
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: const Icon(Icons.arrow_back_ios_new, color: primaryColor, size: 18),
-                            ),
-                          ),
+                          const SizedBox(width: 36), // Spacer untuk keseimbangan
                           const Expanded(
                             child: Text(
                               "Profil",
@@ -134,11 +126,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                           ),
-                          const SizedBox(width: 36),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
 
                     // Foto Profil dengan Stack untuk Ikon Kamera
@@ -269,9 +260,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 58,
         padding: const EdgeInsets.symmetric(horizontal: 18),
         decoration: BoxDecoration(
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(14),
-          color: color.withOpacity(0.05),
+          color: color.withValues(alpha: 0.05),
         ),
         child: Row(
           children: [

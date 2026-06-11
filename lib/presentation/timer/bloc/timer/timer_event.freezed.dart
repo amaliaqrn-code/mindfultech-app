@@ -55,7 +55,7 @@ extension TimerEventPatterns on TimerEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( TimerSetup value)?  setupTimer,TResult Function( TimerStarted value)?  start,TResult Function( TimerPaused value)?  pause,TResult Function( TimerToggled value)?  toggle,TResult Function( TimerReset value)?  reset,TResult Function( TimerTicked value)?  tick,TResult Function( TimerNextSession value)?  nextSession,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( TimerSetup value)?  setupTimer,TResult Function( TimerStarted value)?  start,TResult Function( TimerPaused value)?  pause,TResult Function( TimerToggled value)?  toggle,TResult Function( TimerReset value)?  reset,TResult Function( TimerTicked value)?  tick,TResult Function( TimerNextSession value)?  nextSession,TResult Function( TimerSessionEnded value)?  sessionEnded,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case TimerSetup() when setupTimer != null:
@@ -65,7 +65,8 @@ return pause(_that);case TimerToggled() when toggle != null:
 return toggle(_that);case TimerReset() when reset != null:
 return reset(_that);case TimerTicked() when tick != null:
 return tick(_that);case TimerNextSession() when nextSession != null:
-return nextSession(_that);case _:
+return nextSession(_that);case TimerSessionEnded() when sessionEnded != null:
+return sessionEnded(_that);case _:
   return orElse();
 
 }
@@ -83,7 +84,7 @@ return nextSession(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( TimerSetup value)  setupTimer,required TResult Function( TimerStarted value)  start,required TResult Function( TimerPaused value)  pause,required TResult Function( TimerToggled value)  toggle,required TResult Function( TimerReset value)  reset,required TResult Function( TimerTicked value)  tick,required TResult Function( TimerNextSession value)  nextSession,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( TimerSetup value)  setupTimer,required TResult Function( TimerStarted value)  start,required TResult Function( TimerPaused value)  pause,required TResult Function( TimerToggled value)  toggle,required TResult Function( TimerReset value)  reset,required TResult Function( TimerTicked value)  tick,required TResult Function( TimerNextSession value)  nextSession,required TResult Function( TimerSessionEnded value)  sessionEnded,}){
 final _that = this;
 switch (_that) {
 case TimerSetup():
@@ -93,7 +94,8 @@ return pause(_that);case TimerToggled():
 return toggle(_that);case TimerReset():
 return reset(_that);case TimerTicked():
 return tick(_that);case TimerNextSession():
-return nextSession(_that);case _:
+return nextSession(_that);case TimerSessionEnded():
+return sessionEnded(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -110,7 +112,7 @@ return nextSession(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( TimerSetup value)?  setupTimer,TResult? Function( TimerStarted value)?  start,TResult? Function( TimerPaused value)?  pause,TResult? Function( TimerToggled value)?  toggle,TResult? Function( TimerReset value)?  reset,TResult? Function( TimerTicked value)?  tick,TResult? Function( TimerNextSession value)?  nextSession,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( TimerSetup value)?  setupTimer,TResult? Function( TimerStarted value)?  start,TResult? Function( TimerPaused value)?  pause,TResult? Function( TimerToggled value)?  toggle,TResult? Function( TimerReset value)?  reset,TResult? Function( TimerTicked value)?  tick,TResult? Function( TimerNextSession value)?  nextSession,TResult? Function( TimerSessionEnded value)?  sessionEnded,}){
 final _that = this;
 switch (_that) {
 case TimerSetup() when setupTimer != null:
@@ -120,7 +122,8 @@ return pause(_that);case TimerToggled() when toggle != null:
 return toggle(_that);case TimerReset() when reset != null:
 return reset(_that);case TimerTicked() when tick != null:
 return tick(_that);case TimerNextSession() when nextSession != null:
-return nextSession(_that);case _:
+return nextSession(_that);case TimerSessionEnded() when sessionEnded != null:
+return sessionEnded(_that);case _:
   return null;
 
 }
@@ -137,7 +140,7 @@ return nextSession(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int totalTarget,  int perSession,  int breakDuration)?  setupTimer,TResult Function()?  start,TResult Function()?  pause,TResult Function()?  toggle,TResult Function()?  reset,TResult Function( int remainingSeconds)?  tick,TResult Function()?  nextSession,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int totalTarget,  int perSession,  int breakDuration)?  setupTimer,TResult Function()?  start,TResult Function()?  pause,TResult Function()?  toggle,TResult Function()?  reset,TResult Function( int remainingSeconds)?  tick,TResult Function()?  nextSession,TResult Function()?  sessionEnded,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case TimerSetup() when setupTimer != null:
 return setupTimer(_that.totalTarget,_that.perSession,_that.breakDuration);case TimerStarted() when start != null:
@@ -146,7 +149,8 @@ return pause();case TimerToggled() when toggle != null:
 return toggle();case TimerReset() when reset != null:
 return reset();case TimerTicked() when tick != null:
 return tick(_that.remainingSeconds);case TimerNextSession() when nextSession != null:
-return nextSession();case _:
+return nextSession();case TimerSessionEnded() when sessionEnded != null:
+return sessionEnded();case _:
   return orElse();
 
 }
@@ -164,7 +168,7 @@ return nextSession();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int totalTarget,  int perSession,  int breakDuration)  setupTimer,required TResult Function()  start,required TResult Function()  pause,required TResult Function()  toggle,required TResult Function()  reset,required TResult Function( int remainingSeconds)  tick,required TResult Function()  nextSession,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int totalTarget,  int perSession,  int breakDuration)  setupTimer,required TResult Function()  start,required TResult Function()  pause,required TResult Function()  toggle,required TResult Function()  reset,required TResult Function( int remainingSeconds)  tick,required TResult Function()  nextSession,required TResult Function()  sessionEnded,}) {final _that = this;
 switch (_that) {
 case TimerSetup():
 return setupTimer(_that.totalTarget,_that.perSession,_that.breakDuration);case TimerStarted():
@@ -173,7 +177,8 @@ return pause();case TimerToggled():
 return toggle();case TimerReset():
 return reset();case TimerTicked():
 return tick(_that.remainingSeconds);case TimerNextSession():
-return nextSession();case _:
+return nextSession();case TimerSessionEnded():
+return sessionEnded();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -190,7 +195,7 @@ return nextSession();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int totalTarget,  int perSession,  int breakDuration)?  setupTimer,TResult? Function()?  start,TResult? Function()?  pause,TResult? Function()?  toggle,TResult? Function()?  reset,TResult? Function( int remainingSeconds)?  tick,TResult? Function()?  nextSession,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int totalTarget,  int perSession,  int breakDuration)?  setupTimer,TResult? Function()?  start,TResult? Function()?  pause,TResult? Function()?  toggle,TResult? Function()?  reset,TResult? Function( int remainingSeconds)?  tick,TResult? Function()?  nextSession,TResult? Function()?  sessionEnded,}) {final _that = this;
 switch (_that) {
 case TimerSetup() when setupTimer != null:
 return setupTimer(_that.totalTarget,_that.perSession,_that.breakDuration);case TimerStarted() when start != null:
@@ -199,7 +204,8 @@ return pause();case TimerToggled() when toggle != null:
 return toggle();case TimerReset() when reset != null:
 return reset();case TimerTicked() when tick != null:
 return tick(_that.remainingSeconds);case TimerNextSession() when nextSession != null:
-return nextSession();case _:
+return nextSession();case TimerSessionEnded() when sessionEnded != null:
+return sessionEnded();case _:
   return null;
 
 }
@@ -495,6 +501,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'TimerEvent.nextSession()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class TimerSessionEnded implements TimerEvent {
+  const TimerSessionEnded();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimerSessionEnded);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TimerEvent.sessionEnded()';
 }
 
 

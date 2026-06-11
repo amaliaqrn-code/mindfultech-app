@@ -32,7 +32,7 @@ class _PurpleTaskRecommendationPageState
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
             energyLevel: widget.energyLevel ?? EnergyLevel.tinggi,
@@ -48,20 +48,10 @@ class _PurpleTaskRecommendationPageState
       body: SafeArea(
         child: BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
           builder: (context, state) {
-            // ✅ SOLUSI LUAR: Menggunakan gabungan Column dan Expanded + ListView di dalam kontrol state.
-            // Ini memisahkan Header & Footer tetap di tempatnya, sementara konten tengah bisa scroll mandiri.
             return Column(
               children: [
-                // Header tetap di atas
                 _buildHeader(context, state),
-
-                // Area konten tengah yang fleksibel dan bisa di-scroll tanpa jebakan unbounded height
-                Expanded(
-                  child: _buildContent(context, state),
-                ),
-
-                // Dekorasi bawah tetap di bawah
-                _buildBottomDecoration(),
+                Expanded(child: _buildContent(context, state)),
               ],
             );
           },
@@ -202,11 +192,8 @@ class _PurpleTaskRecommendationPageState
     final task = state.primaryRecommendation ?? state.recommendedTasks.firstOrNull;
     if (task == null) {
       return const Center(child: Text('Tidak ada rekomendasi tugas saat ini.'));
-    }    
+    }
 
-    // ✅ SOLUSI UTAMA: Mengganti SingleChildScrollView menjadi ListView bawaan.
-    // Ditambah dengan pembungkus IntrinsicHeight pada tingkat Stack, ini memotong total
-    // rantai 'unbounded height' dari widget card internal yang nakal tadi.
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -236,71 +223,57 @@ class _PurpleTaskRecommendationPageState
             height: 1.4,
           ),
         ),
+
         const SizedBox(height: 24),
 
-        // Pengaman Stack agar anak-anaknya tahu tinggi aslinya tanpa dipaksa melar/SizedBox statis
-        IntrinsicHeight(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            clipBehavior: Clip.none,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 40),
-                child: PurpleRecommendationCard(
-                  task: task,
-                  onConfirm: () {
-                    Navigator.pushNamed(context, AppRoutes.timer);
-                  },
-                  onTryAnother: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.purpleAlternativeTaskList,
-                      arguments: {
-                        'category': state.selectedCategory ?? widget.selectedCategory,
-                        'excludeTaskId': task.id,
-                        'energyLevel': widget.energyLevel ?? EnergyLevel.tinggi,
-                      },
-                    );
-                  },
-                ),
+        // Mascot (moved outside card)
+        Center(
+          child: _buildMascotImage(),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Card
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PurpleRecommendationCard(
+              task: task,
+              energyLevel: widget.energyLevel ?? EnergyLevel.tinggi,
+              category: widget.selectedCategory,
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
+        // Buttons outside the card
+        Column(
+          children: [
+            // Try Another Button (Outline)
+            PurpleOutlineButton(
+              text: 'Coba tugas lain',
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRoutes.purpleAlternativeTaskList,
+                arguments: {
+                  'category': state.selectedCategory ?? widget.selectedCategory,
+                  'excludeTaskId': task.id,
+                  'energyLevel': widget.energyLevel ?? EnergyLevel.tinggi,
+                },
               ),
-              Positioned(
-                top: -20,
-                child: _buildMascotImage(),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+            // Confirm Button (Solid Purple)
+            PurpleSolidButton(
+              text: 'Aku siap fokus!',
+              onTap: () => Navigator.pushNamed(context, AppRoutes.setupTimer),
+            ),
+          ],
         ),
 
         const SizedBox(height: 24),
       ],
-    );
-  }
-
-  Widget _buildBottomDecoration() {
-    return Container(
-      height: 30,
-      decoration: BoxDecoration(
-        color: PurpleTheme.backgroundWhite,
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-        boxShadow: [
-          BoxShadow(
-            color: PurpleTheme.shadowColor.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Container(
-          width: 40,
-          height: 4,
-          decoration: BoxDecoration(
-            color: PurpleTheme.borderLight,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-      ),
     );
   }
 

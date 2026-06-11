@@ -225,29 +225,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ],
       ),
-
-      // Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: 4,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xFF4A90E2),
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
-            BottomNavigationBarItem(icon: Icon(Icons.timer_outlined), label: 'Fokus'),
-            BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'Journey'),
-            BottomNavigationBarItem(icon: Icon(Icons.local_fire_department_outlined), label: 'Streak'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-          ],
-        ),
-      ),
     );
   }
 
@@ -288,7 +265,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 : null,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: borderColor.withOpacity(0.6), width: 1.2),
+              borderSide: BorderSide(color: borderColor.withValues(alpha: 0.6), width: 1.2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

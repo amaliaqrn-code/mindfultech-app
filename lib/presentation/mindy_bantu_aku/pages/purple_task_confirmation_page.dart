@@ -133,7 +133,7 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                                     size: 50,
                                   ),
                                 ),
-                                const SizedBox(height: 32), // badge -> icon = 32
+                                const SizedBox(height: 32),
 
                                 // Task Title
                                 Text(
@@ -146,7 +146,7 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                                     height: 1.3,
                                   ),
                                 ),
-                                const SizedBox(height: 16), // icon -> title = 28 (with 12 already from icon)
+                                const SizedBox(height: 16),
 
                                 // Task Description
                                 Text(
@@ -158,7 +158,7 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                                     height: 1.5,
                                   ),
                                 ),
-                                const SizedBox(height: 32), // description -> card bottom = 32
+                                const SizedBox(height: 32),
                               ],
                             ),
                           ),
@@ -166,7 +166,7 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 24), // card -> primary button = 24
+                    const SizedBox(height: 24),
 
                     // Primary Button - "Yay, Lanjut Fokus!"
                     GestureDetector(
@@ -175,7 +175,7 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                           context,
                           AppRoutes.setupTimer,
                           arguments: {
-                            'task': selectedTask, // 'selectedTask' adalah objek tugas yang ingin dikirim
+                            'task': selectedTask,
                           },
                         );
                       },

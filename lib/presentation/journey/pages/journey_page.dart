@@ -53,7 +53,6 @@ class _JourneyPageState extends State<JourneyPage> {
         children: [
           Row(
             children: [
-              _buildBackButton(),
               const Spacer(),
               Text(
                 'Journey Map',
@@ -64,31 +63,11 @@ class _JourneyPageState extends State<JourneyPage> {
                 ),
               ),
               const Spacer(),
-              const SizedBox(width: 40),
             ],
           ),
           const SizedBox(height: 10),
           _buildProgressCard(state),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBackButton() {
-    return GestureDetector(
-      onTap: () => Navigator.pop(context),
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF5CA3E6),
-        ),
-        child: const Icon(
-          Icons.arrow_back_ios_new,
-          color: Colors.white,
-          size: 16,
-        ),
       ),
     );
   }

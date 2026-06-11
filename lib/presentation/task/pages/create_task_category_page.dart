@@ -32,7 +32,6 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-
       ),
       body: SafeArea(
         child: Column(
@@ -43,7 +42,7 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [                              
+                  children: [
                     // Judul & Subjudul
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -51,8 +50,8 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                         blendMode: BlendMode.srcIn,
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [
-                            Color(0xFF4191FF), // Biru utama
-                            Color(0xFF76E4CE), // Tosca terang (bisa diganti sesuai selera)
+                            Color(0xFF4191FF),
+                            Color(0xFF76E4CE),
                           ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
@@ -63,7 +62,6 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
-                            // color: Color(0xFF4191FF), <--- HAPUS properti color ini
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -90,7 +88,6 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                       height: 100,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        // Fallback jika gambar belum ada di folder assets
                         return const Icon(Icons.cloud_queue_rounded, size: 80, color: Color(0xFF4FA5FF));
                       },
                     ),
@@ -101,10 +98,10 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3, // <-- UBAH DI SINI: Menjadi 3 kolom
-                        crossAxisSpacing: 12, // Sedikit dirapatkan agar pas di layar
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 12,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.95, // <-- UBAH DI SINI: Disesuaikan agar tinggi kotak tetap proporsional (tidak gepeng)
+                        childAspectRatio: 0.95,
                       ),
                       itemCount: _categories.length,
                       itemBuilder: (context, index) {
@@ -139,7 +136,7 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                               children: [
                                 Icon(
                                   category['icon'],
-                                  size: 28, // Sedikit dikecilkan ukurannya agar pas di kotak 3 kolom
+                                  size: 28,
                                   color: isSelected ? Colors.white : color,
                                 ),
                                 const SizedBox(height: 8),
@@ -147,7 +144,7 @@ class _CreateTaskCategoryPageState extends State<CreateTaskCategoryPage> {
                                   category['name'],
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 12, // Sedikit dikecilkan agar teks tidak terpotong
+                                    fontSize: 12,
                                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                     color: isSelected ? Colors.white : Colors.black87,
                                   ),

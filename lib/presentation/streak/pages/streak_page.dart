@@ -76,17 +76,12 @@ class _StreakPageState extends State<StreakPage> with SingleTickerProviderStateM
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          ),
           const Text(
             'Streak',
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          const SizedBox(width: 40), // Spasi penyeimbang back button
         ],
       ),
     );

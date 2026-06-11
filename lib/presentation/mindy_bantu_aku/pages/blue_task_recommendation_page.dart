@@ -30,17 +30,17 @@ class BlueTaskRecommendationPage extends StatefulWidget {
 class _BlueTaskRecommendationPageState
     extends State<BlueTaskRecommendationPage> {
   @override
-    void initState() {
-      super.initState();
-      
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // 💡 Panggil fungsi gabungan baru dengan default Energi SEDANG
-        context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
-              energyLevel: widget.energyLevel ?? EnergyLevel.sedang,
-              category: widget.selectedCategory,
-            );
-      });
-    }
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 💡 Panggil fungsi gabungan baru dengan default Energi SEDANG
+      context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+            energyLevel: widget.energyLevel ?? EnergyLevel.sedang,
+            category: widget.selectedCategory,
+          );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,6 @@ class _BlueTaskRecommendationPageState
               children: [
                 _buildHeader(context, state),
                 Expanded(child: _buildContent(context, state)),
-                _buildBottomDecoration(),
               ],
             );
           },
@@ -189,41 +188,76 @@ class _BlueTaskRecommendationPageState
       padding: const EdgeInsets.symmetric(horizontal: 20),
       children: [
         const SizedBox(height: 20),
-        const Text('Mindy memilihkan\ntugas untukmu', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: BlueTheme.textDark, height: 1.3)),
+        const Text(
+          'Mindy memilihkan\ntugas untukmu',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w400,
+            color: Colors.blue,
+            height: 1.3,
+          ),
+        ),
         const SizedBox(height: 12),
-        const Text('Berdasarkan energimu hari ini dan kategori yang kamu pilih,\nini lah rekomendasi kegiatan terbaik buat kamu', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: BlueTheme.textGrey, height: 1.4)),
-        const SizedBox(height: 24),
-        IntrinsicHeight(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            clipBehavior: Clip.none,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 40),
-                child: BlueRecommendationCard(
-                  task: recommendedTask,
-                  onConfirm: () => Navigator.pushNamed(context, AppRoutes.timer),
-                  onTryAnother: () => Navigator.pushNamed(context, AppRoutes.blueAlternativeTaskList, arguments: {'category': state.selectedCategory ?? widget.selectedCategory, 'excludeTaskId': recommendedTask.id, 'energyLevel': widget.energyLevel ?? EnergyLevel.sedang}),
-                ),
-              ),
-              Positioned(top: -20, child: _buildMascotImage()),
-            ],
+        const Text(
+          'Berdasarkan energimu hari ini dan kategori yang kamu pilih, ini lah rekomendasi kegiatan terbaik buat kamu',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: BlueTheme.textGrey,
+            height: 1.4,
           ),
         ),
         const SizedBox(height: 24),
-      ],
-    );
-  }
 
-  Widget _buildBottomDecoration() {
-    return Container(
-      height: 30,
-      decoration: BoxDecoration(
-        color: BlueTheme.backgroundWhite,
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-        boxShadow: [BoxShadow(color: BlueTheme.shadowColor.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -5))],
-      ),
-      child: Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: BlueTheme.borderLight, borderRadius: BorderRadius.circular(2)))),
+        // Mascot
+        Center(
+          child: _buildMascotImage(),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Card with Stack (mascot overlap effect removed - mascot is now above)
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BlueRecommendationCard(
+              task: recommendedTask,
+              energyLevel: widget.energyLevel ?? EnergyLevel.sedang,
+              category: widget.selectedCategory,
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
+        // Buttons outside the card
+        Column(
+          children: [
+            // Try Another Button (Outline)
+            BlueOutlineButton(
+              text: 'Coba tugas lain',
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRoutes.blueAlternativeTaskList,
+                arguments: {
+                  'category': state.selectedCategory ?? widget.selectedCategory,
+                  'excludeTaskId': recommendedTask.id,
+                  'energyLevel': widget.energyLevel ?? EnergyLevel.sedang,
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Confirm Button (Solid Blue)
+            BlueSolidButton(
+              text: 'Aku siap fokus!',
+              onTap: () => Navigator.pushNamed(context, AppRoutes.setupTimer),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+      ],
     );
   }
 

@@ -191,35 +191,6 @@ class _PurpleAlternativeTaskListPageState
                 ),
               ),
             ),
-
-            // Bottom decoration
-            Container(
-              height: 30,
-              decoration: BoxDecoration(
-                color: PurpleTheme.backgroundWhite,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: PurpleTheme.shadowColor.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: PurpleTheme.borderLight,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

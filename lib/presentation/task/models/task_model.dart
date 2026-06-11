@@ -156,6 +156,95 @@ extension TaskPriorityExtension on TaskPriority {
   }
 }
 
+/// Default task data helper for fallback recommendations
+class DefaultTaskHelper {
+  /// Get default task title based on energy level and category
+  static String getDefaultTaskTitle(EnergyLevel energi, TaskCategory kategori) {
+    // Low energy (rendah) - 5 minutes tasks
+    if (energi == EnergyLevel.rendah) {
+      switch (kategori) {
+        case TaskCategory.belajar:
+          return 'Baca 1 halaman buku atau artikel edukatif ringan';
+        case TaskCategory.pekerjaan:
+          return 'Cek dan rapihkan inbox email atau urutkan to-do list';
+        case TaskCategory.kesehatan:
+          return 'Minum satu gelas air putih dan regangkan tangan';
+        case TaskCategory.pribadi:
+          return 'Tulis 1 hal yang kamu syukuri hari ini di jurnal';
+        case TaskCategory.rumah:
+          return 'Buang sampah atau letakkan baju kotor ke tempatnya';
+        case TaskCategory.lainnya:
+          return 'Istirahat tanpa melihat layar smartphone sama sekali';
+      }
+    }
+
+    // Medium energy (sedang) - 10-15 minutes tasks
+    if (energi == EnergyLevel.sedang) {
+      switch (kategori) {
+        case TaskCategory.belajar:
+          return 'Tonton 1 video tutorial atau rangkum materi singkat';
+        case TaskCategory.pekerjaan:
+          return 'Balas pesan klien atau cicil dokumen kerjaan ringan';
+        case TaskCategory.kesehatan:
+          return 'Latihan napas dalam (deep breathing) atau jalan santai';
+        case TaskCategory.pribadi:
+          return 'Lakukan meditasi tenang atau rapikan galeri foto HP';
+        case TaskCategory.rumah:
+          return 'Lap meja kerja, cuci piring, atau rapikan kasur';
+        case TaskCategory.lainnya:
+          return 'Buat daftar lagu (playlist) santai untuk nemenin hari';
+      }
+    }
+
+    // High energy (tinggi) - 15-30 minutes tasks
+    // Default case for tinggi
+    switch (kategori) {
+      case TaskCategory.belajar:
+        return 'Pelajari topik baru yang sulit atau latihan soal';
+      case TaskCategory.pekerjaan:
+        return 'Selesaikan tugas utama yang paling menyita otak';
+      case TaskCategory.kesehatan:
+        return 'Olahraga ringan, stretching total, atau workout singkat';
+      case TaskCategory.pribadi:
+        return 'Evaluasi target mingguan atau rencanakan hobi barumu';
+      case TaskCategory.rumah:
+        return 'Sapu dan pel kamar atau tata ulang lemari pakaian';
+      case TaskCategory.lainnya:
+        return 'Bereskan satu hal kecil yang terus kamu tunda minggu ini';
+    }
+  }
+
+  /// Get default duration based on energy level
+  static int getDefaultDuration(EnergyLevel energi) {
+    switch (energi) {
+      case EnergyLevel.rendah:
+        return 5;
+      case EnergyLevel.sedang:
+        return 15;
+      case EnergyLevel.tinggi:
+        return 25;
+    }
+  }
+
+  /// Create a default TaskModel based on energy level and category
+  static TaskModel createDefaultTask({
+    required EnergyLevel energi,
+    required TaskCategory kategori,
+    String? customId,
+  }) {
+    return TaskModel(
+      id: customId ?? 'default_${energi.name}_${kategori.name}_${DateTime.now().millisecondsSinceEpoch}',
+      namaTugas: getDefaultTaskTitle(energi, kategori),
+      kategori: kategori,
+      energi: energi,
+      estimasiWaktu: getDefaultDuration(energi),
+      prioritas: TaskPriority.santai,
+      createdAt: DateTime.now(),
+      isDefault: true,
+    );
+  }
+}
+
 /// Fungsi helper untuk parsing int yang aman
 int _parseInt(dynamic value, {int defaultValue = 0}) {
   if (value == null) return defaultValue;

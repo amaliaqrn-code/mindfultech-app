@@ -3,24 +3,32 @@ import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
 class GreenRecommendationCard extends StatelessWidget {
-  final TaskModel task;
-  final VoidCallback onConfirm;
-  final VoidCallback onTryAnother;
+  final TaskModel? task;
+  final EnergyLevel? energyLevel;
+  final TaskCategory? category;
 
   const GreenRecommendationCard({
     super.key,
-    required this.task,
-    required this.onConfirm,
-    required this.onTryAnother,
+    this.task,
+    this.energyLevel,
+    this.category,
   });
 
-  IconData get _taskIcon {
-    // Gunakan icon dari kategori task
-    return task.kategori.icon;
+  // Get task data with fallback to default values
+  TaskModel get _effectiveTask {
+    if (task != null) return task!;
+    // Create default task from energy level and category
+    final effectiveEnergy = energyLevel ?? EnergyLevel.rendah;
+    final effectiveCategory = category ?? TaskCategory.lainnya;
+    return DefaultTaskHelper.createDefaultTask(
+      energi: effectiveEnergy,
+      kategori: effectiveCategory,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final effectiveTask = _effectiveTask;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -63,7 +71,7 @@ class GreenRecommendationCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                _taskIcon,
+                effectiveTask.kategori.icon,
                 color: GreenTheme.sageGreen,
                 size: 44,
               ),
@@ -72,7 +80,7 @@ class GreenRecommendationCard extends StatelessWidget {
 
             // Task Title - gunakan namaTugas
             Text(
-              task.namaTugas,
+              effectiveTask.namaTugas,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 26,
@@ -89,7 +97,7 @@ class GreenRecommendationCard extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    task.kategori.displayName,
+                    effectiveTask.kategori.displayName,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 14,
@@ -99,7 +107,7 @@ class GreenRecommendationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    task.formattedDuration,
+                    effectiveTask.formattedDuration,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 12,
@@ -110,18 +118,6 @@ class GreenRecommendationCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Tombol di dalam kartu
-            _GreenOutlineButton(
-              text: 'Coba tugas lain',
-              onTap: onTryAnother,
-            ),
-            const SizedBox(height: 12),
-            _GreenSolidButton(
-              text: 'Aku siap fokus!',
-              onTap: onConfirm,
-            ),
           ],
         ),
       ),
@@ -129,11 +125,16 @@ class GreenRecommendationCard extends StatelessWidget {
   }
 }
 
-class _GreenOutlineButton extends StatelessWidget {
+/// Green Outline Button (Helper Widget)
+class GreenOutlineButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _GreenOutlineButton({required this.text, required this.onTap});
+  const GreenOutlineButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -164,11 +165,16 @@ class _GreenOutlineButton extends StatelessWidget {
   }
 }
 
-class _GreenSolidButton extends StatelessWidget {
+/// Green Solid Button (Helper Widget)
+class GreenSolidButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _GreenSolidButton({required this.text, required this.onTap});
+  const GreenSolidButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

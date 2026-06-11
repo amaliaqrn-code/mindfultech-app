@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
-import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
 import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
 import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
+import 'package:mindfultech_app/presentation/timer/pages/setup_timer_page.dart';
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_bloc.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
@@ -28,13 +30,16 @@ class _MainPageState extends State<MainPage> {
 
   /// List halaman pages - urutan harus sesuai dengan BottomNavigationBar items
   /// 0: Beranda (HomepagePage)
-  /// 1: Fokus (SetupTimerPage) - navigasi via named route
+  /// 1: Fokus (SetupTimerPage) - tab Fokus menggunakan halaman ini
   /// 2: Journey (JourneyPage)
   /// 3: Streak (StreakPage)
   /// 4: Profil (ProfileScreen)
   final List<Widget> _pages = [
     const HomepagePage(),
-    const SizedBox(), // Placeholder untuk tab Fokus (navigasi via route)
+    BlocProvider(
+      create: (_) => TimerBloc(),
+      child: const SetupTimerPage(task: null),
+    ),
     const JourneyPage(),
     const StreakPage(),
     const ProfileScreen(),
@@ -143,15 +148,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onNavTap(int index) {
-    // Tab Fokus (index 1) navigasi via named route ke SetupTimerPage dengan default 25 menit
-    if (index == 1) {
-      Navigator.pushNamed(
-        context,
-        AppRoutes.setupTimer,
-        arguments: {'taskDurationMinutes': 25}, // Default durasi jika user langsung ke tab Fokus
-      );
-      return;
-    }
+    // Tab Fokus (index 1) sekarang menggunakan SetupTimerPage yang sudah ada di IndexedStack
+    // Tidak perlu navigasi via named route lagi
     setState(() => _currentNavIndex = index);
   }
 }

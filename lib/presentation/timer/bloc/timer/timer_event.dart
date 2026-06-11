@@ -15,4 +15,6 @@ class TimerEvent with _$TimerEvent {
   const factory TimerEvent.reset() = TimerReset;
   const factory TimerEvent.tick(int remainingSeconds) = TimerTicked;
   const factory TimerEvent.nextSession() = TimerNextSession;
+
+  const factory TimerEvent.sessionEnded() = TimerSessionEnded;
 }

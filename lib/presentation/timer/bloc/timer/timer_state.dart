@@ -17,12 +17,12 @@ abstract class TimerState with _$TimerState {
   }) = _TimerState;
 
   factory TimerState.initial() => const TimerState(
-        totalTargetMinutes: 25,
-        durationPerSession: 25,
-        breakDurationMinutes: 5,
-        totalSessions: 1,
-        currentSession: 1,
-        remainingSeconds: 25 * 60,
+        totalTargetMinutes: 0,
+        durationPerSession: 0,
+        breakDurationMinutes: 0,
+        totalSessions: 0,
+        currentSession: 0,
+        remainingSeconds: 0,
         isRunning: false,
         isBreakTime: false,
         isAllCompleted: false,

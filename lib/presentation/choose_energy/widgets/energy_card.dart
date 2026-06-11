@@ -39,8 +39,8 @@ class EnergyCard extends StatelessWidget {
 
   Widget _buildImageContainer() {
     return SizedBox(
-      width: 56,
-      height: 56,
+      width: 80,
+      height: 80,
       child: Image.asset(
         option.imageAsset,
         fit: BoxFit.contain,

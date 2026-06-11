@@ -28,7 +28,7 @@ class TimerControllerButtons extends StatelessWidget {
         IconButton(
           iconSize: 44,
           icon: const Icon(Icons.replay_rounded),
-          color: Colors.white.withOpacity(0.8),
+          color: Colors.white.withValues(alpha: 0.8),
           onPressed: onReset,
         ),
       ],

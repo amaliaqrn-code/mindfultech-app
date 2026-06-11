@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 class TaskSuccessPage extends StatelessWidget {
@@ -16,21 +17,13 @@ class TaskSuccessPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Ilustrasi Gambar
-              Image.asset(
-                'assets/images/input_tugas_mindy.png', // Sesuaikan dengan nama gambar awan suksesmu
-                height: 220,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 32),
-
               // Teks Judul
               const Text(
-                'Hore! Tugas Baru\nDitambahkan',
+                'Yeay! Tugasmu\nberhasil disimpan',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w500,
                   color: Color(0xFF4191FF), // Biru utama
                   height: 1.3,
                   letterSpacing: -0.5,
@@ -40,7 +33,7 @@ class TaskSuccessPage extends StatelessWidget {
 
               // Teks Deskripsi
               const Text(
-                'Satu langkah lebih dekat menuju tujuanmu. Yuk, selesaikan dengan penuh semangat!',
+                'Kamu bisa melihat dan mulai mengerjakannya di halaman beranda',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -50,58 +43,62 @@ class TaskSuccessPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // --- KOTAK DATA TUGAS YANG DITAMBAHKAN ---
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEBF4FF),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF4191FF).withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.task_alt_rounded, color: Color(0xFF4191FF)),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            task.namaTugas, // Menampilkan nama tugas
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1A56B1),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${task.kategori.displayName} • ${task.estimasiWaktu} Menit', // Menampilkan kategori & waktu
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF709CE0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              // Maskot mindy
+              Image.asset(
+                'assets/images/page_success.png', // Sesuaikan dengan nama gambar awan suksesmu
+                height: 200,
+                fit: BoxFit.contain,
               ),
-              // ----------------------------------------
+              const SizedBox(height: 20),
 
-              const SizedBox(height: 48),
+              // Ringkasan Tugas
+              Column(
+                children: [
+                  // Nama Tugas
+                  buildInfoCard(
+                    icon: Icons.assignment,
+                    title: 'Nama Tugas',
+                    value: task.namaTugas,
+                    chipColor: const Color(0xFFE8F0FF),
+                    chipTextColor: const Color(0xFF2F66D0),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Tingkat Energi
+                  buildInfoCard(
+                    icon: Icons.eco,
+                    title: 'Tingkat Energi',
+                    value: task.energi.displayName,
+                    chipColor: const Color(0xFFE7F3DF),
+                    chipTextColor: const Color(0xFF6A8E4D),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Estimasi Waktu
+                  buildInfoCard(
+                    icon: Icons.access_time_filled,
+                    title: 'Estimasi Waktu',
+                    value: '${task.estimasiWaktu} Menit',
+                    chipColor: const Color(0xFFFFF1D9),
+                    chipTextColor: const Color(0xFFFF9800),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Prioritas
+                  buildInfoCard(
+                    icon: Icons.star,
+                    title: 'Prioritas',
+                    value: task.prioritas.displayName,
+                    chipColor: const Color(0xFFFFE1E1),
+                    chipTextColor: Colors.red,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
 
               // Tombol "Lihat Daftar Tugas"
               SizedBox(
@@ -109,8 +106,12 @@ class TaskSuccessPage extends StatelessWidget {
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Pindah ke halaman semua tugas
-                    Navigator.pushReplacementNamed(context, '/all-tasks'); 
+                    // Pindah ke halaman semua tugas menggunakan named route
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.mainPage,
+                      (route) => false,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4191FF),
@@ -120,7 +121,7 @@ class TaskSuccessPage extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Lihat Daftar Tugas',
+                    'Kembali ke Beranda',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -130,34 +131,74 @@ class TaskSuccessPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Tombol "Kembali ke Beranda"
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF4191FF), width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(27),
-                    ),
-                  ),
-                  child: const Text(
-                    'Kembali ke Beranda',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4191FF),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildInfoCard({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color chipColor,
+    required Color chipTextColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: const Color(0xFF2F66D0),
+          ),
+
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: Color(0xFF2F66D0),
+              ),
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: chipColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: chipTextColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
