@@ -174,9 +174,7 @@ class BlueTaskConfirmationPage extends StatelessWidget {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.setupTimer,
-                          arguments: {
-                            'task': selectedTask,
-                          },
+                          arguments: selectedTask,
                         );
                       },
                       child: Container(

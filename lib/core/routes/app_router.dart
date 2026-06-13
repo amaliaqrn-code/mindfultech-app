@@ -34,7 +34,6 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_c
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/task_category_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
-import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
 import 'package:mindfultech_app/presentation/timer/pages/setup_timer_page.dart';
 import '../../presentation/timer/bloc/timer/timer_bloc.dart';
 import 'package:mindfultech_app/presentation/task/pages/all_tasks_page.dart';
@@ -101,8 +100,21 @@ class AppRouter {
       case AppRoutes.greenTaskRecommendation:
         final args = settings.arguments as Map<String, dynamic>?;
         final category = args?['category'] as TaskCategory?;
+
         final energyLevel =
             args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
+
+        final selectedTask =
+            args?['selectedTask'] as TaskModel? ??
+            TaskModel(
+              id: 'default_recommendation_task',
+              namaTugas: 'Menulis Jurnal',
+              kategori: TaskCategory.pribadi,
+              energi: EnergyLevel.rendah,
+              estimasiWaktu: 10,
+              prioritas: TaskPriority.santai,
+              createdAt: DateTime.now(),
+            );
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -110,6 +122,7 @@ class AppRouter {
             child: GreenTaskRecommendationPage(
               selectedCategory: category,
               energyLevel: energyLevel,
+              selectedTask: selectedTask,
             ),
           ),
         );
@@ -153,6 +166,18 @@ class AppRouter {
         final blueCategory = blueArgs?['category'] as TaskCategory?;
         final blueEnergyLevel =
             blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+
+        final blueSelectedTask =
+            blueArgs?['selectedTask'] as TaskModel? ??
+            TaskModel(
+              id: 'default_recommendation_task',
+              namaTugas: 'Meditasi 15 menit',
+              kategori: TaskCategory.pribadi,
+              energi: EnergyLevel.sedang,
+              estimasiWaktu: 15,
+              prioritas: TaskPriority.santai,
+              createdAt: DateTime.now(),
+            );
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -160,6 +185,7 @@ class AppRouter {
             child: BlueTaskRecommendationPage(
               selectedCategory: blueCategory,
               energyLevel: blueEnergyLevel,
+              selectedTask: blueSelectedTask,
             ),
           ),
         );
@@ -203,6 +229,18 @@ class AppRouter {
         final purpleCategory = purpleArgs?['category'] as TaskCategory?;
         final purpleEnergyLevel =
             purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
+
+        final purpleSelectedTask =
+            purpleArgs?['selectedTask'] as TaskModel? ??
+            TaskModel(
+              id: 'default_recommendation_task',
+              namaTugas: 'Belajar coding intensif',
+              kategori: TaskCategory.belajar,
+              energi: EnergyLevel.tinggi,
+              estimasiWaktu: 120,
+              prioritas: TaskPriority.mendesak,
+              createdAt: DateTime.now(),
+            );
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -210,6 +248,7 @@ class AppRouter {
             child: PurpleTaskRecommendationPage(
               selectedCategory: purpleCategory,
               energyLevel: purpleEnergyLevel,
+              selectedTask: purpleSelectedTask,
             ),
           ),
         );
@@ -248,14 +287,6 @@ class AppRouter {
           settings,
           PurpleTaskConfirmationPage(selectedTask: purpleSelectedTask),
         );
-      case AppRoutes.timer:
-        return _buildPageRoute(
-          settings,
-          BlocProvider(
-            create: (context) => TimerBloc(), // 💡 Diganti jadi TimerBloc
-            child: const TimerPage(),
-          ),
-        );
       case AppRoutes.setupTimer:
         final args = settings.arguments as Map<String, dynamic>?;
         final task = args?['task'] as dynamic;
@@ -270,6 +301,15 @@ class AppRouter {
         return _buildPageRoute(
           settings,
           BlocProvider(create: (_) => TimerBloc(), child: const TimerPage()),
+        );
+        final task = settings.arguments as TaskModel;
+
+        return _buildPageRoute(
+          settings,
+          BlocProvider(
+            create: (_) => TimerBloc(),
+            child: SetupTimerPage(task: task),
+          ),
         );
       case AppRoutes.allTasks:
         return _buildPageRoute(settings, const AllTasksPage());

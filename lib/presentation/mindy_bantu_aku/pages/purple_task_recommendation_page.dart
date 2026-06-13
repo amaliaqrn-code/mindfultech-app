@@ -15,11 +15,13 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_a
 class PurpleTaskRecommendationPage extends StatefulWidget {
   final TaskCategory? selectedCategory;
   final EnergyLevel? energyLevel;
+  final TaskModel selectedTask;
 
   const PurpleTaskRecommendationPage({
     super.key,
     this.selectedCategory,
     this.energyLevel,
+    required this.selectedTask,
   });
 
   @override
@@ -267,7 +269,11 @@ class _PurpleTaskRecommendationPageState
             // Confirm Button (Solid Purple)
             PurpleSolidButton(
               text: 'Aku siap fokus!',
-              onTap: () => Navigator.pushNamed(context, AppRoutes.setupTimer),
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRoutes.setupTimer,
+                arguments: task,
+              ),
             ),
           ],
         ),

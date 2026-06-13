@@ -146,6 +146,8 @@ flutter:
     # Timer page images
     - assets/images/timerpage/tugas_selesai.png
     - assets/images/timerpage/backcground.png
+    - assets/images/timerpage/Cloud1.png
+    - assets/images/timerpage/finish_icon.png
 
     # Timer page icons (PNG)
     - assets/icon/timerpage/Cloud1.png
@@ -153,7 +155,11 @@ flutter:
     - assets/icon/timerpage/Cloud4.png
     - assets/icon/timerpage/Cloud5.png
     - assets/icon/timerpage/Cloud6.png
-    - assets/icon/timerpage/Group3.png
+    - assets/icon/timerpage/Cloud3.png
+    - assets/icon/timerpage/bahaya.svg
+    - assets/icon/timerpage/papanpanah.svg
+    - assets/icon/timerpage/bell.svg
+    - assets/icon/timerpage/self_improve.svg
 
     # Homepage icons
     - assets/icon/homepage/belajar.png
@@ -171,9 +177,6 @@ flutter:
     - assets/icon/pilihenergi/petir.svg
     - assets/icon/pilihenergi/daun.svg
 
-    # Timer page icons (SVG)
-    - assets/icon/timerpage/bahaya.svg
-    - assets/icon/timerpage/papanpanah.svg
 
     # Input Tugas icons (SVG)
     - assets/icon/input_tugas/rendah.svg
@@ -195,6 +198,7 @@ flutter:
     - assets/icon/energirendah/tidurlebihawal.svg
 
     - assets/icon/icon-park-solid_laptop.svg
+
 
     # Result images
     - assets/images/result/Cloud1.png

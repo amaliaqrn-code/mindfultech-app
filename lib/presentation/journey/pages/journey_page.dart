@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_state.dart';
-import '../data/journey_data.dart';
 
 class JourneyPage extends StatefulWidget {
   const JourneyPage({super.key});
@@ -27,9 +26,17 @@ class _JourneyPageState extends State<JourneyPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<JourneyCubit, JourneyState>(
+      buildWhen: (previous, current) {
+        // ✅ REACTIVE: Rebuild when level or totalDays changes
+        return previous.currentLevel.level != current.currentLevel.level ||
+               previous.totalDays != current.totalDays ||
+               previous.isLoading != current.isLoading;
+      },
       builder: (context, state) {
+        // ✅ SAFE: Use state from BlocBuilder directly
+        // Clamp level to valid range (1-6)
+        final currentLevel = state.currentLevel.level.clamp(1, 6);
         final cubit = context.read<JourneyCubit>();
-        final currentCycle = cubit.currentCycle; // Level aktif saat ini (1-6)
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -37,7 +44,7 @@ class _JourneyPageState extends State<JourneyPage> {
             child: Column(
               children: [
                 _buildHeader(state, cubit),
-                Expanded(child: _buildMapArea(state, currentCycle)),
+                Expanded(child: _buildMapArea(state, currentLevel)),
               ],
             ),
           ),
@@ -112,7 +119,7 @@ class _JourneyPageState extends State<JourneyPage> {
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: [
                             Text(
-                              '${state.totalDays}',
+                              '${state.safeTotalDays}', // ✅ Use safe getter
                               style: GoogleFonts.inter(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -212,9 +219,9 @@ class _JourneyPageState extends State<JourneyPage> {
         ),
         const SizedBox(width: 4),
         Image.asset(
-          'assets/images/journey/awan.png', 
-          width: 65, 
-          height: 55, 
+          'assets/images/journey/awan.png',
+          width: 65,
+          height: 55,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) => const Text('☁️', style: TextStyle(fontSize: 32)),
         ),
@@ -222,10 +229,10 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  Widget _buildMapArea(JourneyState state, int currentCycle) {
+  Widget _buildMapArea(JourneyState state, int currentLevel) {
     // Menghitung persentase kejenuhan warna denah berdasarkan progress hari (Maksimal 30 hari)
     // Hari ke-0 = Full Grayscale (0.0), Hari ke-30 = Full Color (1.0)
-    final double saturationProgress = (state.totalDays / JourneyData.maxDays).clamp(0.0, 1.0);
+    final double saturationProgress = (state.safeTotalDays / JourneyData.maxDays).clamp(0.0, 1.0);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -254,22 +261,30 @@ class _JourneyPageState extends State<JourneyPage> {
                         0, 0, 0, 1, 0,
                       ]),
                       child: Image.asset(
-                        'assets/images/journey/journey_map.png', 
+                        'assets/images/journey/journey_map.png',
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: const Color(0xFFE8F4FD),
+                            child: const Center(
+                              child: Text('Journey Map', style: TextStyle(fontSize: 24)),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
                 ),
               ),
-              
+
               // Render Semua Node Pin (1 sampai 6)
-              ..._buildLevelNodes(constraints, currentCycle),
-              
+              ..._buildLevelNodes(constraints, currentLevel, state),
+
               // Render Maskot Bergerak secara Halus & Balon Teks di Atas Map
-              _buildAnimatedMascot(constraints, currentCycle),
-              
+              _buildAnimatedMascot(constraints, currentLevel),
+
               // Render Kotak Peti Harta Karun Samping
-              _buildTreasureChestCard(constraints, currentCycle),
+              _buildTreasureChestCard(constraints, currentLevel),
             ],
           ),
         );
@@ -277,14 +292,15 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  List<Widget> _buildLevelNodes(BoxConstraints constraints, int currentCycle) {
+  List<Widget> _buildLevelNodes(BoxConstraints constraints, int currentLevel, JourneyState state) {
     final nodes = <Widget>[];
     for (int i = 0; i < _levelPositions.length; i++) {
       final pos = _levelPositions[i];
       final level = i + 1;
-      
-      final isCompleted = level < currentCycle;
-      final isCurrent = level == currentCycle;
+
+      // ✅ SAFE: Calculate completed status based on totalDays
+      final isCompleted = state.safeTotalDays >= _getRequiredDaysForLevel(level);
+      final isCurrent = level == currentLevel;
 
       nodes.add(
         Positioned(
@@ -293,7 +309,7 @@ class _JourneyPageState extends State<JourneyPage> {
           child: GestureDetector(
             onTap: () {
               // Pengguna bisa mengklik level yang aktif saat ini atau level yang sudah selesai dilewati
-              if (level <= currentCycle) {
+              if (level <= currentLevel) {
                 Navigator.pushNamed(context, AppRoutes.chooseEnergy);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -314,6 +330,26 @@ class _JourneyPageState extends State<JourneyPage> {
       );
     }
     return nodes;
+  }
+
+  /// Get required days for a level (helper method)
+  int _getRequiredDaysForLevel(int level) {
+    switch (level) {
+      case 1:
+        return 1;
+      case 2:
+        return 6;
+      case 3:
+        return 11;
+      case 4:
+        return 16;
+      case 5:
+        return 21;
+      case 6:
+        return 26;
+      default:
+        return 1;
+    }
   }
 
   Widget _buildMapPin({required int level, required bool isCompleted, required bool isCurrent}) {
@@ -361,12 +397,13 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  // Menggunakan AnimatedPositioned agar perpindahan tempat Mindy (Awan) berjalan halus/smooth saat berganti level
-  Widget _buildAnimatedMascot(BoxConstraints constraints, int currentCycle) {
-    int activeIndex = currentCycle;
-    if (activeIndex < 1) activeIndex = 1;
-    if (activeIndex > _levelPositions.length) activeIndex = _levelPositions.length;
-    
+  /// ✅ FIXED: Menggunakan AnimatedPositioned dengan Key untuk memastikan animasi ter-trigger
+  /// Awan bergerak mengikuti currentLevel dari state
+  Widget _buildAnimatedMascot(BoxConstraints constraints, int currentLevel) {
+    // Clamp level to valid range (1-6)
+    int activeIndex = currentLevel.clamp(1, 6);
+
+    // Get position for current level
     final pinPos = _levelPositions[activeIndex - 1];
 
     // Menghitung koordinat berdiri Mindy tepat di samping kiri Pin Level yang dituju
@@ -374,6 +411,7 @@ class _JourneyPageState extends State<JourneyPage> {
     final double targetTop = (pinPos['y']! * constraints.maxHeight) - 15;
 
     return AnimatedPositioned(
+      key: ValueKey('mascot_level_$currentLevel'), // ✅ Key-based animation trigger per level
       duration: const Duration(milliseconds: 800),
       curve: Curves.easeInOut,
       left: targetLeft,
@@ -382,11 +420,11 @@ class _JourneyPageState extends State<JourneyPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            'assets/images/journey/awan1.png', 
-            width: 42, 
-            height: 32, 
+            'assets/images/journey/awan1.png',
+            width: 42,
+            height: 32,
             fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const Text('☁️'),
+            errorBuilder: (context, error, stackTrace) => const Text('☁️', style: TextStyle(fontSize: 24)),
           ),
           const SizedBox(width: 4),
           Container(
@@ -417,8 +455,8 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  Widget _buildTreasureChestCard(BoxConstraints constraints, int currentCycle) {
-    final isTreasureUnlocked = currentCycle >= 6;
+  Widget _buildTreasureChestCard(BoxConstraints constraints, int currentLevel) {
+    final isTreasureUnlocked = currentLevel >= 6;
 
     return Positioned(
       left: 16,
@@ -453,9 +491,9 @@ class _JourneyPageState extends State<JourneyPage> {
                 ),
                 const SizedBox(height: 6),
                 Image.asset(
-                  'assets/images/journey/hartaKarun.png', 
-                  width: 48, 
-                  height: 40, 
+                  'assets/images/journey/hartaKarun.png',
+                  width: 48,
+                  height: 40,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => const Icon(Icons.inventory_2, color: Colors.amber, size: 36),
                 ),
@@ -507,7 +545,7 @@ class _TrianglePainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
     final path = Path();
-    
+
     if (invert) {
       path.moveTo(size.width / 2, 0);
       path.lineTo(size.width, size.height);
