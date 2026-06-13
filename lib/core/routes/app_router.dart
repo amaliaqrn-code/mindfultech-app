@@ -18,6 +18,7 @@ import 'package:mindfultech_app/presentation/onboarding/pages/onboarding_page.da
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/main_page.dart';
+import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
 import 'package:mindfultech_app/presentation/tutorial/pages/tutorial_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
 import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
@@ -302,15 +303,7 @@ class AppRouter {
           settings,
           BlocProvider(create: (_) => TimerBloc(), child: const TimerPage()),
         );
-        final task = settings.arguments as TaskModel;
 
-        return _buildPageRoute(
-          settings,
-          BlocProvider(
-            create: (_) => TimerBloc(),
-            child: SetupTimerPage(task: task),
-          ),
-        );
       case AppRoutes.allTasks:
         return _buildPageRoute(settings, const AllTasksPage());
       case AppRoutes.createTaskCategory:
