@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Tambahkan import ini
-import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
+import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
 import '../bloc/timer/timer_bloc.dart';
 import '../bloc/timer/timer_event.dart';
 
@@ -20,20 +20,41 @@ class _SetupTimerPageState extends State<SetupTimerPage> {
   late final TextEditingController sessionController;
   late final TextEditingController breakController;
 
+  int get totalSessions {
+  final total = int.tryParse(totalTargetController.text) ?? 0;
+  final session = int.tryParse(sessionController.text) ?? 1;
+
+  if (session <= 0) return 0;
+
+  return (total / session).ceil();
+}
+
   @override
   void initState() {
     super.initState();
     
-    final taskData = widget.task as TaskModel?;
-    final int taskDuration = taskData?.estimasiWaktu ?? 60; // Default ke 60 sesuai mockup gambar
+     final taskData = widget.task as TaskModel?;
 
-    totalTargetController = TextEditingController(text: taskDuration.toString());
-    sessionController = TextEditingController(text: "0"); // Default 30 menit sesuai gambar
-    breakController = TextEditingController(text: "0");
+    // Estimasi dari task
+    final int taskDuration = taskData?.estimasiWaktu ?? 60;
 
-    // Listener agar nilai menit di bagian atas otomatis terupdate saat durasi sesi diubah
+    // Tidak bisa diubah
+    totalTargetController =
+        TextEditingController(text: taskDuration.toString());
+
+    // Bisa diubah user
+    sessionController =
+        TextEditingController(text: "30");
+
+    // Bisa diubah user
+    breakController =
+        TextEditingController(text: "5");
+
     sessionController.addListener(() {
       setState(() {});
+
+      print(widget.task);
+      print(widget.task.runtimeType);
     });
   }
 
@@ -208,16 +229,74 @@ class _SetupTimerPageState extends State<SetupTimerPage> {
                         title: "Target Belajar (Total)",
                         subtitle: "Total waktu yang ingin dicapai",
                         controller: totalTargetController,
+                        readOnly: true,
                       ),
                       _buildConfigCard(
                         title: "Durasi Belajar (Per-Sesi)",
                         subtitle: "Waktu belajar di setiap sesi",
                         controller: sessionController,
+                        readOnly: false,
                       ),
                       _buildConfigCard(
                         title: "Durasi Istirahat",
                         subtitle: "Waktu istirahat setiap jeda",
                         controller: breakController,
+                        readOnly: false,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Color(0xFFEAF4FF),
+                        child: Icon(
+                          Icons.menu_book_rounded,
+                          color: Color(0xFF4A90E2),
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "$totalSessions Sesi Belajar",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4A90E2),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              "${totalTargetController.text} menit • ${sessionController.text} menit/sesi",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -252,7 +331,17 @@ class _SetupTimerPageState extends State<SetupTimerPage> {
                         ),
                       );
 
-                      Navigator.pushNamed(context, AppRoutes.timer);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<TimerBloc>(),
+                            child: TimerPage(
+                              task: widget.task,
+                            ),
+                          ),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -286,6 +375,7 @@ class _SetupTimerPageState extends State<SetupTimerPage> {
     required String title,
     required String subtitle,
     required TextEditingController controller,
+    required bool readOnly,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -334,7 +424,9 @@ class _SetupTimerPageState extends State<SetupTimerPage> {
                 ),
                 child: TextField(
                   controller: controller,
-                  keyboardType: TextInputType.number,
+                  readOnly: readOnly,
+                  keyboardType:
+                      readOnly ? TextInputType.none : TextInputType.number,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   decoration: const InputDecoration(

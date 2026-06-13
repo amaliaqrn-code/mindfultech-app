@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_state.dart';
 import '../models/streak_models.dart';
 import '../widgets/streak_widgets.dart';
 
@@ -10,7 +13,6 @@ class StreakPage extends StatefulWidget {
 }
 
 class _StreakPageState extends State<StreakPage> with SingleTickerProviderStateMixin {
-  int _currentStreak = 5; // Default testing
   int _selectedTabIndex = 0;
   late TabController _tabController;
 
@@ -31,42 +33,50 @@ class _StreakPageState extends State<StreakPage> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  StreakTheme get _theme => StreakTheme(streakDays: _currentStreak);
   List<AchievementLevel> get _achievements => AchievementLevel.getAchievements();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE3F2FD), // Latar Biru Cerah Sesuai Figma canvas
+      backgroundColor: const Color(0xFFE3F2FD),
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            StreakTabBar(
-              selectedIndex: _selectedTabIndex,
-              theme: _theme,
-              tabController: _tabController,
-            ),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF9FAFB), // Putih susu lembut untuk area konten dasar
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
+        child: BlocBuilder<JourneyCubit, JourneyState>(
+          buildWhen: (previous, current) => previous.streakCount != current.streakCount,
+          builder: (context, state) {
+            // ✅ SAFE: All state access through BlocBuilder
+            final currentStreak = state.streakCount;
+            final theme = StreakTheme(streakDays: currentStreak);
+
+            return Column(
+              children: [
+                _buildHeader(),
+                StreakTabBar(
+                  selectedIndex: _selectedTabIndex,
+                  theme: theme, // ✅ Using theme from BlocBuilder state
+                  tabController: _tabController,
+                ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF9FAFB),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(32),
+                        topRight: Radius.circular(32),
+                      ),
+                    ),
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildStreakSummary(currentStreak, theme),
+                        _buildAchievementsTab(currentStreak),
+                      ],
+                    ),
                   ),
                 ),
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildStreakSummary(),
-                    _buildAchievementsTab(),
-                  ],
-                ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -87,69 +97,40 @@ class _StreakPageState extends State<StreakPage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildStreakSummary() {
+  Widget _buildStreakSummary(int currentStreak, StreakTheme theme) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
       child: Column(
         children: [
-          StreakMindySection(theme: _theme),
+          StreakMindySection(theme: theme),
           const SizedBox(height: 16),
-          StreakInfo(currentStreak: _currentStreak, theme: _theme),
+          StreakInfo(currentStreak: currentStreak, theme: theme),
           const SizedBox(height: 32),
-          StreakProgressBar(theme: _theme),
+          StreakProgressBar(theme: theme),
           const SizedBox(height: 12),
           Text(
-            _theme.getNextLevelInfo(),
+            theme.getNextLevelInfo(),
             style: const TextStyle(fontSize: 13, color: Color(0xFF4B5563), fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 40),
           StreakActionButton(onPressed: () => _tabController.animateTo(1)),
           const SizedBox(height: 32),
-          _buildDebugControls(),
         ],
       ),
     );
   }
 
-  Widget _buildAchievementsTab() {
+  Widget _buildAchievementsTab(int currentStreak) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(24),
       itemCount: _achievements.length,
       itemBuilder: (context, index) {
         final achievement = _achievements[index];
-        final isUnlocked = _currentStreak >= achievement.requiredDays;
+        final isUnlocked = currentStreak >= achievement.requiredDays;
         return AchievementCard(achievement: achievement, isUnlocked: isUnlocked);
       },
-    );
-  }
-
-  Widget _buildDebugControls() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Column(
-        children: [
-          const Text('Simulasi Pengujian Hari:', style: TextStyle(fontSize: 11, color: Colors.grey)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            children: [5, 10, 15, 20, 25, 30].map((days) {
-              final active = _currentStreak == days;
-              return ChoiceChip(
-                label: Text('$days Hari'),
-                selected: active,
-                onSelected: (_) => setState(() => _currentStreak = days),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
     );
   }
 }

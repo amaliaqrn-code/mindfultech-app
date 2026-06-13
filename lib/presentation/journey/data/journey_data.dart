@@ -53,6 +53,18 @@ class JourneyData {
 
   static JourneyLevelModel getLevelForDay(int totalDays) {
     final levels = getLevels();
+
+    // Safety check: if levels is empty, return default level
+    if (levels.isEmpty) {
+      return JourneyLevelModel(
+        level: 1,
+        requiredDays: 1,
+        areaName: 'Mulai Perjalanan',
+        emoji: '🏠',
+        backgroundImage: '',
+      );
+    }
+
     JourneyLevelModel currentLevel = levels.first;
 
     for (var level in levels) {

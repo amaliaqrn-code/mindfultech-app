@@ -8,6 +8,7 @@ import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
 import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
 import 'package:mindfultech_app/presentation/timer/pages/setup_timer_page.dart';
 import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_bloc.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
@@ -28,17 +29,31 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentNavIndex = 0;
 
+  /// Default task for SetupTimerPage when accessed from main nav
+  /// This is used when user taps the Fokus tab without selecting a specific task
+  TaskModel get _defaultFocusTask => TaskModel(
+    id: 'default_focus_task',
+    namaTugas: 'Pilih tugas untuk fokus',
+    kategori: TaskCategory.pribadi,
+    energi: EnergyLevel.sedang,
+    estimasiWaktu: 30,
+    prioritas: TaskPriority.santai,
+    createdAt: DateTime.now(),
+  );
+
   /// List halaman pages - urutan harus sesuai dengan BottomNavigationBar items
   /// 0: Beranda (HomepagePage)
   /// 1: Fokus (SetupTimerPage) - tab Fokus menggunakan halaman ini
   /// 2: Journey (JourneyPage)
   /// 3: Streak (StreakPage)
   /// 4: Profil (ProfileScreen)
-  final List<Widget> _pages = [
+  List<Widget> get _pages => [
     const HomepagePage(),
-    BlocProvider(
-      create: (_) => TimerBloc(),
-      child: const SetupTimerPage(task: null),
+    // Use BlocProvider.value to access the global TimerBloc from main.dart
+    // No need to create a new local TimerBloc
+    BlocProvider.value(
+      value: context.read<TimerBloc>(),
+      child: SetupTimerPage(task: _defaultFocusTask),
     ),
     const JourneyPage(),
     const StreakPage(),

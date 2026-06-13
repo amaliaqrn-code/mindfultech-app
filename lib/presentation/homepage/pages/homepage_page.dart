@@ -5,8 +5,12 @@ import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_state.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
+import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_state.dart';
 import 'package:mindfultech_app/presentation/task/bloc/task/task_bloc.dart';
 import 'package:mindfultech_app/presentation/task/bloc/task/task_event.dart';
+import 'package:mindfultech_app/presentation/task/bloc/task/task_state.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 class HomepagePage extends StatefulWidget {
   const HomepagePage({super.key});
@@ -21,6 +25,8 @@ class _HomepagePageState extends State<HomepagePage> {
     super.initState();
     // Load user tasks from SQLite on page open
     context.read<TaskBloc>().add(const FetchTasksEvent());
+    // Load emotion data from database
+    context.read<HomepageCubit>().loadEmotionData();
   }
 
   @override
@@ -29,38 +35,44 @@ class _HomepagePageState extends State<HomepagePage> {
     final userName = storage.read('userName') ?? 'Aluna';
 
     return BlocBuilder<HomepageCubit, HomepageState>(
-      builder: (context, state) {
+      builder: (context, homeState) {
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           body: SafeArea(
             child: Column(
               children: [
                 Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 16),
-                        _buildHeader(userName),
-                        const SizedBox(height: 20),
-                        _buildMindyGreetingCard(state.mascotGreeting),
-                        const SizedBox(height: 16),
-                        _buildStatisticsSection(state),
-                        const SizedBox(height: 20),
-                        _buildEmotionProgressSection(state),
-                        const SizedBox(height: 20),
-                        _buildTasksSection(state),
-                        const SizedBox(height: 24),
-                      ],
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<TaskBloc>().add(const FetchTasksEvent());
+                      context.read<HomepageCubit>().loadEmotionData();
+                    },
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          _buildHeader(userName),
+                          const SizedBox(height: 20),
+                          _buildMindyGreetingCard(homeState.mascotGreeting),
+                          const SizedBox(height: 16),
+                          _buildStatisticsSection(),
+                          const SizedBox(height: 20),
+                          _buildEmotionProgressSection(homeState),
+                          const SizedBox(height: 20),
+                          _buildTasksSection(),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-                  );
+        );
       },
     );
   }
@@ -194,6 +206,9 @@ class _HomepagePageState extends State<HomepagePage> {
             width: 100,
             height: 100,
             fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(Icons.cloud, size: 80, color: AppColors.primary);
+            },
           ),
         ],
       ),
@@ -201,50 +216,76 @@ class _HomepagePageState extends State<HomepagePage> {
   }
 
   // ================= STATISTICS SECTION =================
-  Widget _buildStatisticsSection(HomepageState state) {
-    return SizedBox(
-      height: 180,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Image.asset(
-                state.backgroundImagePath,
-                fit: BoxFit.cover,
+  /// ✅ FIXED: Use data from JourneyCubit state directly
+  Widget _buildStatisticsSection() {
+    return BlocBuilder<JourneyCubit, JourneyState>(
+      buildWhen: (previous, current) =>
+          previous.totalDays != current.totalDays ||
+          previous.streakCount != current.streakCount ||
+          previous.currentLevel.level != current.currentLevel.level,
+      builder: (context, journeyState) {
+        // ✅ SAFE: Get data from JourneyCubit state with safe getters
+        final streakText = '${journeyState.streakCount} / ${journeyState.totalDays} hari';
+        final levelText = 'LEVEL ${journeyState.currentLevel.level.toString().padLeft(2, '0')}';
+
+        return SizedBox(
+          height: 180,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'assets/images/homepage/background.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary.withValues(alpha: 0.1),
+                              AppColors.primary.withValues(alpha: 0.2),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    icon: Icons.local_fire_department,
-                    iconColor: const Color(0xFFFF6B35),
-                    title: 'Streak hari ini',
-                    value: state.streakText,
-                    valueColor: const Color(0xFFFF6B35),
-                  ),
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 16,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        icon: Icons.local_fire_department,
+                        iconColor: const Color(0xFFFF6B35),
+                        title: 'Streak hari ini',
+                        value: streakText,
+                        valueColor: const Color(0xFFFF6B35),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        icon: Icons.map,
+                        iconColor: AppColors.primary,
+                        title: 'Perjalananmu',
+                        value: levelText,
+                        valueColor: AppColors.primary,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    icon: Icons.map,
-                    iconColor: AppColors.primary,
-                    title: 'Perjalananmu',
-                    value: state.levelText,
-                    valueColor: AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -303,8 +344,10 @@ class _HomepagePageState extends State<HomepagePage> {
   }
 
   // ================= REKAPAN EMOSI DENGAN INDIKATOR LEVEL =================
-  Widget _buildEmotionProgressSection(HomepageState state) {
-    final int collectedEmotions = 1;
+  Widget _buildEmotionProgressSection(HomepageState homeState) {
+    // ✅ Use real data from HomepageCubit state (loaded from database)
+    final int collectedEmotions = homeState.emotionSessionCount;
+    final int totalFocusSessions = homeState.totalFocusSessions;
     const int totalLevels = 6;
 
     return Column(
@@ -365,6 +408,17 @@ class _HomepagePageState extends State<HomepagePage> {
             }),
           ),
         ),
+        if (totalFocusSessions > 0)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              '$totalFocusSessions sesi fokus selesai',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -382,56 +436,116 @@ class _HomepagePageState extends State<HomepagePage> {
     );
   }
 
-
   // ================= TUGAS HARI INI =================
-  Widget _buildTasksSection(HomepageState state) {
-    final tasks = state.currentTasks;
+  Widget _buildTasksSection() {
+    return BlocBuilder<TaskBloc, TaskState>(
+      builder: (context, taskState) {
+        // Sort tasks by priority: mendesak (0) -> penting (1) -> santai (2)
+        final sortedTasks = List<TaskModel>.from(taskState.tasks)
+          ..sort((a, b) => a.prioritas.value.compareTo(b.prioritas.value));
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // Take first 3 tasks for homepage display
+        final displayTasks = sortedTasks.take(3).toList();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Tugas Hari Ini',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.allTasks);
-              },
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text(
-                'Lihat Semua',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.primary),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (tasks.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text('Belum ada tugas untuk hari ini.', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
-          )
-        else
-          ...tasks.map((task) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildTaskCard(
-                  iconPath: task.iconPath,
-                  title: task.title,
-                  duration: task.duration,
-                  category: task.category,
-                  categoryColor: task.categoryColor,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Tugas yang kamu punya',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
                 ),
-              )),
-      ],
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.allTasks);
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    'Lihat Semua',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.primary),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (taskState.isLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else if (displayTasks.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.15), width: 1),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.inbox_outlined, size: 40, color: Colors.grey.shade400),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Belum ada tugas untuk hari ini',
+                        style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, AppRoutes.createTaskCategory);
+                          if (mounted) {
+                            context.read<TaskBloc>().add(const FetchTasksEvent());
+                          }
+                        },
+                        child: const Text('+ Tambah Tugas'),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ...displayTasks.map((task) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _buildTaskCard(
+                      iconPath: _getCategoryIconPath(task.kategori),
+                      title: task.namaTugas,
+                      duration: task.formattedDuration,
+                      category: task.kategori.displayName,
+                      categoryColor: task.kategori.color,
+                    ),
+                  )),
+          ],
+        );
+      },
     );
+  }
+
+  String _getCategoryIconPath(TaskCategory category) {
+    switch (category) {
+      case TaskCategory.belajar:
+        return 'assets/icon/homepage/belajar.png';
+      case TaskCategory.pekerjaan:
+        return 'assets/icon/homepage/belajar.png';
+      case TaskCategory.kesehatan:
+        return 'assets/icon/homepage/olahraga.png';
+      case TaskCategory.pribadi:
+        return 'assets/icon/homepage/menonton.png';
+      case TaskCategory.rumah:
+        return 'assets/icon/homepage/olahraga.png';
+      case TaskCategory.lainnya:
+        return 'assets/icon/homepage/menonton.png';
+    }
   }
 
   // ================= TASK CARD =================
@@ -485,5 +599,4 @@ class _HomepagePageState extends State<HomepagePage> {
       ),
     );
   }
-
-  }
+}

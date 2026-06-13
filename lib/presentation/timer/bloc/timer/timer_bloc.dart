@@ -56,7 +56,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
       if (!current.isRunning) return;
 
-      if (current.remainingSeconds > 1) {
+      if (current.remainingSeconds > 0) {
         add(TimerEvent.tick(current.remainingSeconds - 1));
       } else {
         add(const TimerEvent.sessionEnded());
@@ -64,9 +64,6 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     });
   }
 
-  // =========================
-  // SESSION END HANDLER (AUTO SWITCH CORE)
-  // =========================
   void _onSessionEnded(
     TimerSessionEnded event,
     Emitter<TimerState> emit,
@@ -75,7 +72,19 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     _timer = null;
 
     // =========================
-    // dari STUDY → BREAK
+    // 1. CEK FINISH DULU (PALING PENTING)
+    // =========================
+    if (!state.isBreakTime &&
+        state.currentSession >= state.totalSessions) {
+      emit(state.copyWith(
+        isAllCompleted: true,
+        isRunning: false,
+      ));
+      return;
+    }
+
+    // =========================
+    // 2. STUDY → BREAK
     // =========================
     if (!state.isBreakTime) {
       emit(state.copyWith(
@@ -89,7 +98,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     }
 
     // =========================
-    // dari BREAK → NEXT SESSION
+    // 3. BREAK → NEXT SESSION / FINISH
     // =========================
     if (state.currentSession < state.totalSessions) {
       emit(state.copyWith(
@@ -101,9 +110,6 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
       _startLoop();
     } else {
-      // =========================
-      // FINISH ALL SESSIONS
-      // =========================
       emit(state.copyWith(
         isAllCompleted: true,
         isRunning: false,

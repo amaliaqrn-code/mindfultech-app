@@ -1,11 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:mindfultech_app/core/routes/app_routes.dart';
-import 'package:mindfultech_app/presentation/task/models/task_model.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/blue_theme.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/blue_recommendation_card.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_state.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/blue_theme.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/blue_recommendation_card.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 
 /// ============================================================
 /// BLUE TASK RECOMMENDATION SCREEN
@@ -15,12 +17,14 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_a
 class BlueTaskRecommendationPage extends StatefulWidget {
   final TaskCategory? selectedCategory;
   final EnergyLevel? energyLevel;
+  final TaskModel selectedTask;
 
   const BlueTaskRecommendationPage({
-    super.key,
+    Key? key,
     this.selectedCategory,
     this.energyLevel,
-  });
+    required this.selectedTask,
+  }) : super(key: key);
 
   @override
   State<BlueTaskRecommendationPage> createState() =>
@@ -251,7 +255,13 @@ class _BlueTaskRecommendationPageState
             // Confirm Button (Solid Blue)
             BlueSolidButton(
               text: 'Aku siap fokus!',
-              onTap: () => Navigator.pushNamed(context, AppRoutes.setupTimer),
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.setupTimer,
+                  arguments: recommendedTask,
+                );
+              },
             ),
           ],
         ),
