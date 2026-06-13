@@ -8,9 +8,9 @@ import '../bloc/timer/timer_state.dart';
 import '../widgets/timer_circle_progress.dart';
 
 class TimerPage extends StatelessWidget {
-  final TaskModel task;
+  final TaskModel? task;
 
-  const TimerPage({super.key, required this.task});
+  const TimerPage({super.key, this.task});
 
   @override
   Widget build(BuildContext context) {

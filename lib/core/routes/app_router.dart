@@ -44,7 +44,10 @@ import 'package:mindfultech_app/presentation/task/pages/create_custom_task_page.
 /// App Router - Centralized routing configuration using Flutter Navigator
 class AppRouter {
   /// Generate routes with BLoC providers
-  static Route<dynamic>? generateRoute(RouteSettings settings, AppDependencies dependencies) {
+  static Route<dynamic>? generateRoute(
+    RouteSettings settings,
+    AppDependencies dependencies,
+  ) {
     final uri = Uri.parse(settings.name ?? '/');
     final taskRepository = dependencies.taskRepository;
     final authRepository = dependencies.authRepository;
@@ -85,7 +88,10 @@ class AppRouter {
           ),
         );
       case AppRoutes.mainPage:
-        return _buildPageRoute(settings, MainPage(authRepository: authRepository));
+        return _buildPageRoute(
+          settings,
+          MainPage(authRepository: authRepository),
+        );
       case AppRoutes.journey:
         return _buildPageRoute(settings, JourneyPage());
       case AppRoutes.streak:
@@ -95,7 +101,8 @@ class AppRouter {
       case AppRoutes.greenTaskRecommendation:
         final args = settings.arguments as Map<String, dynamic>?;
         final category = args?['category'] as TaskCategory?;
-        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
+        final energyLevel =
+            args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -108,9 +115,11 @@ class AppRouter {
         );
       case AppRoutes.greenAlternativeTaskList:
         final args = settings.arguments as Map<String, dynamic>?;
-        final category = args?['category'] as TaskCategory? ?? TaskCategory.pribadi;
+        final category =
+            args?['category'] as TaskCategory? ?? TaskCategory.pribadi;
         final excludeTaskId = args?['excludeTaskId'] as String?;
-        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
+        final energyLevel =
+            args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -124,7 +133,8 @@ class AppRouter {
         );
       case AppRoutes.greenTaskConfirmation:
         final args = settings.arguments as Map<String, dynamic>?;
-        final selectedTask = args?['selectedTask'] as TaskModel? ??
+        final selectedTask =
+            args?['selectedTask'] as TaskModel? ??
             TaskModel(
               id: 'default_confirm_task',
               namaTugas: 'Menulis Jurnal',
@@ -136,14 +146,13 @@ class AppRouter {
             );
         return _buildPageRoute(
           settings,
-          GreenTaskConfirmationPage(
-            selectedTask: selectedTask,
-          ),
+          GreenTaskConfirmationPage(selectedTask: selectedTask),
         );
       case AppRoutes.blueTaskRecommendation:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
         final blueCategory = blueArgs?['category'] as TaskCategory?;
-        final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        final blueEnergyLevel =
+            blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -156,9 +165,11 @@ class AppRouter {
         );
       case AppRoutes.blueAlternativeTaskList:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
+        final blueCategory =
+            blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
         final blueExcludeTaskId = blueArgs?['excludeTaskId'] as String?;
-        final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        final blueEnergyLevel =
+            blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -172,7 +183,8 @@ class AppRouter {
         );
       case AppRoutes.blueTaskConfirmation:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueSelectedTask = blueArgs?['selectedTask'] as TaskModel? ??
+        final blueSelectedTask =
+            blueArgs?['selectedTask'] as TaskModel? ??
             TaskModel(
               id: 'default_blue_confirm',
               namaTugas: 'Meditasi 15 menit',
@@ -184,14 +196,13 @@ class AppRouter {
             );
         return _buildPageRoute(
           settings,
-          BlueTaskConfirmationPage(
-            selectedTask: blueSelectedTask,
-          ),
+          BlueTaskConfirmationPage(selectedTask: blueSelectedTask),
         );
       case AppRoutes.purpleTaskRecommendation:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
         final purpleCategory = purpleArgs?['category'] as TaskCategory?;
-        final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
+        final purpleEnergyLevel =
+            purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -204,9 +215,11 @@ class AppRouter {
         );
       case AppRoutes.purpleAlternativeTaskList:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
+        final purpleCategory =
+            purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
         final purpleExcludeTaskId = purpleArgs?['excludeTaskId'] as String?;
-        final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
+        final purpleEnergyLevel =
+            purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -220,7 +233,8 @@ class AppRouter {
         );
       case AppRoutes.purpleTaskConfirmation:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleSelectedTask = purpleArgs?['selectedTask'] as TaskModel? ??
+        final purpleSelectedTask =
+            purpleArgs?['selectedTask'] as TaskModel? ??
             TaskModel(
               id: 'default_purple_confirm',
               namaTugas: 'Belajar coding intensif',
@@ -232,9 +246,7 @@ class AppRouter {
             );
         return _buildPageRoute(
           settings,
-          PurpleTaskConfirmationPage(
-            selectedTask: purpleSelectedTask,
-          ),
+          PurpleTaskConfirmationPage(selectedTask: purpleSelectedTask),
         );
       case AppRoutes.timer:
         return _buildPageRoute(
@@ -257,10 +269,7 @@ class AppRouter {
       case AppRoutes.activeTimer:
         return _buildPageRoute(
           settings,
-          BlocProvider(
-            create: (_) => TimerBloc(),
-            child: const TimerPage(),
-          ),
+          BlocProvider(create: (_) => TimerBloc(), child: const TimerPage()),
         );
       case AppRoutes.allTasks:
         return _buildPageRoute(settings, const AllTasksPage());
@@ -270,7 +279,8 @@ class AppRouter {
         return _buildPageRoute(settings, const CreateCustomTaskPage());
       case AppRoutes.taskCategory:
         final args = settings.arguments as Map<String, dynamic>?;
-        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        final energyLevel =
+            args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
           TaskCategoryPage(energyLevel: energyLevel),
