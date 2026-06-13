@@ -25,12 +25,14 @@ class LogoutDialog extends StatelessWidget {
             const SizedBox(height: 20),
             const Text(
               'Apakah kamu yakin ingin keluar?',
+              'Apakah kamu yakin\ningin keluar?',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
               'Kamu dapat masuk kembali kapan saja untuk melanjutkan perjalananmu bersama mindy',
+              'Kamu dapat masuk kembali kapan saja\nuntuk melanjutkan perjalananmu bersama Mindy.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             ),

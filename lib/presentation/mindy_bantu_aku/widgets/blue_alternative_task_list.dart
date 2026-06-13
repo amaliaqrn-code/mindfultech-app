@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/blue_theme.dart';
 
 /// Blue Alternative Task List Widget
@@ -47,73 +47,6 @@ class BlueAlternativeTaskCard extends StatelessWidget {
     required this.onTap,
   });
 
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'email':
-        return Icons.email;
-      case 'schedule':
-        return Icons.schedule;
-      case 'assignment':
-        return Icons.assignment;
-      case 'trending_up':
-        return Icons.trending_up;
-      case 'slideshow':
-        return Icons.slideshow;
-      case 'description':
-        return Icons.description;
-      case 'folder':
-        return Icons.folder;
-      case 'event_note':
-        return Icons.event_note;
-      case 'school':
-        return Icons.school;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'article':
-        return Icons.article;
-      case 'quiz':
-        return Icons.quiz;
-      case 'translate':
-        return Icons.translate;
-      case 'video_library':
-        return Icons.video_library;
-      case 'directions_walk':
-        return Icons.directions_walk;
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'health_and_safety':
-        return Icons.health_and_safety;
-      case 'medication':
-        return Icons.medication;
-      case 'palette':
-        return Icons.palette;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'edit':
-        return Icons.edit;
-      case 'restaurant_menu':
-        return Icons.restaurant_menu;
-      case 'movie':
-        return Icons.movie;
-      case 'groups':
-        return Icons.groups;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'call':
-        return Icons.call;
-      case 'pets':
-        return Icons.pets;
-      case 'favorite':
-        return Icons.favorite;
-      case 'work':
-        return Icons.work;
-      default:
-        return Icons.task_alt;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -151,7 +84,7 @@ class BlueAlternativeTaskCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                _taskIcon,
+                task.kategori.icon,
                 color: isSelected ? Colors.white : BlueTheme.primaryBlue,
                 size: 24,
               ),
@@ -164,7 +97,7 @@ class BlueAlternativeTaskCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    task.title,
+                    task.namaTugas,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -173,7 +106,7 @@ class BlueAlternativeTaskCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    task.description,
+                    task.kategori.displayName,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -195,7 +128,7 @@ class BlueAlternativeTaskCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '~${task.estimatedMinutes} menit',
+                        '~${task.estimasiWaktu} menit',
                         style: TextStyle(
                           fontSize: 11,
                           color: isSelected

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../models/energy_option_model.dart';
 import '../data/choose_energy_data.dart';
 import '../widgets/energy_card.dart';
@@ -179,17 +180,14 @@ class _ChooseEnergyPageState extends State<ChooseEnergyPage> {
   }
 
   void _onContinue() {
-    // Navigate based on energy selection - go to respective screen with theme
-    switch (_selectedEnergy) {
-      case 0: // Rendah - Green
-        Navigator.pushNamed(context, AppRoutes.greenTaskRecommendation);
-        break;
-      case 1: // Sedang - Blue
-        Navigator.pushNamed(context, AppRoutes.blueTaskRecommendation);
-        break;
-      case 2: // Tinggi - Purple
-        Navigator.pushNamed(context, AppRoutes.purpleTaskRecommendation);
-        break;
-    }
-  }
+  // Ambil nilai enum berdasarkan indeks pilihan user (0: rendah, 1: sedang, 2: tinggi)
+  final energyLevel = EnergyLevel.values[_selectedEnergy];
+
+  // Navigasi ke halaman TaskCategoryPage yang menampilkan 3 CategoryGridWidget
+  Navigator.pushNamed(
+    context,
+    AppRoutes.taskCategory,
+    arguments: {'energyLevel': energyLevel},
+  );
+}
 }

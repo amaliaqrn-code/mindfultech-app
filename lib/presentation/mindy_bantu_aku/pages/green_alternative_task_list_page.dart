@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/green_theme.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/green_alternative_task_list.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_state.dart';
 
 /// ============================================================
 /// GREEN ALTERNATIVE TASK LIST SCREEN
@@ -12,11 +15,13 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/green_alter
 class GreenAlternativeTaskListPage extends StatefulWidget {
   final TaskCategory category;
   final String? excludeTaskId;
+  final EnergyLevel energyLevel;
 
   const GreenAlternativeTaskListPage({
     super.key,
     required this.category,
     this.excludeTaskId,
+    required this.energyLevel,
   });
 
   @override
@@ -28,162 +33,13 @@ class _GreenAlternativeTaskListPageState
     extends State<GreenAlternativeTaskListPage> {
   TaskModel? _selectedTask;
 
-  // Sample tasks for each category (low energy tasks)
-  List<TaskModel> get _tasks {
-    final allTasks = _getTasksForCategory(widget.category);
-    if (widget.excludeTaskId != null) {
-      return allTasks.where((t) => t.id != widget.excludeTaskId).toList();
-    }
-    return allTasks;
-  }
-
-  List<TaskModel> _getTasksForCategory(TaskCategory category) {
-    switch (category) {
-      case TaskCategory.belajar:
-        return [
-          const TaskModel(
-            id: 'belajar_1',
-            title: 'Baca buku 5 menit',
-            description: 'Membaca buku ringan selama 5 menit untuk melatih fokus',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.low,
-            iconName: 'menu_book',
-            estimatedMinutes: 5,
-          ),
-          const TaskModel(
-            id: 'belajar_2',
-            title: 'Belajar vocabulary baru',
-            description: 'Menghafal 3-5 kata baru dalam bahasa asing',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.low,
-            iconName: 'translate',
-            estimatedMinutes: 10,
-          ),
-          const TaskModel(
-            id: 'belajar_3',
-            title: 'Baca artikel pendek',
-            description: 'Membaca satu artikel singkat yang menarik',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.low,
-            iconName: 'article',
-            estimatedMinutes: 10,
-          ),
-        ];
-      case TaskCategory.pekerjaan:
-        return [
-          const TaskModel(
-            id: 'pekerjaan_1',
-            title: 'Baca email penting',
-            description: 'Memeriksa dan merespons email yang penting saja',
-            category: TaskCategory.pekerjaan,
-            energyLevel: EnergyLevel.low,
-            iconName: 'email',
-            estimatedMinutes: 10,
-          ),
-          const TaskModel(
-            id: 'pekerjaan_2',
-            title: 'Update to-do list',
-            description: 'Membuat atau memperbarui daftar tugas hari ini',
-            category: TaskCategory.pekerjaan,
-            energyLevel: EnergyLevel.low,
-            iconName: 'assignment',
-            estimatedMinutes: 5,
-          ),
-        ];
-      case TaskCategory.kesehatan:
-        return [
-          const TaskModel(
-            id: 'kesehatan_1',
-            title: 'Stretching ringan',
-            description: 'Regangan ringan selama 5 menit untuk melepas ketegangan',
-            category: TaskCategory.kesehatan,
-            energyLevel: EnergyLevel.low,
-            iconName: 'self_improvement',
-            estimatedMinutes: 5,
-          ),
-          const TaskModel(
-            id: 'kesehatan_2',
-            title: 'Minum air putih',
-            description: 'Memastikan tubuh terhidrasi dengan baik',
-            category: TaskCategory.kesehatan,
-            energyLevel: EnergyLevel.low,
-            iconName: 'local_cafe',
-            estimatedMinutes: 2,
-          ),
-        ];
-      case TaskCategory.selfCare:
-        return [
-          const TaskModel(
-            id: 'selfcare_1',
-            title: 'Journaling',
-            description: 'Menulis perasaan dan pikiran di jurnal',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.low,
-            iconName: 'edit',
-            estimatedMinutes: 10,
-          ),
-          const TaskModel(
-            id: 'selfcare_2',
-            title: 'Meditasi singkat',
-            description: 'Menenangkan pikiran dengan meditasi 5 menit',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.low,
-            iconName: 'spa',
-            estimatedMinutes: 5,
-          ),
-          const TaskModel(
-            id: 'selfcare_3',
-            title: 'Breathe exercise',
-            description: 'Latihan pernapasan untuk menenangkan diri',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.low,
-            iconName: 'face',
-            estimatedMinutes: 5,
-          ),
-        ];
-      case TaskCategory.rumah:
-        return [
-          const TaskModel(
-            id: 'rumah_1',
-            title: 'Rapikan meja',
-            description: 'Membersihkan dan merapikan permukaan meja',
-            category: TaskCategory.rumah,
-            energyLevel: EnergyLevel.low,
-            iconName: 'desk',
-            estimatedMinutes: 5,
-          ),
-          const TaskModel(
-            id: 'rumah_2',
-            title: 'Rapikan tempat tidur',
-            description: 'Membuat tempat tidur rapi dan bersih',
-            category: TaskCategory.rumah,
-            energyLevel: EnergyLevel.low,
-            iconName: 'bed',
-            estimatedMinutes: 3,
-          ),
-        ];
-      case TaskCategory.hubungan:
-        return [
-          const TaskModel(
-            id: 'hubungan_1',
-            title: 'Kirim pesan ke keluarga',
-            description: 'Mengirim pesan singkat ke anggota keluarga',
-            category: TaskCategory.hubungan,
-            energyLevel: EnergyLevel.low,
-            iconName: 'chat',
-            estimatedMinutes: 5,
-          ),
-          const TaskModel(
-            id: 'hubungan_2',
-            title: 'Telfon teman dekat',
-            description: 'Menelepon teman dekat untuk mengecek kabar',
-            category: TaskCategory.hubungan,
-            energyLevel: EnergyLevel.low,
-            iconName: 'call',
-            estimatedMinutes: 10,
-          ),
-        ];
-    }
+  @override
+  void initState() {
+    super.initState();
+    // Trigger data fetch saat halaman dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MindyBantuAkuCubit>().selectEnergyLevel(widget.energyLevel);
+    });
   }
 
   @override
@@ -233,13 +89,43 @@ class _GreenAlternativeTaskListPageState
                     const SizedBox(height: 20),
 
                     // Task list
-                    GreenAlternativeTaskList(
-                      tasks: _tasks,
-                      selectedTask: _selectedTask,
-                      onTaskSelected: (task) {
-                        setState(() {
-                          _selectedTask = task;
-                        });
+                    BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
+                      builder: (context, state) {
+                        if (state.isLoading) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: CircularProgressIndicator(
+                                color: GreenTheme.sageGreen,
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (state.hasError) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: Text(
+                                state.errorMessage ?? 'Terjadi kesalahan',
+                                style: TextStyle(
+                                  color: GreenTheme.textGrey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return GreenAlternativeTaskList(
+                          tasks: state.recommendedTasks,
+                          selectedTask: _selectedTask,
+                          onTaskSelected: (task) {
+                            setState(() {
+                              _selectedTask = task as TaskModel?;
+                            });
+                          },
+                        );
                       },
                     ),
 
@@ -298,35 +184,6 @@ class _GreenAlternativeTaskListPageState
                             : GreenTheme.textMuted,
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-
-            // Bottom decoration
-            Container(
-              height: 30,
-              decoration: BoxDecoration(
-                color: GreenTheme.backgroundWhite,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: GreenTheme.shadowColor.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: GreenTheme.borderLight,
-                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),

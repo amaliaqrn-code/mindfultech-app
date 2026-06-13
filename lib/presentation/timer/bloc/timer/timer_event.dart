@@ -1,0 +1,20 @@
+// lib/presentation/timer/bloc/timer/timer_event.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'timer_event.freezed.dart';
+
+@freezed
+class TimerEvent with _$TimerEvent {
+  const factory TimerEvent.setupTimer({
+    required int totalTarget,
+    required int perSession,
+    required int breakDuration,
+  }) = TimerSetup;
+  const factory TimerEvent.start() = TimerStarted;
+  const factory TimerEvent.pause() = TimerPaused;
+  const factory TimerEvent.toggle() = TimerToggled;
+  const factory TimerEvent.reset() = TimerReset;
+  const factory TimerEvent.tick(int remainingSeconds) = TimerTicked;
+  const factory TimerEvent.nextSession() = TimerNextSession;
+
+  const factory TimerEvent.sessionEnded() = TimerSessionEnded;
+}

@@ -1,48 +1,34 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
 class GreenRecommendationCard extends StatelessWidget {
-  final TaskModel task;
-  final VoidCallback onConfirm;
-  final VoidCallback onTryAnother;
+  final TaskModel? task;
+  final EnergyLevel? energyLevel;
+  final TaskCategory? category;
 
   const GreenRecommendationCard({
     super.key,
-    required this.task,
-    required this.onConfirm,
-    required this.onTryAnother,
+    this.task,
+    this.energyLevel,
+    this.category,
   });
 
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'edit':
-        return Icons.edit;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'spa':
-        return Icons.spa;
-      case 'self_improvement':
-        return Icons.self_improvement;
-      case 'email':
-        return Icons.email;
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'work':
-        return Icons.work;
-      case 'home':
-        return Icons.home;
-      case 'favorite':
-        return Icons.favorite;
-      case 'chat':
-        return Icons.chat;
-      default:
-        return Icons.edit;
-    }
+  // Get task data with fallback to default values
+  TaskModel get _effectiveTask {
+    if (task != null) return task!;
+    // Create default task from energy level and category
+    final effectiveEnergy = energyLevel ?? EnergyLevel.rendah;
+    final effectiveCategory = category ?? TaskCategory.lainnya;
+    return DefaultTaskHelper.createDefaultTask(
+      energi: effectiveEnergy,
+      kategori: effectiveCategory,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final effectiveTask = _effectiveTask;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -85,16 +71,16 @@ class GreenRecommendationCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                _taskIcon,
+                effectiveTask.kategori.icon,
                 color: GreenTheme.sageGreen,
                 size: 44,
               ),
             ),
             const SizedBox(height: 20),
 
-            // Task Title
+            // Task Title - gunakan namaTugas
             Text(
-              task.title,
+              effectiveTask.namaTugas,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 26,
@@ -105,30 +91,32 @@ class GreenRecommendationCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Task Description
+            // Task Info - kategori dan estimasi waktu
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                task.description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: GreenTheme.textGrey,
-                  height: 1.4,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    effectiveTask.kategori.displayName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: GreenTheme.textGrey,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    effectiveTask.formattedDuration,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: GreenTheme.sageGreen,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 24),
-
-            // Tombol di dalam kartu
-            _GreenOutlineButton(
-              text: 'Coba tugas lain',
-              onTap: onTryAnother,
-            ),
-            const SizedBox(height: 12),
-            _GreenSolidButton(
-              text: 'Aku siap fokus!',
-              onTap: onConfirm,
             ),
           ],
         ),
@@ -137,11 +125,16 @@ class GreenRecommendationCard extends StatelessWidget {
   }
 }
 
-class _GreenOutlineButton extends StatelessWidget {
+/// Green Outline Button (Helper Widget)
+class GreenOutlineButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _GreenOutlineButton({required this.text, required this.onTap});
+  const GreenOutlineButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -172,11 +165,16 @@ class _GreenOutlineButton extends StatelessWidget {
   }
 }
 
-class _GreenSolidButton extends StatelessWidget {
+/// Green Solid Button (Helper Widget)
+class GreenSolidButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _GreenSolidButton({required this.text, required this.onTap});
+  const GreenSolidButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

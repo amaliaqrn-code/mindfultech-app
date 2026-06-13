@@ -156,6 +156,95 @@ extension TaskPriorityExtension on TaskPriority {
   }
 }
 
+/// Default task data helper for fallback recommendations
+class DefaultTaskHelper {
+  /// Get default task title based on energy level and category
+  static String getDefaultTaskTitle(EnergyLevel energi, TaskCategory kategori) {
+    // Low energy (rendah) - 5 minutes tasks
+    if (energi == EnergyLevel.rendah) {
+      switch (kategori) {
+        case TaskCategory.belajar:
+          return 'Baca 1 halaman buku atau artikel edukatif ringan';
+        case TaskCategory.pekerjaan:
+          return 'Cek dan rapihkan inbox email atau urutkan to-do list';
+        case TaskCategory.kesehatan:
+          return 'Minum satu gelas air putih dan regangkan tangan';
+        case TaskCategory.pribadi:
+          return 'Tulis 1 hal yang kamu syukuri hari ini di jurnal';
+        case TaskCategory.rumah:
+          return 'Buang sampah atau letakkan baju kotor ke tempatnya';
+        case TaskCategory.lainnya:
+          return 'Istirahat tanpa melihat layar smartphone sama sekali';
+      }
+    }
+
+    // Medium energy (sedang) - 10-15 minutes tasks
+    if (energi == EnergyLevel.sedang) {
+      switch (kategori) {
+        case TaskCategory.belajar:
+          return 'Tonton 1 video tutorial atau rangkum materi singkat';
+        case TaskCategory.pekerjaan:
+          return 'Balas pesan klien atau cicil dokumen kerjaan ringan';
+        case TaskCategory.kesehatan:
+          return 'Latihan napas dalam (deep breathing) atau jalan santai';
+        case TaskCategory.pribadi:
+          return 'Lakukan meditasi tenang atau rapikan galeri foto HP';
+        case TaskCategory.rumah:
+          return 'Lap meja kerja, cuci piring, atau rapikan kasur';
+        case TaskCategory.lainnya:
+          return 'Buat daftar lagu (playlist) santai untuk nemenin hari';
+      }
+    }
+
+    // High energy (tinggi) - 15-30 minutes tasks
+    // Default case for tinggi
+    switch (kategori) {
+      case TaskCategory.belajar:
+        return 'Pelajari topik baru yang sulit atau latihan soal';
+      case TaskCategory.pekerjaan:
+        return 'Selesaikan tugas utama yang paling menyita otak';
+      case TaskCategory.kesehatan:
+        return 'Olahraga ringan, stretching total, atau workout singkat';
+      case TaskCategory.pribadi:
+        return 'Evaluasi target mingguan atau rencanakan hobi barumu';
+      case TaskCategory.rumah:
+        return 'Sapu dan pel kamar atau tata ulang lemari pakaian';
+      case TaskCategory.lainnya:
+        return 'Bereskan satu hal kecil yang terus kamu tunda minggu ini';
+    }
+  }
+
+  /// Get default duration based on energy level
+  static int getDefaultDuration(EnergyLevel energi) {
+    switch (energi) {
+      case EnergyLevel.rendah:
+        return 5;
+      case EnergyLevel.sedang:
+        return 15;
+      case EnergyLevel.tinggi:
+        return 25;
+    }
+  }
+
+  /// Create a default TaskModel based on energy level and category
+  static TaskModel createDefaultTask({
+    required EnergyLevel energi,
+    required TaskCategory kategori,
+    String? customId,
+  }) {
+    return TaskModel(
+      id: customId ?? 'default_${energi.name}_${kategori.name}_${DateTime.now().millisecondsSinceEpoch}',
+      namaTugas: getDefaultTaskTitle(energi, kategori),
+      kategori: kategori,
+      energi: energi,
+      estimasiWaktu: getDefaultDuration(energi),
+      prioritas: TaskPriority.santai,
+      createdAt: DateTime.now(),
+      isDefault: true,
+    );
+  }
+}
+
 /// Fungsi helper untuk parsing int yang aman
 int _parseInt(dynamic value, {int defaultValue = 0}) {
   if (value == null) return defaultValue;
@@ -222,6 +311,8 @@ class TaskModel extends Equatable {
   final int estimasiWaktu; // dalam menit
   final TaskPriority prioritas;
   final DateTime createdAt;
+  final String? userId; // User ID untuk multi-user isolation
+  final bool isDefault; // Flag untuk default system tasks
 
   const TaskModel({
     required this.id,
@@ -231,6 +322,8 @@ class TaskModel extends Equatable {
     required this.estimasiWaktu,
     required this.prioritas,
     required this.createdAt,
+    this.userId,
+    this.isDefault = false,
   });
 
   /// Membuat TaskModel dari Map (biasanya dari database)
@@ -250,6 +343,10 @@ class TaskModel extends Equatable {
     final namaTugasValue = _parseString(map['namaTugas']);
     // Parse createdAt - handle berbagai format tanggal
     final createdAtValue = _parseDateTime(map['createdAt']);
+    // Parse userId - nullable, untuk multi-user isolation
+    final userIdValue = map['userId'] != null ? _parseString(map['userId']) : null;
+    // Parse isDefault - boolean flag untuk default tasks
+    final isDefaultValue = map['isDefault'] == 1 || map['isDefault'] == true;
 
     return TaskModel(
       id: idValue.isEmpty ? DateTime.now().millisecondsSinceEpoch.toString() : idValue,
@@ -259,6 +356,8 @@ class TaskModel extends Equatable {
       estimasiWaktu: estimasiValue,
       prioritas: TaskPriorityExtension.fromValue(prioritasValue),
       createdAt: createdAtValue,
+      userId: userIdValue?.isNotEmpty == true ? userIdValue : null,
+      isDefault: isDefaultValue,
     );
   }
 
@@ -272,6 +371,8 @@ class TaskModel extends Equatable {
       'estimasiWaktu': estimasiWaktu,
       'prioritas': prioritas.value,
       'createdAt': createdAt.toIso8601String(),
+      'userId': userId,
+      'isDefault': isDefault ? 1 : 0,
     };
   }
 
@@ -292,6 +393,7 @@ class TaskModel extends Equatable {
       'title': namaTugas,               // Sesuaikan dengan nama variabel properti tugasmu
       'difficulty': difficultyLaravel,
       'is_completed': 0,
+      'is_default': isDefault ? 1 : 0,
     };
   }
 
@@ -304,6 +406,8 @@ class TaskModel extends Equatable {
     int? estimasiWaktu,
     TaskPriority? prioritas,
     DateTime? createdAt,
+    String? userId,
+    bool? isDefault,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -313,6 +417,8 @@ class TaskModel extends Equatable {
       estimasiWaktu: estimasiWaktu ?? this.estimasiWaktu,
       prioritas: prioritas ?? this.prioritas,
       createdAt: createdAt ?? this.createdAt,
+      userId: userId ?? this.userId,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 
@@ -321,12 +427,14 @@ class TaskModel extends Equatable {
 
   @override
   List<Object?> get props => [
- id,
+        id,
         namaTugas,
         kategori,
         energi,
         estimasiWaktu,
         prioritas,
         createdAt,
+        userId,
+        isDefault,
       ];
 }

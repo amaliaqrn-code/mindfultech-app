@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
 /// Green Category Grid Widget - Grid 2x3 dengan Green Theme
@@ -19,10 +19,10 @@ class GreenCategoryGridWidget extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 1.0,
+        crossAxisCount: 3,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.95,
       ),
       itemCount: TaskCategory.values.length,
       itemBuilder: (context, index) {
@@ -56,11 +56,11 @@ class GreenCategoryCard extends StatelessWidget {
         return Icons.home_rounded;
       case TaskCategory.pekerjaan:
         return Icons.work_rounded;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return Icons.person_rounded;
       case TaskCategory.belajar:
         return Icons.menu_book_rounded;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return Icons.auto_awesome_rounded;
       case TaskCategory.kesehatan:
         return Icons.favorite_rounded;
@@ -75,11 +75,11 @@ class GreenCategoryCard extends StatelessWidget {
         return const Color(0xFFC7E7A6);
       case TaskCategory.kesehatan:
         return const Color(0xFFA7D7A7);
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return const Color(0xFFB7E4C7);
       case TaskCategory.rumah:
         return GreenTheme.sageGreenLight;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return const Color(0xFFC9F0D6);
     }
   }
@@ -92,11 +92,11 @@ class GreenCategoryCard extends StatelessWidget {
         return const Color(0xFF3A8C47);
       case TaskCategory.kesehatan:
         return const Color(0xFF257A4B);
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return const Color(0xFF4C956C);
       case TaskCategory.rumah:
         return GreenTheme.sageGreen;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return const Color(0xFF5DAE82);
     }
   }

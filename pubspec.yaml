@@ -144,7 +144,16 @@ flutter:
     - assets/images/streak/streak_legend.png
 
     # Timer page images
-    - assets/images/timerpage/background.jpg
+    - assets/images/timerpage/tugas_selesai.png
+    - assets/images/timerpage/backcground.png
+
+    # Timer page icons (PNG)
+    - assets/icon/timerpage/Cloud1.png
+    - assets/icon/timerpage/Cloud2.png
+    - assets/icon/timerpage/Cloud4.png
+    - assets/icon/timerpage/Cloud5.png
+    - assets/icon/timerpage/Cloud6.png
+    - assets/icon/timerpage/Group3.png
 
     # Homepage icons
     - assets/icon/homepage/belajar.png
@@ -186,3 +195,19 @@ flutter:
     - assets/icon/energirendah/tidurlebihawal.svg
 
     - assets/icon/icon-park-solid_laptop.svg
+
+    # Result images
+    - assets/images/result/Cloud1.png
+    - assets/images/result/Cloud2.png
+    - assets/images/result/Cloud3.png
+    - assets/images/result/Cloud4.png
+    - assets/images/result/Cloud5.png
+    - assets/images/result/Group 67.png
+    - assets/images/result/resultlevel1.png
+    - assets/images/result/resultlevel2.png
+    - assets/images/result/resultlevel3.png
+    - assets/images/result/resultlevel4.png
+    - assets/images/result/resultlevel5.png
+    - assets/images/result/resultlevel6.png
+
+    - assets/images/page_success.png

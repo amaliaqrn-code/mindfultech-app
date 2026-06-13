@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/blue_theme.dart';
 
 /// ============================================================
@@ -14,73 +15,6 @@ class BlueTaskConfirmationPage extends StatelessWidget {
     super.key,
     required this.selectedTask,
   });
-
-  IconData get _taskIcon {
-    switch (selectedTask.iconName) {
-      case 'email':
-        return Icons.email;
-      case 'schedule':
-        return Icons.schedule;
-      case 'assignment':
-        return Icons.assignment;
-      case 'trending_up':
-        return Icons.trending_up;
-      case 'slideshow':
-        return Icons.slideshow;
-      case 'description':
-        return Icons.description;
-      case 'folder':
-        return Icons.folder;
-      case 'event_note':
-        return Icons.event_note;
-      case 'school':
-        return Icons.school;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'article':
-        return Icons.article;
-      case 'quiz':
-        return Icons.quiz;
-      case 'translate':
-        return Icons.translate;
-      case 'video_library':
-        return Icons.video_library;
-      case 'directions_walk':
-        return Icons.directions_walk;
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'health_and_safety':
-        return Icons.health_and_safety;
-      case 'medication':
-        return Icons.medication;
-      case 'palette':
-        return Icons.palette;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'edit':
-        return Icons.edit;
-      case 'restaurant_menu':
-        return Icons.restaurant_menu;
-      case 'movie':
-        return Icons.movie;
-      case 'groups':
-        return Icons.groups;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'call':
-        return Icons.call;
-      case 'pets':
-        return Icons.pets;
-      case 'favorite':
-        return Icons.favorite;
-      case 'work':
-        return Icons.work;
-      default:
-        return Icons.task_alt;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,16 +128,16 @@ class BlueTaskConfirmationPage extends StatelessWidget {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    _taskIcon,
+                                    selectedTask.kategori.icon,
                                     color: BlueTheme.primaryBlue,
                                     size: 50,
                                   ),
                                 ),
-                                const SizedBox(height: 32), // badge -> icon = 32
+                                const SizedBox(height: 32),
 
                                 // Task Title
                                 Text(
-                                  selectedTask.title,
+                                  selectedTask.namaTugas,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontSize: 20,
@@ -212,11 +146,11 @@ class BlueTaskConfirmationPage extends StatelessWidget {
                                     height: 1.3,
                                   ),
                                 ),
-                                const SizedBox(height: 16), // icon -> title = 28 (with 12 already from icon)
+                                const SizedBox(height: 16),
 
                                 // Task Description
                                 Text(
-                                  selectedTask.description,
+                                  selectedTask.kategori.displayName,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontSize: 14,
@@ -224,7 +158,7 @@ class BlueTaskConfirmationPage extends StatelessWidget {
                                     height: 1.5,
                                   ),
                                 ),
-                                const SizedBox(height: 32), // description -> card bottom = 32
+                                const SizedBox(height: 32),
                               ],
                             ),
                           ),
@@ -232,12 +166,18 @@ class BlueTaskConfirmationPage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 24), // card -> primary button = 24
+                    const SizedBox(height: 24),
 
                     // Primary Button - "Yay, Lanjut Fokus!"
                     GestureDetector(
                       onTap: () {
-                        // Navigate to timer
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.setupTimer,
+                          arguments: {
+                            'task': selectedTask,
+                          },
+                        );
                       },
                       child: Container(
                         width: double.infinity,
@@ -265,38 +205,6 @@ class BlueTaskConfirmationPage extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 16), // primary -> secondary = 16
-
-                    // Secondary Button - "Buat Tugasmu Sendiri"
-                    GestureDetector(
-                      onTap: () {
-                        // Navigate to create task screen
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: BlueTheme.backgroundWhite,
-                          borderRadius: BorderRadius.circular(26),
-                          border: Border.all(
-                            color: BlueTheme.primaryBlue,
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Buat Tugasmu Sendiri',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: BlueTheme.primaryBlue,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
                     const SizedBox(height: 24),
                   ],
                 ),

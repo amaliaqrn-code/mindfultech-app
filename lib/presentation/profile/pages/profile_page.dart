@@ -1,9 +1,11 @@
+// profile_page.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import '../data/dummy_user.dart'; // Sesuaikan dengan lokasi file dummy_user.dart
-import '../models/user_model.dart';
-import '../widgets/logout_dialog.dart'; // Sesuaikan dengan lokasi LogoutDialog kamu
+import 'package:mindfultech_app/presentation/profile/bloc/profile/profile_bloc.dart';
+import 'package:mindfultech_app/data/models/user_model.dart';
+import '../widgets/logout_dialog.dart';
 import 'notification_page.dart';
 import 'privacy_policy_page.dart';
 import 'edit_profile_page.dart';
@@ -16,27 +18,22 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  File? profileImage;
   final ImagePicker picker = ImagePicker();
-  late UserModel currentUserData;
-
-  // Ambil data langsung dari objek currentUser di dummy_user.dart
-  String userName = currentUser.name;
-  String userUsername = currentUser.username;
 
   @override
   void initState() {
     super.initState();
-    currentUserData = currentUser;
+    context.read<ProfileBloc>().add(const ProfileEvent.started());
   }
 
   Future<void> pickImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source, imageQuality: 80);
-
     if (pickedFile != null) {
-      setState(() {
-        profileImage = File(pickedFile.path);
-      });
+      if (mounted) {
+        context.read<ProfileBloc>().add(
+              ProfileEvent.updateProfileImage(imageFile: File(pickedFile.path)),
+            );
+      }
     }
   }
 
@@ -52,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text("Gallery"),
+                title: const Text('Galeri'),
                 onTap: () {
                   Navigator.pop(context);
                   pickImage(ImageSource.gallery);
@@ -60,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text("Camera"),
+                title: const Text('Kamera'),
                 onTap: () {
                   Navigator.pop(context);
                   pickImage(ImageSource.camera);
@@ -75,205 +72,172 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    // Tentukan warna utama aplikasi
+    const primaryColor = Color(0xFF4D96E8);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF8DBBE8),
+      // 1. Menggunakan Stack untuk latar belakang gambar awan
       body: Stack(
         children: [
-          /// BACKGROUND
-          SizedBox(
-            height: size.height * 0.38,
+          // Latar Belakang Gambar Awan
+          Container(
             width: double.infinity,
-            child: Image.asset(
-              'assets/images/profile/background_profile.png',
-              fit: BoxFit.cover,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                // Pastikan gambar ini ada di folder assets dan terdaftar di pubspec.yaml
+                image: AssetImage('assets/images/profile/background_profile.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
 
-          /// CARD PUTIH
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: size.height * 0.65,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 80),
+          // Konten Utama
+          SafeArea(
+            child: BlocConsumer<ProfileBloc, ProfileState>(
+              listener: (context, state) {
+                state.maybeWhen(
+                  error: (message) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message), backgroundColor: Colors.red),
+                    );
+                  },
+                  orElse: () {},
+                );
+              },
+              builder: (context, state) {
+                final UserModel user = state.maybeWhen(
+                  orElse: () => UserModel(id: 0, name: '', username: '', gender: '', phone: '', email: ''),
+                );
+                final localImage = state.maybeWhen(success: (_, image) => image, orElse: () => null);
 
-                  Text(
-                    userName,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    userUsername,
-                    style: const TextStyle(color: Colors.grey, fontSize: 15),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  /// EDIT PROFILE
-                  buildMenuButton(
-                    icon: Icons.person,
-                    title: "Edit Profil",
-                    onTap: () async {
-                      // Kirim data currentUserData ke EditProfileScreen
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditProfileScreen(user: currentUserData),
-                        ),
-                      );
-
-                      // Jika mendapatkan data balikan berupa UserModel yang baru
-                      if (result != null && result is UserModel) {
-                        setState(() {
-                          currentUserData = result;
-                          userName = result.name;
-                          userUsername = result.username;
-                        });
-                      }
-                    },
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  /// NOTIFIKASI
-                  buildMenuButton(
-                    icon: Icons.notifications,
-                    title: "Notifikasi",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const NotificationScreen(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  /// PRIVASI
-                  buildMenuButton(
-                    icon: Icons.lock,
-                    title: "Kebijakan Privasi",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const PrivacyPolicyScreen(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 35),
-
-                  /// LOGOUT
-                  SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            // Memanggil komponen LogoutDialog yang sudah kamu sediakan
-                            return LogoutDialog(onLogout: () {});
-                          },
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4D96E8),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                return Column(
+                  children: [
+                    // Header (Judul "Profil")
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      child: Row(
                         children: [
-                          Icon(Icons.logout_rounded, color: Colors.white),
-                          SizedBox(width: 10),
-                          Text(
-                            "Keluar",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(width: 36), // Spacer untuk keseimbangan
+                          const Expanded(
+                            child: Text(
+                              "Profil",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
 
-          /// AVATAR
-          Positioned(
-            top: size.height * 0.28,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: GestureDetector(
-                onTap: showImagePicker,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
+                    const SizedBox(height: 20),
+
+                    // Foto Profil dengan Stack untuk Ikon Kamera
+                    Center(
+                      child: Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: showImagePicker,
+                            child: CircleAvatar(
+                              radius: 55,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 52,
+                                backgroundColor: Colors.grey.shade200,
+                                backgroundImage: localImage != null
+                                    ? FileImage(localImage)
+                                    : (user.imagePath != null && user.imagePath!.isNotEmpty
+                                        ? NetworkImage(user.imagePath!)
+                                        : const AssetImage('assets/images/profile/avatar.png')) as ImageProvider,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              child: const Icon(Icons.camera_alt, color: primaryColor, size: 20),
+                            ),
                           ),
                         ],
                       ),
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundImage: profileImage != null
-                            ? FileImage(profileImage!)
-                            : const AssetImage(
-                                    'assets/images/profile/avatar.png',
-                                  )
-                                  as ImageProvider,
-                      ),
                     ),
 
-                    // Overlay gelap transparan
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black.withValues(alpha: 0.25),
+                    const SizedBox(height: 20),
+
+                    // 2. Container Putih Melengkung untuk Area Konten Bawah
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                        ),
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Nama dan Username
+                              Text(user.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text(
+                                user.username?.isNotEmpty == true ? '@${user.username}' : '@belum_diatur',
+                                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                              ),
+
+                              const SizedBox(height: 30),
+
+                              // Tombol Menu
+                              _buildMenuButton(
+                                icon: Icons.person_outline,
+                                title: "Ubah Profil",
+                                color: primaryColor,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EditProfileScreen(user: user))),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildMenuButton(
+                                icon: Icons.notifications_none,
+                                title: "Notifikasi",
+                                color: primaryColor,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen())),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildMenuButton(
+                                icon: Icons.privacy_tip_outlined,
+                                title: "Kebijakan Privasi",
+                                color: primaryColor,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                              ),
+                              
+                              const SizedBox(height: 40),
+
+                              // Tombol Keluar
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => showDialog(context: context, builder: (_) => LogoutDialog(onLogout: () {})),
+                                  icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+                                  label: const Text("Keluar", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryColor,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-
-                    // Icon kamera di tengah
-                    const Icon(Icons.camera_alt, color: Colors.white, size: 32),
                   ],
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -281,10 +245,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildMenuButton({
+  // Widget Pembantu untuk Tombol Menu
+  Widget _buildMenuButton({
     required IconData icon,
     required String title,
-    VoidCallback? onTap,
+    required Color color,
+    required VoidCallback onTap,
   }) {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -294,17 +260,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 58,
         padding: const EdgeInsets.symmetric(horizontal: 18),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFF4D96E8)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(14),
+          color: color.withValues(alpha: 0.05),
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF4D96E8), size: 22),
+            Icon(icon, color: color, size: 22),
             const SizedBox(width: 14),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            ),
+            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            const Spacer(),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
           ],
         ),
       ),

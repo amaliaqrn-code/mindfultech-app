@@ -1,89 +1,35 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/blue_theme.dart';
 
 /// Blue Recommendation Card Widget
 class BlueRecommendationCard extends StatelessWidget {
-  final TaskModel task;
-  final VoidCallback onConfirm;
-  final VoidCallback onTryAnother;
+  final TaskModel? task;
+  final EnergyLevel? energyLevel;
+  final TaskCategory? category;
 
   const BlueRecommendationCard({
     super.key,
-    required this.task,
-    required this.onConfirm,
-    required this.onTryAnother,
+    this.task,
+    this.energyLevel,
+    this.category,
   });
 
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'email':
-        return Icons.email;
-      case 'schedule':
-        return Icons.schedule;
-      case 'assignment':
-        return Icons.assignment;
-      case 'trending_up':
-        return Icons.trending_up;
-      case 'slideshow':
-        return Icons.slideshow;
-      case 'description':
-        return Icons.description;
-      case 'folder':
-        return Icons.folder;
-      case 'event_note':
-        return Icons.event_note;
-      case 'school':
-        return Icons.school;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'article':
-        return Icons.article;
-      case 'quiz':
-        return Icons.quiz;
-      case 'translate':
-        return Icons.translate;
-      case 'video_library':
-        return Icons.video_library;
-      case 'directions_walk':
-        return Icons.directions_walk;
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'health_and_safety':
-        return Icons.health_and_safety;
-      case 'medication':
-        return Icons.medication;
-      case 'palette':
-        return Icons.palette;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'edit':
-        return Icons.edit;
-      case 'restaurant_menu':
-        return Icons.restaurant_menu;
-      case 'movie':
-        return Icons.movie;
-      case 'groups':
-        return Icons.groups;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'call':
-        return Icons.call;
-      case 'pets':
-        return Icons.pets;
-      case 'favorite':
-        return Icons.favorite;
-      case 'work':
-        return Icons.work;
-      default:
-        return Icons.task_alt;
-    }
+  // Get task data with fallback to default values
+  TaskModel get _effectiveTask {
+    if (task != null) return task!;
+    // Create default task from energy level and category
+    final effectiveEnergy = energyLevel ?? EnergyLevel.sedang;
+    final effectiveCategory = category ?? TaskCategory.lainnya;
+    return DefaultTaskHelper.createDefaultTask(
+      energi: effectiveEnergy,
+      kategori: effectiveCategory,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final effectiveTask = _effectiveTask;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -119,13 +65,13 @@ class BlueRecommendationCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.lightbulb_outline,
                   color: BlueTheme.primaryBlue,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   'Hari ini coba kamu fokus ke:',
                   style: TextStyle(
                     fontSize: 14,
@@ -146,12 +92,12 @@ class BlueRecommendationCard extends StatelessWidget {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: BlueTheme.primaryBluePale,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _taskIcon,
+                    effectiveTask.kategori.icon,
                     color: BlueTheme.primaryBlue,
                     size: 40,
                   ),
@@ -160,7 +106,7 @@ class BlueRecommendationCard extends StatelessWidget {
 
                 // Task Title
                 Text(
-                  task.title,
+                  effectiveTask.namaTugas,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 22,
@@ -173,7 +119,7 @@ class BlueRecommendationCard extends StatelessWidget {
 
                 // Task Description
                 Text(
-                  task.description,
+                  effectiveTask.kategori.displayName,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 15,
@@ -189,34 +135,12 @@ class BlueRecommendationCard extends StatelessWidget {
                   children: [
                     _buildMetaChip(
                       icon: Icons.category_rounded,
-                      label: task.category.displayName,
+                      label: effectiveTask.kategori.displayName,
                     ),
                     const SizedBox(width: 12),
                     _buildMetaChip(
                       icon: Icons.timer_outlined,
-                      label: '~${task.estimatedMinutes} menit',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Action Buttons
-                Row(
-                  children: [
-                    // Try Another Button (Outline)
-                    Expanded(
-                      child: _BlueOutlineButton(
-                        text: 'Coba tugas lain',
-                        onTap: onTryAnother,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Confirm Button (Solid Blue)
-                    Expanded(
-                      child: _BlueSolidButton(
-                        text: 'Aku siap fokus!',
-                        onTap: onConfirm,
-                      ),
+                      label: '~${effectiveTask.estimasiWaktu} menit',
                     ),
                   ],
                 ),
@@ -257,11 +181,13 @@ class BlueRecommendationCard extends StatelessWidget {
   }
 }
 
-class _BlueOutlineButton extends StatelessWidget {
+/// Blue Outline Button (Helper Widget)
+class BlueOutlineButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _BlueOutlineButton({
+  const BlueOutlineButton({
+    super.key,
     required this.text,
     required this.onTap,
   });
@@ -295,11 +221,13 @@ class _BlueOutlineButton extends StatelessWidget {
   }
 }
 
-class _BlueSolidButton extends StatelessWidget {
+/// Blue Solid Button (Helper Widget)
+class BlueSolidButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _BlueSolidButton({
+  const BlueSolidButton({
+    super.key,
     required this.text,
     required this.onTap,
   });

@@ -151,7 +151,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                     child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 22),
                   ),
                 ),
-                
+
                 // Elemen Header Utama: Ilustrasi Awan Mindy & Teks
                 Center(
                   child: Column(
@@ -165,8 +165,8 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                       const Text(
                         'Buat Tugasmu Sendiri',
                         style: TextStyle(
-                          fontSize: 26, 
-                          fontWeight: FontWeight.bold, 
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
                           color: primaryBlue,
                           letterSpacing: 0.5,
                         ),
@@ -199,7 +199,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                           children: [
                             const Text('Kategori', style: TextStyle(fontSize: 11, color: Color(0xFF709CE0))),
                             Text(
-                              categoryName, 
+                              categoryName,
                               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1A56B1)),
                             ),
                           ],
@@ -212,7 +212,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
 
                 // Bagian Input Nama Tugas
                 const Text(
-                  'Nama Tugas', 
+                  'Nama Tugas',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
                 ),
                 const SizedBox(height: 10),
@@ -230,11 +230,11 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                       child: Icon(Icons.edit, color: Colors.black87, size: 22),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18), 
+                      borderRadius: BorderRadius.circular(18),
                       borderSide: const BorderSide(color: Color(0xFF4FA5FF), width: 1.2),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18), 
+                      borderRadius: BorderRadius.circular(18),
                       borderSide: const BorderSide(color: primaryBlue, width: 2),
                     ),
                   ),
@@ -243,7 +243,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
 
                 // Bagian Tingkat Energi (Label teks di gambar rujukan tertulis "Prioritas")
                 const Text(
-                  'Prioritas', 
+                  'Prioritas',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
                 ),
                 const SizedBox(height: 12),
@@ -265,9 +265,9 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SvgPicture.asset(
-                                opt['icon'], 
+                                opt['icon'],
                                 colorFilter: ColorFilter.mode(
-                                  isSelected ? opt['activeText'] : opt['inactiveText'], 
+                                  isSelected ? opt['activeText'] : opt['inactiveText'],
                                   BlendMode.srcIn,
                                 ),
                                 width: 18,
@@ -275,9 +275,9 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                opt['name'], 
+                                opt['name'],
                                 style: TextStyle(
-                                  color: isSelected ? opt['activeText'] : opt['inactiveText'], 
+                                  color: isSelected ? opt['activeText'] : opt['inactiveText'],
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -293,7 +293,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
 
                 // Bagian Estimasi Waktu (Susunan 3 Kolom Grid Berjajar)
                 const Text(
-                  'Estimasi Waktu', 
+                  'Estimasi Waktu',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
                 ),
                 const SizedBox(height: 12),
@@ -324,7 +324,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                               SvgPicture.asset(
                                 'assets/icon/input_tugas/timer.svg',
                                 colorFilter: ColorFilter.mode(
-                                  isSelected ? Colors.white : primaryBlue, 
+                                  isSelected ? Colors.white : primaryBlue,
                                   BlendMode.srcIn,
                                 ),
                                 width: 16,
@@ -332,9 +332,9 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '$minutes Menit', 
+                                '$minutes Menit',
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : primaryBlue, 
+                                  color: isSelected ? Colors.white : primaryBlue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -362,7 +362,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                               SvgPicture.asset(
                                 'assets/icon/input_tugas/timer.svg',
                                 colorFilter: ColorFilter.mode(
-                                  isSelected ? Colors.white : primaryBlue, 
+                                  isSelected ? Colors.white : primaryBlue,
                                   BlendMode.srcIn,
                                 ),
                                 width: 16,
@@ -370,11 +370,11 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                _customDurationController.text.isNotEmpty 
-                                    ? '${_customDurationController.text} Mnt' 
+                                _customDurationController.text.isNotEmpty
+                                    ? '${_customDurationController.text} Mnt'
                                     : 'Kustom +',
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : primaryBlue, 
+                                  color: isSelected ? Colors.white : primaryBlue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -390,7 +390,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
 
                 // Bagian Opsi Manajemen Prioritas Bawah
                 const Text(
-                  'Prioritas', 
+                  'Prioritas',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryBlue),
                 ),
                 const SizedBox(height: 12),
@@ -424,7 +424,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                               Text(
                                 opt['name'],
                                 style: TextStyle(
-                                  color: isSelected ? opt['activeText'] : opt['inactiveText'], 
+                                  color: isSelected ? opt['activeText'] : opt['inactiveText'],
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -447,7 +447,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
 
                     return GestureDetector(
                       onTap: () {
-                        
+
                         final taskName = _taskNameController.text.trim();
                         if (taskName.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -480,8 +480,8 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                         final category = categoryNameMap[categoryName] ?? TaskCategory.lainnya;
                         final energy = energyMap[_selectedEnergyIndex]!;
                         final priority = priorityMap[_selectedPriorityIndex]!;
-                        
-                        
+
+
                         int duration;
                         if (_selectedDurationIndex == _durations.length) {
                           duration = int.tryParse(_customDurationController.text) ?? 5;
@@ -526,6 +526,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                     );
                   },
                 ),
+                const SizedBox(height: 100), // Extra padding for bottom nav bar
               ],
             ),
           ),

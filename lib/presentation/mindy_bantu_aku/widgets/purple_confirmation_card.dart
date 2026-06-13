@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
 /// Purple Confirmation Card Widget
@@ -13,59 +13,6 @@ class PurpleConfirmationCard extends StatelessWidget {
     required this.onConfirm,
   });
 
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'directions_run':
-        return Icons.directions_run;
-      case 'pool':
-        return Icons.pool;
-      case 'sports':
-        return Icons.sports;
-      case 'directions_bike':
-        return Icons.directions_bike;
-      case 'self_improvement':
-        return Icons.self_improvement;
-      case 'school':
-        return Icons.school;
-      case 'checkroom':
-        return Icons.checkroom;
-      case 'edit_document':
-        return Icons.edit_document;
-      case 'assignment':
-        return Icons.assignment;
-      case 'code':
-        return Icons.code;
-      case 'computer':
-        return Icons.computer;
-      case 'palette':
-        return Icons.palette;
-      case 'videocam':
-        return Icons.videocam;
-      case 'music_note':
-        return Icons.music_note;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'article':
-        return Icons.article;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'cast_for_education':
-        return Icons.cast_for_education;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'groups':
-        return Icons.groups;
-      case 'volunteer_activism':
-        return Icons.volunteer_activism;
-      case 'favorite':
-        return Icons.favorite;
-      default:
-        return Icons.task_alt;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,7 +23,7 @@ class PurpleConfirmationCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             PurpleTheme.backgroundWhite,
-            PurpleTheme.violetAccentLight,
+            PurpleTheme.primaryPurplePale,
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -130,7 +77,7 @@ class PurpleConfirmationCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            task.title,
+            task.namaTugas,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 24,
@@ -143,7 +90,7 @@ class PurpleConfirmationCard extends StatelessWidget {
 
           // Description
           Text(
-            task.description,
+            task.kategori.displayName,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 15,
@@ -158,14 +105,14 @@ class PurpleConfirmationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildMetaChip(
-                icon: _taskIcon,
-                label: task.category.displayName,
+                icon: task.kategori.icon,
+                label: task.kategori.displayName,
                 color: PurpleTheme.primaryPurple,
               ),
               const SizedBox(width: 12),
               _buildMetaChip(
                 icon: Icons.timer_outlined,
-                label: '~${task.estimatedMinutes} menit',
+                label: '~${task.estimasiWaktu} menit',
                 color: PurpleTheme.primaryPurple,
               ),
             ],

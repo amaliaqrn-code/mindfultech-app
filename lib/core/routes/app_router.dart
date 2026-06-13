@@ -31,9 +31,12 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/blue_task_con
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_recommendation_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_alternative_task_list_page.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/purple_task_confirmation_page.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/pages/task_category_page.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/timer/pages/timer_page.dart';
-import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_cubit.dart';
+import 'package:mindfultech_app/presentation/timer/pages/setup_timer_page.dart';
+import '../../presentation/timer/bloc/timer/timer_bloc.dart';
 import 'package:mindfultech_app/presentation/task/pages/all_tasks_page.dart';
 import 'package:mindfultech_app/presentation/task/pages/create_task_category_page.dart';
 import 'package:mindfultech_app/presentation/task/pages/create_custom_task_page.dart';
@@ -41,8 +44,10 @@ import 'package:mindfultech_app/presentation/task/pages/create_custom_task_page.
 /// App Router - Centralized routing configuration using Flutter Navigator
 class AppRouter {
   /// Generate routes with BLoC providers
-  static Route<dynamic>? generateRoute(RouteSettings settings, AuthRepository authRepository) {
+  static Route<dynamic>? generateRoute(RouteSettings settings, AppDependencies dependencies) {
     final uri = Uri.parse(settings.name ?? '/');
+    final taskRepository = dependencies.taskRepository;
+    final authRepository = dependencies.authRepository;
 
     switch (uri.path) {
       case AppRoutes.splash:
@@ -89,46 +94,45 @@ class AppRouter {
         return _buildPageRoute(settings, ChooseEnergyPage());
       case AppRoutes.greenTaskRecommendation:
         final args = settings.arguments as Map<String, dynamic>?;
-        final category = args?['category'] as TaskCategory? ?? TaskCategory.selfCare;
-        final recommendedTask = args?['recommendedTask'] as TaskModel? ??
-            const TaskModel(
-              id: 'default_green_task',
-              title: 'Menulis Jurnal',
-              description: 'Menuangkan isi pikiran dan perasaan melalui tulisan',
-              category: TaskCategory.selfCare,
-              energyLevel: EnergyLevel.low,
-              iconName: 'edit',
-              estimatedMinutes: 10,
-            );
+        final category = args?['category'] as TaskCategory?;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
         return _buildPageRoute(
           settings,
-          GreenTaskRecommendationPage(
-            selectedCategory: category,
-            recommendedTask: recommendedTask,
+          BlocProvider(
+            create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
+            child: GreenTaskRecommendationPage(
+              selectedCategory: category,
+              energyLevel: energyLevel,
+            ),
           ),
         );
       case AppRoutes.greenAlternativeTaskList:
         final args = settings.arguments as Map<String, dynamic>?;
-        final category = args?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final category = args?['category'] as TaskCategory? ?? TaskCategory.pribadi;
         final excludeTaskId = args?['excludeTaskId'] as String?;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
         return _buildPageRoute(
           settings,
-          GreenAlternativeTaskListPage(
-            category: category,
-            excludeTaskId: excludeTaskId,
+          BlocProvider(
+            create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
+            child: GreenAlternativeTaskListPage(
+              category: category,
+              excludeTaskId: excludeTaskId,
+              energyLevel: energyLevel,
+            ),
           ),
         );
       case AppRoutes.greenTaskConfirmation:
         final args = settings.arguments as Map<String, dynamic>?;
         final selectedTask = args?['selectedTask'] as TaskModel? ??
-            const TaskModel(
+            TaskModel(
               id: 'default_confirm_task',
-              title: 'Menulis Jurnal',
-              description: 'Menuangkan isi pikiran dan perasaan melalui tulisan',
-              category: TaskCategory.selfCare,
-              energyLevel: EnergyLevel.low,
-              iconName: 'edit',
-              estimatedMinutes: 10,
+              namaTugas: 'Menulis Jurnal',
+              kategori: TaskCategory.pribadi,
+              energi: EnergyLevel.rendah,
+              estimasiWaktu: 10,
+              prioritas: TaskPriority.santai,
+              createdAt: DateTime.now(),
             );
         return _buildPageRoute(
           settings,
@@ -138,46 +142,45 @@ class AppRouter {
         );
       case AppRoutes.blueTaskRecommendation:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
-        final blueRecommendedTask = blueArgs?['recommendedTask'] as TaskModel? ??
-            const TaskModel(
-              id: 'default_blue_task',
-              title: 'Meditasi 15 menit',
-              description: 'Menenangkan pikiran dengan guided meditation',
-              category: TaskCategory.selfCare,
-              energyLevel: EnergyLevel.medium,
-              iconName: 'self_improvement',
-              estimatedMinutes: 15,
-            );
+        final blueCategory = blueArgs?['category'] as TaskCategory?;
+        final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
-          BlueTaskRecommendationPage(
-            selectedCategory: blueCategory,
-            recommendedTask: blueRecommendedTask,
+          BlocProvider(
+            create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
+            child: BlueTaskRecommendationPage(
+              selectedCategory: blueCategory,
+              energyLevel: blueEnergyLevel,
+            ),
           ),
         );
       case AppRoutes.blueAlternativeTaskList:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
         final blueExcludeTaskId = blueArgs?['excludeTaskId'] as String?;
+        final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
-          BlueAlternativeTaskListPage(
-            category: blueCategory,
-            excludeTaskId: blueExcludeTaskId,
+          BlocProvider(
+            create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
+            child: BlueAlternativeTaskListPage(
+              category: blueCategory,
+              excludeTaskId: blueExcludeTaskId,
+              energyLevel: blueEnergyLevel,
+            ),
           ),
         );
       case AppRoutes.blueTaskConfirmation:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
         final blueSelectedTask = blueArgs?['selectedTask'] as TaskModel? ??
-            const TaskModel(
+            TaskModel(
               id: 'default_blue_confirm',
-              title: 'Meditasi 15 menit',
-              description: 'Menenangkan pikiran dengan guided meditation',
-              category: TaskCategory.selfCare,
-              energyLevel: EnergyLevel.medium,
-              iconName: 'self_improvement',
-              estimatedMinutes: 15,
+              namaTugas: 'Meditasi 15 menit',
+              kategori: TaskCategory.pribadi,
+              energi: EnergyLevel.sedang,
+              estimasiWaktu: 15,
+              prioritas: TaskPriority.penting,
+              createdAt: DateTime.now(),
             );
         return _buildPageRoute(
           settings,
@@ -187,46 +190,45 @@ class AppRouter {
         );
       case AppRoutes.purpleTaskRecommendation:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
-        final purpleRecommendedTask = purpleArgs?['recommendedTask'] as TaskModel? ??
-            const TaskModel(
-              id: 'default_purple_task',
-              title: 'Belajar coding intensif',
-              description: 'Belajar coding intensif selama 2 jam',
-              category: TaskCategory.belajar,
-              energyLevel: EnergyLevel.high,
-              iconName: 'computer',
-              estimatedMinutes: 120,
-            );
+        final purpleCategory = purpleArgs?['category'] as TaskCategory?;
+        final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
         return _buildPageRoute(
           settings,
-          PurpleTaskRecommendationPage(
-            selectedCategory: purpleCategory,
-            recommendedTask: purpleRecommendedTask,
+          BlocProvider(
+            create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
+            child: PurpleTaskRecommendationPage(
+              selectedCategory: purpleCategory,
+              energyLevel: purpleEnergyLevel,
+            ),
           ),
         );
       case AppRoutes.purpleAlternativeTaskList:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.selfCare;
+        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
         final purpleExcludeTaskId = purpleArgs?['excludeTaskId'] as String?;
+        final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
         return _buildPageRoute(
           settings,
-          PurpleAlternativeTaskListPage(
-            category: purpleCategory,
-            excludeTaskId: purpleExcludeTaskId,
+          BlocProvider(
+            create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
+            child: PurpleAlternativeTaskListPage(
+              category: purpleCategory,
+              excludeTaskId: purpleExcludeTaskId,
+              energyLevel: purpleEnergyLevel,
+            ),
           ),
         );
       case AppRoutes.purpleTaskConfirmation:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
         final purpleSelectedTask = purpleArgs?['selectedTask'] as TaskModel? ??
-            const TaskModel(
+            TaskModel(
               id: 'default_purple_confirm',
-              title: 'Belajar coding intensif',
-              description: 'Belajar coding intensif selama 2 jam',
-              category: TaskCategory.belajar,
-              energyLevel: EnergyLevel.high,
-              iconName: 'computer',
-              estimatedMinutes: 120,
+              namaTugas: 'Belajar coding intensif',
+              kategori: TaskCategory.belajar,
+              energi: EnergyLevel.tinggi,
+              estimasiWaktu: 120,
+              prioritas: TaskPriority.mendesak,
+              createdAt: DateTime.now(),
             );
         return _buildPageRoute(
           settings,
@@ -235,12 +237,28 @@ class AppRouter {
           ),
         );
       case AppRoutes.timer:
-        final args = settings.arguments as Map<String, dynamic>?;
-        final taskName = args?['taskName'] as String? ?? 'Tugas Fokus';
         return _buildPageRoute(
           settings,
           BlocProvider(
-            create: (_) => TimerCubit(taskName: taskName),
+            create: (context) => TimerBloc(), // 💡 Diganti jadi TimerBloc
+            child: const TimerPage(),
+          ),
+        );
+      case AppRoutes.setupTimer:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final task = args?['task'] as dynamic;
+        return _buildPageRoute(
+          settings,
+          BlocProvider(
+            create: (_) => TimerBloc(),
+            child: SetupTimerPage(task: task),
+          ),
+        );
+      case AppRoutes.activeTimer:
+        return _buildPageRoute(
+          settings,
+          BlocProvider(
+            create: (_) => TimerBloc(),
             child: const TimerPage(),
           ),
         );
@@ -250,6 +268,13 @@ class AppRouter {
         return _buildPageRoute(settings, const CreateTaskCategoryPage());
       case AppRoutes.createCustomTask:
         return _buildPageRoute(settings, const CreateCustomTaskPage());
+      case AppRoutes.taskCategory:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        return _buildPageRoute(
+          settings,
+          TaskCategoryPage(energyLevel: energyLevel),
+        );
       default:
         return null;
     }

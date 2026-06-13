@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/purple_theme.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/purple_alternative_task_list.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_cubit.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_aku_state.dart';
 
 /// ============================================================
 /// PURPLE ALTERNATIVE TASK LIST SCREEN
@@ -12,11 +15,13 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/widgets/purple_alte
 class PurpleAlternativeTaskListPage extends StatefulWidget {
   final TaskCategory category;
   final String? excludeTaskId;
+  final EnergyLevel energyLevel;
 
   const PurpleAlternativeTaskListPage({
     super.key,
     required this.category,
     this.excludeTaskId,
+    required this.energyLevel,
   });
 
   @override
@@ -28,144 +33,12 @@ class _PurpleAlternativeTaskListPageState
     extends State<PurpleAlternativeTaskListPage> {
   TaskModel? _selectedTask;
 
-  // Sample tasks for each category (high energy tasks)
-  List<TaskModel> get _tasks {
-    final allTasks = _getTasksForCategory(widget.category);
-    if (widget.excludeTaskId != null) {
-      return allTasks.where((t) => t.id != widget.excludeTaskId).toList();
-    }
-    return allTasks;
-  }
-
-  List<TaskModel> _getTasksForCategory(TaskCategory category) {
-    switch (category) {
-      case TaskCategory.belajar:
-        return [
-          const TaskModel(
-            id: 'belajar_1',
-            title: 'Belajar coding intensif',
-            description: 'Belajar coding intensif selama 2 jam dengan project nyata',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.high,
-            iconName: 'computer',
-            estimatedMinutes: 120,
-          ),
-          const TaskModel(
-            id: 'belajar_2',
-            title: 'Baca buku tebal',
-            description: 'Membaca 2 bab dari buku pengembangan diri',
-            category: TaskCategory.belajar,
-            energyLevel: EnergyLevel.high,
-            iconName: 'menu_book',
-            estimatedMinutes: 60,
-          ),
-        ];
-      case TaskCategory.pekerjaan:
-        return [
-          const TaskModel(
-            id: 'pekerjaan_1',
-            title: 'Kerja project besar',
-            description: 'Fokus pengerjaan project utama dengan target selesai',
-            category: TaskCategory.pekerjaan,
-            energyLevel: EnergyLevel.high,
-            iconName: 'work',
-            estimatedMinutes: 180,
-          ),
-          const TaskModel(
-            id: 'pekerjaan_2',
-            title: 'Presentasi important',
-            description: 'Siapkan dan berikan presentasi ke client',
-            category: TaskCategory.pekerjaan,
-            energyLevel: EnergyLevel.high,
-            iconName: 'slideshow',
-            estimatedMinutes: 90,
-          ),
-        ];
-      case TaskCategory.kesehatan:
-        return [
-          const TaskModel(
-            id: 'kesehatan_1',
-            title: 'Gym intensif 1 jam',
-            description: 'Latihan gym intensif dengan target progres',
-            category: TaskCategory.kesehatan,
-            energyLevel: EnergyLevel.high,
-            iconName: 'fitness_center',
-            estimatedMinutes: 60,
-          ),
-          const TaskModel(
-            id: 'kesehatan_2',
-            title: 'Olahraga outdoor',
-            description: 'Hiking atau bersepeda di outdoor',
-            category: TaskCategory.kesehatan,
-            energyLevel: EnergyLevel.high,
-            iconName: 'directions_walk',
-            estimatedMinutes: 90,
-          ),
-        ];
-      case TaskCategory.selfCare:
-        return [
-          const TaskModel(
-            id: 'selfcare_1',
-            title: 'Yoga intensif',
-            description: 'Yoga advanced dengan tantangan fisik',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.high,
-            iconName: 'self_improvement',
-            estimatedMinutes: 45,
-          ),
-          const TaskModel(
-            id: 'selfcare_2',
-            title: 'Buat karya kreatif',
-            description: 'Membuat karya seni atau musik',
-            category: TaskCategory.selfCare,
-            energyLevel: EnergyLevel.high,
-            iconName: 'palette',
-            estimatedMinutes: 60,
-          ),
-        ];
-      case TaskCategory.rumah:
-        return [
-          const TaskModel(
-            id: 'rumah_1',
-            title: 'Deep cleaning',
-            description: 'Bersihkan seluruh rumah dengan detail',
-            category: TaskCategory.rumah,
-            energyLevel: EnergyLevel.high,
-            iconName: 'cleaning_services',
-            estimatedMinutes: 120,
-          ),
-          const TaskModel(
-            id: 'rumah_2',
-            title: 'Renovasi kecil',
-            description: 'Perbaiki atau renovasi area rumah',
-            category: TaskCategory.rumah,
-            energyLevel: EnergyLevel.high,
-            iconName: 'construction',
-            estimatedMinutes: 90,
-          ),
-        ];
-      case TaskCategory.hubungan:
-        return [
-          const TaskModel(
-            id: 'hubungan_1',
-            title: 'Ikut komunitas',
-            description: 'Ikut kegiatan komunitas atau meetup',
-            category: TaskCategory.hubungan,
-            energyLevel: EnergyLevel.high,
-            iconName: 'groups',
-            estimatedMinutes: 120,
-          ),
-          const TaskModel(
-            id: 'hubungan_2',
-            title: 'Event social',
-            description: 'Datangi event sosial atau networking',
-            category: TaskCategory.hubungan,
-            energyLevel: EnergyLevel.high,
-            iconName: 'event_note',
-            estimatedMinutes: 90,
-          ),
-        ];
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MindyBantuAkuCubit>().selectEnergyLevel(widget.energyLevel);
+    });
   }
 
   @override
@@ -215,13 +88,47 @@ class _PurpleAlternativeTaskListPageState
                     const SizedBox(height: 20),
 
                     // Task list
-                    PurpleAlternativeTaskList(
-                      tasks: _tasks,
-                      selectedTask: _selectedTask,
-                      onTaskSelected: (task) {
-                        setState(() {
-                          _selectedTask = task;
-                        });
+                    BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
+                      builder: (context, state) {
+                        if (state.isLoading) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: CircularProgressIndicator(
+                                color: PurpleTheme.primaryPurple,
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (state.hasError) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: Text(
+                                state.errorMessage ?? 'Terjadi kesalahan',
+                                style: TextStyle(
+                                  color: PurpleTheme.textGrey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        final tasks = widget.excludeTaskId != null
+                            ? state.recommendedTasks.where((t) => t.id != widget.excludeTaskId).toList()
+                            : state.recommendedTasks;
+
+                        return PurpleAlternativeTaskList(
+                          tasks: tasks,
+                          selectedTask: _selectedTask,
+                          onTaskSelected: (task) {
+                            setState(() {
+                              _selectedTask = task;
+                            });
+                          },
+                        );
                       },
                     ),
 
@@ -280,35 +187,6 @@ class _PurpleAlternativeTaskListPageState
                             : PurpleTheme.textMuted,
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-
-            // Bottom decoration
-            Container(
-              height: 30,
-              decoration: BoxDecoration(
-                color: PurpleTheme.backgroundWhite,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: PurpleTheme.shadowColor.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: PurpleTheme.borderLight,
-                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),

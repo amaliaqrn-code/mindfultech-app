@@ -14,8 +14,6 @@ class JourneyPage extends StatefulWidget {
 }
 
 class _JourneyPageState extends State<JourneyPage> {
-  final int _currentNavIndex = 2;
-
   // Koordinat presisi meliuk dari bawah (level 1) menuju atas (level 6) sesuai alur denah asli
   final List<Map<String, double>> _levelPositions = [
     {'x': 0.31, 'y': 0.79}, // Level 1 (Dekat rumah mulai awal)
@@ -40,7 +38,6 @@ class _JourneyPageState extends State<JourneyPage> {
               children: [
                 _buildHeader(state, cubit),
                 Expanded(child: _buildMapArea(state, currentCycle)),
-                _buildBottomNavBar(),
               ],
             ),
           ),
@@ -56,7 +53,6 @@ class _JourneyPageState extends State<JourneyPage> {
         children: [
           Row(
             children: [
-              _buildBackButton(),
               const Spacer(),
               Text(
                 'Journey Map',
@@ -67,31 +63,11 @@ class _JourneyPageState extends State<JourneyPage> {
                 ),
               ),
               const Spacer(),
-              const SizedBox(width: 40),
             ],
           ),
           const SizedBox(height: 10),
           _buildProgressCard(state),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBackButton() {
-    return GestureDetector(
-      onTap: () => Navigator.pop(context),
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF5CA3E6),
-        ),
-        child: const Icon(
-          Icons.arrow_back_ios_new,
-          color: Colors.white,
-          size: 16,
-        ),
       ),
     );
   }
@@ -514,63 +490,6 @@ class _JourneyPageState extends State<JourneyPage> {
                 child: const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.grey),
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home_rounded, 'Beranda', _currentNavIndex == 0, () {
-              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
-            }),
-            _buildNavItem(Icons.timer_outlined, 'Fokus', _currentNavIndex == 1, () {
-              Navigator.pushNamed(context, AppRoutes.timer);
-            }),
-            _buildNavItem(Icons.map_rounded, 'Journey', true, () {}),
-            _buildNavItem(Icons.local_fire_department_outlined, 'Streak', _currentNavIndex == 3, () {}),
-            _buildNavItem(Icons.person_outline, 'Profil', _currentNavIndex == 4, () {}),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 24,
-            color: isActive ? const Color(0xFF5CA3E6) : Colors.grey.shade400,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              color: isActive ? const Color(0xFF5CA3E6) : Colors.grey.shade500,
-            ),
-          ),
         ],
       ),
     );

@@ -1,67 +1,44 @@
-import 'package:equatable/equatable.dart';
+// lib/presentation/timer/bloc/timer/timer_state.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'timer_state.freezed.dart';
 
-class TimerState extends Equatable {
-  final int targetMinutes;
-  final int remainingSeconds;
-  final bool isRunning;
-  final String taskName;
+@freezed
+abstract class TimerState with _$TimerState {
+  const factory TimerState({
+    required int totalTargetMinutes,     // Total target dari task (misal: 60)
+    required int durationPerSession,     // Durasi per sesi belajar (misal: 30)
+    required int breakDurationMinutes,   // Durasi istirahat (misal: 10)
+    required int totalSessions,          // Hasil hitung total target / per sesi (misal: 2)
+    required int currentSession,         // Sesi berjalan sekarang (mulai dari 1)
+    required int remainingSeconds,       // Hitung mundur detik yang aktif
+    required bool isRunning,             // Apakah timer berdetak
+    required bool isBreakTime,           // True jika sedang sesi istirahat, False jika sesi tugas
+    required bool isAllCompleted,        // True jika semua rangkaian sesi habis
+  }) = _TimerState;
 
-  const TimerState({
-    required this.targetMinutes,
-    required this.remainingSeconds,
-    required this.isRunning,
-    required this.taskName,
-  });
+  factory TimerState.initial() => const TimerState(
+        totalTargetMinutes: 0,
+        durationPerSession: 0,
+        breakDurationMinutes: 0,
+        totalSessions: 0,
+        currentSession: 0,
+        remainingSeconds: 0,
+        isRunning: false,
+        isBreakTime: false,
+        isAllCompleted: false,
+      );
+}
 
-  factory TimerState.initial({String taskName = 'Tugas Fokus'}) {
-    return TimerState(
-      targetMinutes: 25,
-      remainingSeconds: 25 * 60,
-      isRunning: false,
-      taskName: taskName,
-    );
-  }
-
-  TimerState copyWith({
-    int? targetMinutes,
-    int? remainingSeconds,
-    bool? isRunning,
-    String? taskName,
-  }) {
-    return TimerState(
-      targetMinutes: targetMinutes ?? this.targetMinutes,
-      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
-      isRunning: isRunning ?? this.isRunning,
-      taskName: taskName ?? this.taskName,
-    );
-  }
-
-  String get formattedTime {
+extension TimerStateX on TimerState {
+  String get timeString {
     final minutes = remainingSeconds ~/ 60;
     final seconds = remainingSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  double get progress {
-    final totalSeconds = targetMinutes * 60;
-    if (totalSeconds == 0) return 0;
-    return 1 - (remainingSeconds / totalSeconds);
+  double get progressValue {
+    final totalSeconds = (isBreakTime ? breakDurationMinutes : durationPerSession) * 60;
+    if (totalSeconds == 0) return 0.0;
+    return remainingSeconds / totalSeconds;
   }
-
-  bool get canEditTime => !isRunning && remainingSeconds == targetMinutes * 60;
-
-  bool get isCompleted => remainingSeconds <= 0;
-
-  String get remainingTimeText {
-    final minutes = remainingSeconds ~/ 60;
-    final seconds = remainingSeconds % 60;
-
-    if (minutes > 0) {
-      return '$minutes menit $seconds detik';
-    }
-    return '$seconds detik';
-  }
-
-  @override
-  List<Object?> get props => [targetMinutes, remainingSeconds, isRunning, taskName];
 }

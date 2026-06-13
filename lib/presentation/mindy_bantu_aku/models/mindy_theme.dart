@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'task_model.dart' show EnergyLevel;
+import 'package:mindfultech_app/presentation/task/models/task_model.dart' show EnergyLevel;
 
 /// Konfigurasi tema untuk setiap level energi
 class MindyTheme {
@@ -64,11 +64,11 @@ class MindyTheme {
   /// Get theme by energy level
   static MindyTheme fromEnergyLevel(EnergyLevel level) {
     switch (level) {
-      case EnergyLevel.low:
+      case EnergyLevel.rendah:
         return green;
-      case EnergyLevel.medium:
+      case EnergyLevel.sedang:
         return blue;
-      case EnergyLevel.high:
+      case EnergyLevel.tinggi:
         return purple;
     }
   }

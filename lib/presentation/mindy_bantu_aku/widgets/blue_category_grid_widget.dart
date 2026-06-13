@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/blue_theme.dart';
 
 /// Blue Category Grid Widget - Grid 2x3 dengan Blue Theme
@@ -19,10 +19,10 @@ class BlueCategoryGridWidget extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 1.0,
+        crossAxisCount: 3,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.95,
       ),
       itemCount: TaskCategory.values.length,
       itemBuilder: (context, index) {
@@ -56,11 +56,11 @@ class BlueCategoryCard extends StatelessWidget {
         return Icons.home_rounded;
       case TaskCategory.pekerjaan:
         return Icons.work_rounded;
-      case TaskCategory.selfCare:
+      case TaskCategory.pribadi:
         return Icons.person_rounded;
       case TaskCategory.belajar:
         return Icons.menu_book_rounded;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return Icons.auto_awesome_rounded;
       case TaskCategory.kesehatan:
         return Icons.favorite_rounded;
@@ -75,12 +75,12 @@ class BlueCategoryCard extends StatelessWidget {
         return BlueTheme.categoryColors['belajar']!;
       case TaskCategory.kesehatan:
         return BlueTheme.categoryColors['kesehatan']!;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return BlueTheme.categoryColors['hubungan']!;
       case TaskCategory.rumah:
         return BlueTheme.backgroundCream;
-      case TaskCategory.selfCare:
-        return BlueTheme.categoryColors['kesehatanMental']!;
+      case TaskCategory.pribadi:
+        return BlueTheme.categoryColors['kesehatan']!;
     }
   }
 
@@ -92,12 +92,12 @@ class BlueCategoryCard extends StatelessWidget {
         return BlueTheme.categoryIconColors['belajar']!;
       case TaskCategory.kesehatan:
         return BlueTheme.categoryIconColors['kesehatan']!;
-      case TaskCategory.hubungan:
+      case TaskCategory.lainnya:
         return BlueTheme.categoryIconColors['hubungan']!;
       case TaskCategory.rumah:
         return BlueTheme.primaryBlue;
-      case TaskCategory.selfCare:
-        return BlueTheme.categoryIconColors['kesehatanMental']!;
+      case TaskCategory.pribadi:
+        return BlueTheme.categoryIconColors['kesehatan']!;
     }
   }
 

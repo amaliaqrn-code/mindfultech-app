@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindfultech_app/core/constants/colors.dart';
 import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/homepage/pages/homepage_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
 import 'package:mindfultech_app/presentation/streak/pages/streak_page.dart';
 import 'package:mindfultech_app/presentation/profile/pages/profile_page.dart';
+import 'package:mindfultech_app/presentation/timer/pages/setup_timer_page.dart';
+import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_bloc.dart';
 
 /// ============================================================
 /// MAIN PAGE - Base Shell dengan Bottom Navigation Bar
 ///
 /// Pattern: Shell Page
 /// - Membungkus halaman dengan Scaffold + BottomNavBar
-/// - Content berubah berdasarkan tab yang dipilih
+/// - Content berubah berdasarkan tab yang dipilih menggunakan IndexedStack
+/// - Setiap tab menjaga state-nya saat berpindah
 /// ============================================================
 
 class MainPage extends StatefulWidget {
@@ -24,11 +28,21 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentNavIndex = 0;
 
-  /// List halaman pages
+  /// List halaman pages - urutan harus sesuai dengan BottomNavigationBar items
+  /// 0: Beranda (HomepagePage)
+  /// 1: Fokus (SetupTimerPage) - tab Fokus menggunakan halaman ini
+  /// 2: Journey (JourneyPage)
+  /// 3: Streak (StreakPage)
+  /// 4: Profil (ProfileScreen)
   final List<Widget> _pages = [
     const HomepagePage(),
+    BlocProvider(
+      create: (_) => TimerBloc(),
+      child: const SetupTimerPage(task: null),
+    ),
     const JourneyPage(),
     const StreakPage(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -91,12 +105,7 @@ class _MainPageState extends State<MainPage> {
                 icon: Icons.person_outline,
                 label: 'Profil',
                 isActive: _currentNavIndex == 4,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  );
-                },
+                onTap: () => _onNavTap(4),
               ),
             ],
           ),
@@ -139,6 +148,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onNavTap(int index) {
+    // Tab Fokus (index 1) sekarang menggunakan SetupTimerPage yang sudah ada di IndexedStack
+    // Tidak perlu navigasi via named route lagi
     setState(() => _currentNavIndex = index);
   }
 }

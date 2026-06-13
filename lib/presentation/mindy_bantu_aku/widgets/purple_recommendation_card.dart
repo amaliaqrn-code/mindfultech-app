@@ -1,75 +1,35 @@
 import 'package:flutter/material.dart';
-import '../models/task_model.dart';
+import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
 /// Purple Recommendation Card Widget
 class PurpleRecommendationCard extends StatelessWidget {
-  final TaskModel task;
-  final VoidCallback onConfirm;
-  final VoidCallback onTryAnother;
+  final TaskModel? task;
+  final EnergyLevel? energyLevel;
+  final TaskCategory? category;
 
   const PurpleRecommendationCard({
     super.key,
-    required this.task,
-    required this.onConfirm,
-    required this.onTryAnother,
+    this.task,
+    this.energyLevel,
+    this.category,
   });
 
-  IconData get _taskIcon {
-    switch (task.iconName) {
-      case 'fitness_center':
-        return Icons.fitness_center;
-      case 'directions_run':
-        return Icons.directions_run;
-      case 'pool':
-        return Icons.pool;
-      case 'sports':
-        return Icons.sports;
-      case 'directions_bike':
-        return Icons.directions_bike;
-      case 'self_improvement':
-        return Icons.self_improvement;
-      case 'school':
-        return Icons.school;
-      case 'checkroom':
-        return Icons.checkroom;
-      case 'edit_document':
-        return Icons.edit_document;
-      case 'assignment':
-        return Icons.assignment;
-      case 'code':
-        return Icons.code;
-      case 'computer':
-        return Icons.computer;
-      case 'palette':
-        return Icons.palette;
-      case 'videocam':
-        return Icons.videocam;
-      case 'music_note':
-        return Icons.music_note;
-      case 'camera_alt':
-        return Icons.camera_alt;
-      case 'article':
-        return Icons.article;
-      case 'menu_book':
-        return Icons.menu_book;
-      case 'online':
-        return Icons.cast_for_education;
-      case 'family_restroom':
-        return Icons.family_restroom;
-      case 'groups':
-        return Icons.groups;
-      case 'volunteer_activism':
-        return Icons.volunteer_activism;
-      case 'favorite':
-        return Icons.favorite;
-      default:
-        return Icons.task_alt;
-    }
+  // Get task data with fallback to default values
+  TaskModel get _effectiveTask {
+    if (task != null) return task!;
+    // Create default task from energy level and category
+    final effectiveEnergy = energyLevel ?? EnergyLevel.tinggi;
+    final effectiveCategory = category ?? TaskCategory.lainnya;
+    return DefaultTaskHelper.createDefaultTask(
+      energi: effectiveEnergy,
+      kategori: effectiveCategory,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final effectiveTask = _effectiveTask;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -105,13 +65,13 @@ class PurpleRecommendationCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.bolt,
                   color: PurpleTheme.primaryPurple,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   'Hari ini coba kamu fokus ke:',
                   style: TextStyle(
                     fontSize: 14,
@@ -132,12 +92,12 @@ class PurpleRecommendationCard extends StatelessWidget {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: PurpleTheme.primaryPurplePale,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _taskIcon,
+                    effectiveTask.kategori.icon,
                     color: PurpleTheme.primaryPurple,
                     size: 40,
                   ),
@@ -146,7 +106,7 @@ class PurpleRecommendationCard extends StatelessWidget {
 
                 // Task Title
                 Text(
-                  task.title,
+                  effectiveTask.namaTugas,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 22,
@@ -159,7 +119,7 @@ class PurpleRecommendationCard extends StatelessWidget {
 
                 // Task Description
                 Text(
-                  task.description,
+                  effectiveTask.kategori.displayName,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 15,
@@ -175,34 +135,12 @@ class PurpleRecommendationCard extends StatelessWidget {
                   children: [
                     _buildMetaChip(
                       icon: Icons.category_rounded,
-                      label: task.category.displayName,
+                      label: effectiveTask.kategori.displayName,
                     ),
                     const SizedBox(width: 12),
                     _buildMetaChip(
                       icon: Icons.timer_outlined,
-                      label: '~${task.estimatedMinutes} menit',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Action Buttons
-                Row(
-                  children: [
-                    // Try Another Button (Outline)
-                    Expanded(
-                      child: _PurpleOutlineButton(
-                        text: 'Coba tugas lain',
-                        onTap: onTryAnother,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Confirm Button (Solid Purple)
-                    Expanded(
-                      child: _PurpleSolidButton(
-                        text: 'Aku siap fokus!',
-                        onTap: onConfirm,
-                      ),
+                      label: '~${effectiveTask.estimasiWaktu} menit',
                     ),
                   ],
                 ),
@@ -243,11 +181,13 @@ class PurpleRecommendationCard extends StatelessWidget {
   }
 }
 
-class _PurpleOutlineButton extends StatelessWidget {
+/// Purple Outline Button (Helper Widget)
+class PurpleOutlineButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _PurpleOutlineButton({
+  const PurpleOutlineButton({
+    super.key,
     required this.text,
     required this.onTap,
   });
@@ -281,11 +221,13 @@ class _PurpleOutlineButton extends StatelessWidget {
   }
 }
 
-class _PurpleSolidButton extends StatelessWidget {
+/// Purple Solid Button (Helper Widget)
+class PurpleSolidButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
 
-  const _PurpleSolidButton({
+  const PurpleSolidButton({
+    super.key,
     required this.text,
     required this.onTap,
   });
