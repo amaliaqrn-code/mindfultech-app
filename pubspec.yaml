@@ -64,10 +64,10 @@ flutter:
     - assets/images/onboarding/mindy1.png
     - assets/images/onboarding/mindy2.png
     - assets/images/onboarding/mindy3.png
-    - assets/images/onboarding/mindy4.png
     - assets/images/onboarding/Book.png
     - assets/images/onboarding/Energy.png
     - assets/images/onboarding/File.png
+    - assets/images/onboarding/mindy4.png
 
     # Onboarding icons
     - assets/icon/onboarding/

@@ -23,7 +23,11 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       );
     } else {
       // Navigate to Login Page using standard Navigator
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.login,
+        (route) => false,
+      );
     }
   }
 
@@ -58,9 +62,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                 },
                 itemBuilder: (context, index) {
                   try {
-                    return OnBoardingItem(
-                      data: onboardingData[index],
-                    );
+                    return OnBoardingItem(data: onboardingData[index]);
                   } catch (e) {
                     debugPrint('Error loading onboarding item $index: $e');
                     return Center(child: Text('Error loading page'));
@@ -76,9 +78,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   onboardingData.length,
-                  (index) => DotIndicator(
-                    isActive: _currentIndex == index,
-                  ),
+                  (index) => DotIndicator(isActive: _currentIndex == index),
                 ),
               ),
             ),
@@ -133,11 +133,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             gradient: const LinearGradient(
-              colors: [
-                Color(0xff4597E6),
-                Color(0xff7BBEFF),
-                Color(0xff83DFC6),
-              ],
+              colors: [Color(0xff4597E6), Color(0xff7BBEFF), Color(0xff83DFC6)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -171,9 +167,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: Colors.grey.shade300,
-            ),
+            border: Border.all(color: Colors.grey.shade300),
           ),
           child: Center(
             child: Text(

@@ -6,10 +6,7 @@ import '../onboarding_model.dart';
 class OnBoardingItem extends StatelessWidget {
   final OnBoardingModel data;
 
-  const OnBoardingItem({
-    super.key,
-    required this.data,
-  });
+  const OnBoardingItem({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +29,11 @@ class OnBoardingItem extends StatelessWidget {
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         debugPrint('Error loading image ${data.image}: $error');
-                        return const Icon(Icons.image, size: 100, color: Colors.grey);
+                        return const Icon(
+                          Icons.image,
+                          size: 100,
+                          color: Colors.grey,
+                        );
                       },
                     ),
                   ),
@@ -122,10 +123,7 @@ class OnBoardingItem extends StatelessWidget {
   }
 
   /// Build Low/Medium/High cards for the energy selection slide
-  Widget _buildEnergyCard({
-    required String iconPath,
-    required String label,
-  }) {
+  Widget _buildEnergyCard({required String iconPath, required String label}) {
     return Container(
       width: 100,
       height: 80,
@@ -143,11 +141,7 @@ class OnBoardingItem extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(
-            iconPath,
-            width: 32,
-            height: 32,
-          ),
+          SvgPicture.asset(iconPath, width: 32, height: 32),
           const SizedBox(height: 4),
           Text(
             label,

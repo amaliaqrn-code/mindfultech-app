@@ -24,13 +24,13 @@ class LogoutDialog extends StatelessWidget {
             const Icon(Icons.warning_rounded, color: Colors.red, size: 70),
             const SizedBox(height: 20),
             const Text(
-              'Are you sure you\nwant to log out?',
+              'Apakah kamu yakin ingin keluar?',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
-              'You can always come back anytime\nto continue your healthy journey.',
+              'Kamu dapat masuk kembali kapan saja untuk melanjutkan perjalananmu bersama mindy',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             ),
@@ -42,7 +42,7 @@ class LogoutDialog extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Cancel'),
+                    child: const Text('Batal'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -63,7 +63,7 @@ class LogoutDialog extends StatelessWidget {
                         (route) => false,
                       );
                     },
-                    child: const Text("Log Out"),
+                    child: const Text("Keluar"),
                   ),
                 ),
               ],
