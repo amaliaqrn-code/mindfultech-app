@@ -59,7 +59,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             height: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/profile/background_profile.png'),
+                image: AssetImage(
+                  'assets/images/profile/background_profile.png',
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -74,20 +76,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) => const Center(child: CircularProgressIndicator()),
+                      builder: (_) =>
+                          const Center(child: CircularProgressIndicator()),
                     );
                   },
                   success: (user, _) {
-                    Navigator.pop(context);
+                    debugPrint("SUCCESS PROFILE UPDATE");
+
+                    if (Navigator.of(context, rootNavigator: true).canPop()) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
+
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Profil berhasil diperbarui!'), backgroundColor: Colors.green),
+                      const SnackBar(
+                        content: Text('Profil berhasil diperbarui!'),
+                        backgroundColor: Colors.green,
+                      ),
                     );
-                    Navigator.pop(context);
+
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      if (mounted) {
+                        Navigator.pop(context, true);
+                      }
+                    });
                   },
                   error: (message) {
-                    Navigator.pop(context);
+                    if (Navigator.of(context, rootNavigator: true).canPop()) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
+
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(message), backgroundColor: Colors.red),
+                      SnackBar(
+                        content: Text(message),
+                        backgroundColor: Colors.red,
+                      ),
                     );
                   },
                   orElse: () {},
@@ -97,7 +119,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   // HEADER BAR
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     child: Row(
                       children: [
                         GestureDetector(
@@ -109,7 +134,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               color: Color(0xFF4A90E2),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                            child: const Icon(
+                              Icons.arrow_back_ios_new,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                         ),
                         const Expanded(
@@ -117,8 +146,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             "Edit Profil",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 28, 
-                              fontWeight: FontWeight.bold, 
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
                               color: Color(0xFF59B2CD),
                             ),
                           ),
@@ -131,7 +160,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   // KONTEN FORM DI DALAM VIEWPORT AMAN
                   Expanded(
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       shrinkWrap: true,
                       children: [
                         // Card Putih Tengah Kotak
@@ -144,19 +176,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           child: Column(
                             children: [
-                              _buildField("Name", nameController, borderColor: borderColor),
-                              const SizedBox(height: 16),
-                              _buildField("Username", usernameController, borderColor: borderColor),
-                              const SizedBox(height: 16),
-                              _buildField("Gender", genderController, borderColor: borderColor),
-                              const SizedBox(height: 16),
-                              _buildField("Phone Number", phoneController, borderColor: borderColor),
-                              const SizedBox(height: 16),
-                              _buildField("Email", emailController, isReadOnly: true, borderColor: borderColor),
+                              _buildField(
+                                "Name",
+                                nameController,
+                                borderColor: borderColor,
+                              ),
                               const SizedBox(height: 16),
                               _buildField(
-                                "Password", 
-                                passwordController, 
+                                "Username",
+                                usernameController,
+                                borderColor: borderColor,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildField(
+                                "Gender",
+                                genderController,
+                                borderColor: borderColor,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildField(
+                                "Phone Number",
+                                phoneController,
+                                borderColor: borderColor,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildField(
+                                "Email",
+                                emailController,
+                                isReadOnly: true,
+                                borderColor: borderColor,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildField(
+                                "Password",
+                                passwordController,
                                 borderColor: borderColor,
                                 isPassword: true,
                                 isObscured: _isPasswordObscured,
@@ -169,7 +222,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ],
                           ),
                         ),
-                        
+
                         const SizedBox(height: 24),
 
                         // Tombol Simpan Gradasi Oval (Capsule Style)
@@ -198,8 +251,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 );
 
                                 context.read<ProfileBloc>().add(
-                                      ProfileEvent.updateProfile(updatedUser: updatedUser),
-                                    );
+                                  ProfileEvent.updateProfile(
+                                    updatedUser: updatedUser,
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -210,12 +265,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               child: const Text(
                                 "Simpan",
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40), // Ruang ekstra agar tidak mentok navigasi bawah saat di-scroll
+                        const SizedBox(
+                          height: 40,
+                        ), // Ruang ekstra agar tidak mentok navigasi bawah saat di-scroll
                       ],
                     ),
                   ),
@@ -229,7 +290,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildField(
-    String label, 
+    String label,
     TextEditingController controller, {
     bool isReadOnly = false,
     required Color borderColor,
@@ -242,7 +303,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 14, color: Color(0xFF1E293B), fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 6),
         TextField(
@@ -253,11 +318,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: InputDecoration(
             filled: true,
             fillColor: isReadOnly ? Colors.grey.shade50 : Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
-                      isObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      isObscured
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       color: const Color(0xFF4A90E2),
                     ),
                     onPressed: onToggleVisibility,
@@ -265,7 +335,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 : null,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: borderColor.withValues(alpha: 0.6), width: 1.2),
+              borderSide: BorderSide(
+                color: borderColor.withValues(alpha: 0.6),
+                width: 1.2,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

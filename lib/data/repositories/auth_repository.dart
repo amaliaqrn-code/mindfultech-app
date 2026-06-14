@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../datasources/auth_local_datasource.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../models/user_model.dart';
@@ -11,8 +13,8 @@ class AuthRepository {
   AuthRepository({
     required AuthRemoteDataSource remoteDataSource,
     required AuthLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   // Register new user
   Future<UserModel> register({required RegisterRequest request}) async {
@@ -63,9 +65,11 @@ class AuthRepository {
   Future<void> logout() async {
     try {
       await _remoteDataSource.logout();
-    } catch (_) {
-      // Ignore remote error, clear local anyway
+    } catch (e) {
+      debugPrint("Logout API ignored: $e");
     }
+
+    // 🔥 SELALU CLEAR LOCAL WALAU API GAGAL
     await _localDataSource.clearAuth();
   }
 

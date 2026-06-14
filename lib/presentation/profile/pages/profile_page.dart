@@ -31,8 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (pickedFile != null) {
       if (mounted) {
         context.read<ProfileBloc>().add(
-              ProfileEvent.updateProfileImage(imageFile: File(pickedFile.path)),
-            );
+          ProfileEvent.updateProfileImage(imageFile: File(pickedFile.path)),
+        );
       }
     }
   }
@@ -86,7 +86,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 // Pastikan gambar ini ada di folder assets dan terdaftar di pubspec.yaml
-                image: AssetImage('assets/images/profile/background_profile.png'),
+                image: AssetImage(
+                  'assets/images/profile/background_profile.png',
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -99,7 +101,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 state.maybeWhen(
                   error: (message) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(message), backgroundColor: Colors.red),
+                      SnackBar(
+                        content: Text(message),
+                        backgroundColor: Colors.red,
+                      ),
                     );
                   },
                   orElse: () {},
@@ -107,32 +112,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               builder: (context, state) {
                 final UserModel user = state.maybeWhen(
-                  orElse: () => UserModel(id: 0, name: '', username: '', gender: '', phone: '', email: ''),
+                  orElse: () => UserModel(
+                    id: 0,
+                    name: '',
+                    username: '',
+                    gender: '',
+                    phone: '',
+                    email: '',
+                  ),
                 );
-                final localImage = state.maybeWhen(success: (_, image) => image, orElse: () => null);
+                final localImage = state.maybeWhen(
+                  success: (_, image) => image,
+                  orElse: () => null,
+                );
 
                 return Column(
                   children: [
                     // Header (Judul "Profil")
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
                       child: Row(
                         children: [
-                          const SizedBox(width: 36), // Spacer untuk keseimbangan
+                          const SizedBox(
+                            width: 36,
+                          ), // Spacer untuk keseimbangan
                           const Expanded(
                             child: Text(
                               "Profil",
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 150),
 
                     // Foto Profil dengan Stack untuk Ikon Kamera
+                    Transform.translate(offset: Offset(0, 20)),
                     Center(
                       child: Stack(
                         children: [
@@ -142,30 +167,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               radius: 55,
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
-                                radius: 52,
+                                radius: 50,
                                 backgroundColor: Colors.grey.shade200,
                                 backgroundImage: localImage != null
                                     ? FileImage(localImage)
-                                    : (user.imagePath != null && user.imagePath!.isNotEmpty
-                                        ? NetworkImage(user.imagePath!)
-                                        : const AssetImage('assets/images/profile/avatar.png')) as ImageProvider,
+                                    : (user.imagePath != null &&
+                                                  user.imagePath!.isNotEmpty
+                                              ? NetworkImage(user.imagePath!)
+                                              : const AssetImage(
+                                                  'assets/images/profile/avatar.png',
+                                                ))
+                                          as ImageProvider,
                               ),
                             ),
                           ),
                           Positioned(
                             bottom: 0,
-                            right: 4,
+                            right: 5,
                             child: Container(
                               padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: const Icon(Icons.camera_alt, color: primaryColor, size: 20),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: primaryColor,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: 20),
 
                     // 2. Container Putih Melengkung untuk Area Konten Bawah
                     Expanded(
@@ -173,45 +207,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(30),
+                          ),
                         ),
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+                          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               // Nama dan Username
-                              Text(user.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
                               Text(
-                                user.username?.isNotEmpty == true ? '@${user.username}' : '@belum_diatur',
-                                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                                user.name.isNotEmpty ? user.name : 'Pengguna',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                user.username?.isNotEmpty == true
+                                    ? '@${user.username}'
+                                    : '@belum_diatur',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
 
-                              const SizedBox(height: 30),
+                              const SizedBox(height: 70),
 
                               // Tombol Menu
                               _buildMenuButton(
                                 icon: Icons.person_outline,
                                 title: "Ubah Profil",
                                 color: primaryColor,
-                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EditProfileScreen(user: user))),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        EditProfileScreen(user: user),
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 16),
                               _buildMenuButton(
                                 icon: Icons.notifications_none,
                                 title: "Notifikasi",
                                 color: primaryColor,
-                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen())),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const NotificationScreen(),
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 16),
                               _buildMenuButton(
                                 icon: Icons.privacy_tip_outlined,
                                 title: "Kebijakan Privasi",
                                 color: primaryColor,
-                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const PrivacyPolicyScreen(),
+                                  ),
+                                ),
                               ),
-                              
+
                               const SizedBox(height: 40),
 
                               // Tombol Keluar
@@ -219,17 +282,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton.icon(
-                                  onPressed: () => showDialog(context: context, builder: (_) => LogoutDialog(onLogout: () {})),
-                                  icon: const Icon(Icons.logout, color: Colors.white, size: 20),
-                                  label: const Text("Keluar", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                  onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (_) =>
+                                        LogoutDialog(onLogout: () {}),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  label: const Text(
+                                    "Keluar",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
                                     elevation: 0,
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -268,7 +348,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(width: 14),
-            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
             const Spacer(),
             const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
           ],

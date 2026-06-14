@@ -9,8 +9,8 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthLocalDataSource _authLocalDataSource = AuthLocalDataSource();
 
   AuthCubit({required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(AuthInitial()) {
+    : _authRepository = authRepository,
+      super(AuthInitial()) {
     checkLoginStatus();
   }
 
@@ -40,16 +40,27 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logout() async {
     try {
+      print('STEP 1');
+
       emit(AuthLoading());
-      debugPrint('🔄 AuthCubit: Starting logout process...');
-      await _authRepository.logout();
+
+      try {
+        await _authRepository.logout();
+      } catch (e) {
+        print('STEP 2 API ERROR');
+      }
+
+      print('STEP 3 BEFORE CLEAR');
+
       await _authLocalDataSource.clearAuth();
-      debugPrint('✅ AuthCubit: Logout successful, cleared all auth data');
+
+      print('STEP 4 AFTER CLEAR');
+
       emit(Unauthenticated());
+
+      print('STEP 5 EMIT UNAUTH');
     } catch (e) {
-      debugPrint('❌ AuthCubit: Logout error - $e');
-      await _authLocalDataSource.clearAuth();
-      emit(Unauthenticated());
+      print('LOGOUT ERROR: $e');
     }
   }
 
