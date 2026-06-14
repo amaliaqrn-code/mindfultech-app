@@ -16,9 +16,9 @@ import '../widgets/break_start_card.dart';
 import '../widgets/break_active_card.dart';
 
 class TimerPage extends StatefulWidget {
-  final TaskModel task;
+  final TaskModel? task;
 
-  const TimerPage({super.key, required this.task});
+  const TimerPage({super.key, this.task});
 
   @override
   State<TimerPage> createState() => _TimerPageState();
@@ -56,21 +56,20 @@ class _TimerPageState extends State<TimerPage> {
   // METHOD: Handle state changes (UI-only logic)
   // ============================================================
 
-void _handleStateChange(TimerState state) {
-  // BREAK START
-  if (state.isBreakTime && !_previousIsBreakTime) {
-    _isShowingBreakEnd = false;
-    _showBreakIntroCard();
-  }
+  void _handleStateChange(TimerState state) {
+    // BREAK START
+    if (state.isBreakTime && !_previousIsBreakTime) {
+      _isShowingBreakEnd = false;
+      _showBreakIntroCard();
+    }
+    // BREAK END
+    else if (!state.isBreakTime && _previousIsBreakTime) {
+      _isShowingBreakEnd = true;
+      _showBreakEndCard();
+    }
 
-  // BREAK END
-  else if (!state.isBreakTime && _previousIsBreakTime) {
-    _isShowingBreakEnd = true;
-    _showBreakEndCard();
+    _previousIsBreakTime = state.isBreakTime;
   }
-
-  _previousIsBreakTime = state.isBreakTime;
-}
 
   void _showMotivationCard() {
     _breakIntroTimer?.cancel();
@@ -144,23 +143,23 @@ void _handleStateChange(TimerState state) {
   }
 
   Widget _buildCardContent(TimerState state) {
-  switch (_currentCardType) {
-    case _CardType.motivation:
-      return const MotivationCard(key: ValueKey('motivation'));
+    switch (_currentCardType) {
+      case _CardType.motivation:
+        return const MotivationCard(key: ValueKey('motivation'));
 
-    case _CardType.breakIntro:
-      return BreakStartCard(
-        key: const ValueKey('breakIntro'),
-        breakDurationMinutes: state.breakDurationMinutes,
-      );
+      case _CardType.breakIntro:
+        return BreakStartCard(
+          key: const ValueKey('breakIntro'),
+          breakDurationMinutes: state.breakDurationMinutes,
+        );
 
-    case _CardType.breakActive:
-      return const BreakActiveCard(key: ValueKey('breakActive'));
+      case _CardType.breakActive:
+        return const BreakActiveCard(key: ValueKey('breakActive'));
 
-    case _CardType.breakEndIntro:
-      return const BreakEndCard(key: ValueKey('breakEnd'));
+      case _CardType.breakEndIntro:
+        return const BreakEndCard(key: ValueKey('breakEnd'));
+    }
   }
-}
 
   // ============================================================
   // MAIN BUILD
@@ -254,7 +253,7 @@ void _handleStateChange(TimerState state) {
                                   'assets/icon/timerpage/papanpanah.svg',
                                   width: 32,
                                   height: 32,
-                                )
+                                ),
                               ),
                               const SizedBox(width: 12),
                               // Teks Deskripsi Tugas
@@ -272,7 +271,8 @@ void _handleStateChange(TimerState state) {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      widget.task.namaTugas,
+                                      widget.task?.namaTugas ??
+                                          'Tidak ada tugas',
                                       style: const TextStyle(
                                         color: Colors.black87,
                                         fontSize: 15,
@@ -288,129 +288,158 @@ void _handleStateChange(TimerState state) {
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (dialogContext) {
-                                        return Dialog(
-                                          backgroundColor: Colors.transparent,
-                                          elevation: 0,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 24,
-                                              vertical: 32,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFF5F5F5),
-                                              borderRadius: BorderRadius.circular(32),
-                                            ),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                // ===== Maskot =====
-                                                Image.asset(
-                                                  "assets/images/timerpage/Cloud1.png",
-                                                  width: 150,
-                                                  height: 120,
-                                                  fit: BoxFit.contain,
-                                                ),
-
-                                                const SizedBox(height: 24),
-
-                                                const Text(
-                                                  "Yakin ingin mengakhiri\nsesi mindy?",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Color(0xFF263238),
-                                                    height: 1.2,
-                                                  ),
-                                                ),
-
-                                                const SizedBox(height: 12),
-
-                                                const Text(
-                                                  "Progres sesi ini akan dihentikan dan waktu tidak akan disimpan",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Color(0xFF8A8A99),
-                                                    height: 1.4,
-                                                  ),
-                                                ),
-
-                                                const SizedBox(height: 32),
-
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: OutlinedButton(
-                                                        style: OutlinedButton.styleFrom(
-                                                          minimumSize: const Size.fromHeight(50),
-                                                          side: const BorderSide(
-                                                            color: Color(0xFF4A90E2),
-                                                            width: 2,
-                                                          ),
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(18),
-                                                          ),
-                                                        ),
-
-                                                        onPressed: () {
-                                                          Navigator.pop(dialogContext);
-                                                        },
-
-                                                        child: const Text(
-                                                          "Tetap Fokus",
-                                                          style: TextStyle(
-                                                            color: Color(0xFF4A90E2),
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-
-                                                    const SizedBox(width: 16),
-
-                                                    Expanded(
-                                                      child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                          backgroundColor: const Color(0xFF4A90E2),
-                                                          minimumSize: const Size.fromHeight(50),
-                                                          elevation: 0,
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(18),
-                                                          ),
-                                                        ),
-
-                                                        onPressed: () {
-                                                          context.read<TimerBloc>().add(
-                                                            const TimerEvent.reset(),
-                                                          );
-
-                                                          Navigator.pop(dialogContext);
-                                                          Navigator.pop(context);
-                                                        },
-
-                                                        child: const Text(
-                                                          "Keluar",
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 18,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (dialogContext) {
+                                      return Dialog(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 32,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFF5F5F5),
+                                            borderRadius: BorderRadius.circular(
+                                              32,
                                             ),
                                           ),
-                                        );
-                                      },
-                                    );
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              // ===== Maskot =====
+                                              Image.asset(
+                                                "assets/images/timerpage/Cloud1.png",
+                                                width: 150,
+                                                height: 120,
+                                                fit: BoxFit.contain,
+                                              ),
+
+                                              const SizedBox(height: 24),
+
+                                              const Text(
+                                                "Yakin ingin mengakhiri\nsesi mindy?",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Color(0xFF263238),
+                                                  height: 1.2,
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 12),
+
+                                              const Text(
+                                                "Progres sesi ini akan dihentikan dan waktu tidak akan disimpan",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Color(0xFF8A8A99),
+                                                  height: 1.4,
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 32),
+
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: OutlinedButton(
+                                                      style: OutlinedButton.styleFrom(
+                                                        minimumSize:
+                                                            const Size.fromHeight(
+                                                              50,
+                                                            ),
+                                                        side: const BorderSide(
+                                                          color: Color(
+                                                            0xFF4A90E2,
+                                                          ),
+                                                          width: 2,
+                                                        ),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                18,
+                                                              ),
+                                                        ),
+                                                      ),
+
+                                                      onPressed: () {
+                                                        Navigator.pop(
+                                                          dialogContext,
+                                                        );
+                                                      },
+
+                                                      child: const Text(
+                                                        "Tetap Fokus",
+                                                        style: TextStyle(
+                                                          color: Color(
+                                                            0xFF4A90E2,
+                                                          ),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  const SizedBox(width: 16),
+
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor:
+                                                            const Color(
+                                                              0xFF4A90E2,
+                                                            ),
+                                                        minimumSize:
+                                                            const Size.fromHeight(
+                                                              50,
+                                                            ),
+                                                        elevation: 0,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                18,
+                                                              ),
+                                                        ),
+                                                      ),
+
+                                                      onPressed: () {
+                                                        context
+                                                            .read<TimerBloc>()
+                                                            .add(
+                                                              const TimerEvent.reset(),
+                                                            );
+
+                                                        Navigator.pop(
+                                                          dialogContext,
+                                                        );
+                                                        Navigator.pop(context);
+                                                      },
+
+                                                      child: const Text(
+                                                        "Keluar",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 18,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -608,9 +637,4 @@ void _handleStateChange(TimerState state) {
 // Enum untuk Card Type (UI-only state)
 // ================================================================
 
-enum _CardType {
-  motivation,
-  breakActive,
-  breakIntro,
-  breakEndIntro,
-}
+enum _CardType { motivation, breakActive, breakIntro, breakEndIntro }

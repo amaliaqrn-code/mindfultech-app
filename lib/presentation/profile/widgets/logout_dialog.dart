@@ -24,13 +24,13 @@ class LogoutDialog extends StatelessWidget {
             const Icon(Icons.warning_rounded, color: Colors.red, size: 70),
             const SizedBox(height: 20),
             const Text(
-              'Apakah kamu yakin\ningin keluar?',
+              'Apakah kamu yakin ingin keluar?',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
-              'Kamu dapat masuk kembali kapan saja\nuntuk melanjutkan perjalananmu bersama Mindy.',
+              'Kamu dapat masuk kembali kapan saja untuk melanjutkan perjalananmu bersama mindy',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             ),
