@@ -1,11 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/database/database_helper.dart';
+import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 import 'journey_state.dart';
 
 class JourneyCubit extends Cubit<JourneyState> {
   final _storage = GetStorage();
   final _db = DatabaseHelper();
+  final _authLocal = AuthLocalDataSource();
 
   // Storage keys (for GetStorage backup)
   static const String _keyTodayFocusSeconds = 'journey_todayFocusSeconds';
@@ -13,10 +15,17 @@ class JourneyCubit extends Cubit<JourneyState> {
   static const String _keyStreakCount = 'journey_streakCount';
   static const String _keyLastFocusDate = 'journey_lastFocusDate';
 
-  // Default userId - in production, get from auth
+  /// Get the current user's ID as a string for database isolation.
+  /// Reads from AuthLocalDataSource (the single source of truth for auth).
+  /// Falls back to a session-unique key so anonymous users don't share data.
   String get _userId {
+    final user = _authLocal.getUser();
+    if (user != null && user.id > 0) {
+      return user.id.toString();
+    }
+    // Fallback: use a key stored in GetStorage that is cleared on logout
     final stored = _storage.read('userId');
-    return stored?.toString() ?? 'default_user';
+    return stored?.toString() ?? 'guest';
   }
 
   JourneyCubit() : super(JourneyState.initial()) {
@@ -206,28 +215,28 @@ class JourneyCubit extends Cubit<JourneyState> {
   }
 
   /// Complete a level session - handles all updates in one call
-  /// ✅ FIXED: This is the main method called when user completes a focus session
+  /// Called when user completes a focus session and taps "Lanjut" on TimerFinishedPage.
+  /// Always increments totalDays. Streak increment only if daily target is met.
   Future<void> completeLevelSession() async {
+    final userId = _userId; // Capture once — reads from AuthLocalDataSource
     final today = _getTodayDateString();
     final newDays = state.totalDays + 1;
     final newLevel = JourneyData.getLevelForDay(newDays);
 
-    // 1. Update total days
+    // 1. Always increment total days (every completed session = 1 day)
     _saveToStorage(totalDays: newDays, lastFocusDate: today);
 
     // 2. Check if streak should be incremented
-    // Streak increments when daily target is reached
+    // Streak increments only when daily focus target is reached for the first time today
     int newStreak = state.streakCount;
     if (state.isDailyTargetReached && state.lastFocusDate != today) {
       newStreak = state.streakCount + 1;
       _saveToStorage(streakCount: newStreak);
+      await _db.incrementStreak(userId, newStreak);
     }
 
-    // 3. Save to SQLite database
-    await _db.incrementTotalDays(_userId, newDays, newLevel.level);
-    if (newStreak != state.streakCount) {
-      await _db.incrementStreak(_userId, newStreak);
-    }
+    // 3. Save total days and level to SQLite database
+    await _db.incrementTotalDays(userId, newDays, newLevel.level);
 
     // 4. Emit new state
     emit(state.copyWith(
@@ -328,10 +337,11 @@ class JourneyCubit extends Cubit<JourneyState> {
 
   /// Load journey data from database and GetStorage
   Future<void> _loadJourneyData() async {
+    final userId = _userId; // Capture once from AuthLocalDataSource
     final today = _getTodayDateString();
 
     // Load from SQLite first (primary source)
-    final dbProgress = await _db.getOrCreateJourneyProgress(_userId);
+    final dbProgress = await _db.getOrCreateJourneyProgress(userId);
 
     // Get values with safe defaults (no null)
     int totalDays = dbProgress.totalDays;
@@ -341,19 +351,18 @@ class JourneyCubit extends Cubit<JourneyState> {
     String lastDate = dbProgress.lastFocusDate ?? '';
 
     // Handle day change detection
-    // ✅ FIXED: Streak only resets if user didn't complete focus in the previous day
+    // Streak only resets if user didn't complete focus in the previous day
     if (lastDate.isNotEmpty && lastDate != today) {
-      // Check if yesterday's target was reached
-      // If NOT reached, reset streak to 0
+      // If NOT reached yesterday's target, reset streak to 0
       if (todayFocusSeconds < dailyTargetSeconds) {
         streak = 0;
-        await _db.resetStreak(_userId);
+        await _db.resetStreak(userId);
         _saveToStorage(streakCount: 0);
       }
 
       // Reset daily focus for new day
       todayFocusSeconds = 0;
-      await _db.resetDailyFocus(_userId);
+      await _db.resetDailyFocus(userId);
       _saveToStorage(todayFocusSeconds: 0);
     }
 

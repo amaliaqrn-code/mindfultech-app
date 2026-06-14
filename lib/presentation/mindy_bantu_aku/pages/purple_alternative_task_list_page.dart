@@ -44,7 +44,7 @@ class _PurpleAlternativeTaskListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: PurpleTheme.backgroundPage,
+      backgroundColor: PurpleTheme.backgroundWhite,
       body: SafeArea(
         child: Column(
           children: [
@@ -64,19 +64,19 @@ class _PurpleAlternativeTaskListPageState
                     const Text(
                       'Pilih tugas lain',
                       style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: PurpleTheme.textDark,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w500,
+                        color: PurpleTheme.primaryPurpleDark,
                       ),
                     ),
                     const SizedBox(height: 8),
 
                     // Subtitle
                     const Text(
-                      'Pilih task yang ingin kamu kerjakan',
+                      'Mindy sudah menyiapkan beberapa opsi\nkegiatan untukmu',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         color: PurpleTheme.textGrey,
                       ),
                     ),
@@ -84,9 +84,6 @@ class _PurpleAlternativeTaskListPageState
 
                     // Main image dari assets
                     _buildMainImage(),
-
-                    const SizedBox(height: 20),
-
                     // Task list
                     BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
                       builder: (context, state) {
@@ -256,41 +253,43 @@ class _PurpleAlternativeTaskListPageState
   }
 
   Widget _buildMainImage() {
-    return Image.asset(
-      'assets/images/energitinggi/energi_alternative.png',
-      width: double.infinity,
-      height: 200,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        // Fallback jika asset tidak ditemukan
-        return Container(
-          width: double.infinity,
-          height: 180,
-          decoration: BoxDecoration(
-            color: PurpleTheme.primaryPurplePale,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.bolt_rounded,
-                size: 60,
-                color: PurpleTheme.primaryPurple,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '⚡ Mindy siap membantu!',
-                style: TextStyle(
-                  fontSize: 16,
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Image.asset(
+        'assets/images/energitinggi/energi_alternative.png',
+        width: 166,
+        height: 109.16992950439453,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback jika asset tidak ditemukan
+          return Container(
+            width: double.infinity,
+            height: 180,
+            decoration: BoxDecoration(
+              color: PurpleTheme.primaryPurplePale,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.bolt_rounded,
+                  size: 60,
                   color: PurpleTheme.primaryPurple,
-                  fontWeight: FontWeight.w500,
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+                const SizedBox(height: 8),
+                const Text(
+                  '⚡ Mindy siap membantu!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: PurpleTheme.primaryPurple,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

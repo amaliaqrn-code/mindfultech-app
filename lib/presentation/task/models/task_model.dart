@@ -65,39 +65,23 @@ extension TaskCategoryExtension on TaskCategory {
     }
   }
 
-  IconData get icon {
+  String get iconPath {
     switch (this) {
       case TaskCategory.belajar:
-        return Icons.menu_book_rounded;
+        return 'assets/icon/kategori/belajar.svg';
       case TaskCategory.pekerjaan:
-        return Icons.work_rounded;
+        return 'assets/icon/kategori/pekerjaan.svg';
       case TaskCategory.kesehatan:
-        return Icons.favorite_rounded;
+        return 'assets/icon/kategori/kesehatan.svg';
       case TaskCategory.pribadi:
-        return Icons.person_rounded;
+        return 'assets/icon/kategori/pribadi.svg';
       case TaskCategory.rumah:
-        return Icons.home_rounded;
+        return 'assets/icon/kategori/rumah.svg';
       case TaskCategory.lainnya:
-        return Icons.auto_awesome_rounded;
+        return 'assets/icon/kategori/lainnya.svg';
     }
   }
 
-  Color get color {
-    switch (this) {
-      case TaskCategory.belajar:
-        return const Color(0xFF4597E6);
-      case TaskCategory.pekerjaan:
-        return const Color(0xFF7B68EE);
-      case TaskCategory.kesehatan:
-        return const Color(0xFFFF6B6B);
-      case TaskCategory.pribadi:
-        return const Color(0xFFFF9F43);
-      case TaskCategory.rumah:
-        return const Color(0xFF26DE81);
-      case TaskCategory.lainnya:
-        return const Color(0xFFA55EEA);
-    }
-  }
 
   static TaskCategory fromString(String value) {
     switch (value) {

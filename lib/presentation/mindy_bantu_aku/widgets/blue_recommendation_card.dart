@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/blue_theme.dart';
 
-/// Blue Recommendation Card Widget
+/// Blue Recommendation Card Widget (Green Structure Style)
 class BlueRecommendationCard extends StatelessWidget {
   final TaskModel? task;
   final EnergyLevel? energyLevel;
@@ -15,12 +16,11 @@ class BlueRecommendationCard extends StatelessWidget {
     this.category,
   });
 
-  // Get task data with fallback to default values
   TaskModel get _effectiveTask {
     if (task != null) return task!;
-    // Create default task from energy level and category
     final effectiveEnergy = energyLevel ?? EnergyLevel.sedang;
     final effectiveCategory = category ?? TaskCategory.lainnya;
+
     return DefaultTaskHelper.createDefaultTask(
       energi: effectiveEnergy,
       kategori: effectiveCategory,
@@ -30,157 +30,114 @@ class BlueRecommendationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveTask = _effectiveTask;
+
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: BlueTheme.backgroundWhite,
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
         border: Border.all(
           color: BlueTheme.borderLight,
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: BlueTheme.shadowColor,
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Top Badge
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: const BoxDecoration(
-              color: BlueTheme.primaryBluePale,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Badge (GREEN STYLE)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
+              ),
+              decoration: BoxDecoration(
+                color: BlueTheme.primaryBluePale,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Hari ini coba kamu fokus ke:',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: BlueTheme.textDark,
+                ),
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.lightbulb_outline,
-                  color: BlueTheme.primaryBlue,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Hari ini coba kamu fokus ke:',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: BlueTheme.primaryBlue,
+
+            const SizedBox(height: 24),
+
+            // ICON (GREEN STYLE STRUCTURE)
+            Container(
+              width: 90,
+              height: 90,
+              decoration: const BoxDecoration(
+                color: BlueTheme.primaryBluePale,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  effectiveTask.kategori.iconPath,
+                  width: 44,
+                  height: 44,
+                  colorFilter: const ColorFilter.mode(
+                    BlueTheme.primaryBlueDark,
+                    BlendMode.srcIn,
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
 
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                // Icon
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: const BoxDecoration(
-                    color: BlueTheme.primaryBluePale,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    effectiveTask.kategori.icon,
-                    color: BlueTheme.primaryBlue,
-                    size: 40,
-                  ),
-                ),
-                const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-                // Task Title
-                Text(
-                  effectiveTask.namaTugas,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: BlueTheme.textDark,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 12),
+            // TITLE (GREEN STYLE STRUCTURE)
+            Text(
+              effectiveTask.namaTugas,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                color: BlueTheme.primaryBlueDark,
+                height: 1.3,
+              ),
+            ),
 
-                // Task Description
-                Text(
-                  effectiveTask.kategori.displayName,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: BlueTheme.textGrey,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
-                // Meta info
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildMetaChip(
-                      icon: Icons.category_rounded,
-                      label: effectiveTask.kategori.displayName,
+            // CATEGORY + DURATION (GREEN STYLE STRUCTURE)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  Text(
+                    effectiveTask.kategori.displayName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: BlueTheme.textGrey,
+                      height: 1.4,
                     ),
-                    const SizedBox(width: 12),
-                    _buildMetaChip(
-                      icon: Icons.timer_outlined,
-                      label: '~${effectiveTask.estimasiWaktu} menit',
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '~${effectiveTask.estimasiWaktu} menit',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: BlueTheme.textGrey,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMetaChip({required IconData icon, required String label}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: BlueTheme.backgroundCream,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 14,
-            color: BlueTheme.textLightGrey,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: BlueTheme.textLightGrey,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-
 /// Blue Outline Button (Helper Widget)
 class BlueOutlineButton extends StatelessWidget {
   final String text;
@@ -197,12 +154,12 @@ class BlueOutlineButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        height: 55,
         decoration: BoxDecoration(
           color: Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: BlueTheme.primaryBlue,
+            color: BlueTheme.primaryBlueDark,
             width: 2,
           ),
         ),
@@ -210,9 +167,9 @@ class BlueOutlineButton extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: BlueTheme.primaryBlue,
+              color: BlueTheme.primaryBlueDark,
             ),
           ),
         ),
@@ -237,10 +194,10 @@ class BlueSolidButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        height: 55,
         decoration: BoxDecoration(
           gradient: BlueTheme.solidBlueGradient,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: BlueTheme.primaryBlue.withValues(alpha: 0.4),
@@ -253,7 +210,7 @@ class BlueSolidButton extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

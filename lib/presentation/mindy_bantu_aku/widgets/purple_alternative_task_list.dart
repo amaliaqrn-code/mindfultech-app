@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/blue_theme.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
@@ -54,12 +56,8 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? PurpleTheme.primaryPurple : PurpleTheme.backgroundWhite,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? PurpleTheme.primaryPurple : PurpleTheme.borderLight,
-            width: isSelected ? 2 : 1,
-          ),
+          color: isSelected ? PurpleTheme.primaryPurple : PurpleTheme.primaryPurplePale,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: isSelected
@@ -74,20 +72,27 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
           children: [
             // Icon Container
             Container(
-              width: 48,
-              height: 48,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? PurpleTheme.violetAccent.withValues(alpha: 0.3)
+                    ? PurpleTheme.primaryPurplePale
+                    : PurpleTheme.primaryPurpleDark,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: SvgPicture.asset(
+                  task.kategori.iconPath,
+                  width: 30,
+                  height: 30,
+                  color: isSelected
+                    ? PurpleTheme.primaryPurpleDark
                     : PurpleTheme.primaryPurplePale,
-                borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
-              child: Icon(
-                task.kategori.icon,
-                color: isSelected ? Colors.white : PurpleTheme.primaryPurple,
-                size: 24,
-              ),
-            ),
+    
             const SizedBox(width: 16),
 
             // Task Info
@@ -157,19 +162,12 @@ class PurpleAlternativeTaskCard extends StatelessWidget {
       height: 28,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isSelected ? Colors.white : Colors.transparent,
+        color: isSelected ? PurpleTheme.primaryPurplePale : PurpleTheme.primaryPurplePale,
         border: Border.all(
           color: isSelected ? Colors.white : PurpleTheme.borderMedium,
           width: 2,
         ),
       ),
-      child: isSelected
-          ? Icon(
-              Icons.check,
-              color: PurpleTheme.primaryPurple,
-              size: 18,
-            )
-          : null,
     );
   }
 }

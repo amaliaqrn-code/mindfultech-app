@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
@@ -28,6 +29,7 @@ class PurpleCategoryGridWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final category = TaskCategory.values[index];
         final isSelected = selectedCategory == category;
+
         return PurpleCategoryCard(
           category: category,
           isSelected: isSelected,
@@ -50,56 +52,10 @@ class PurpleCategoryCard extends StatelessWidget {
     required this.onTap,
   });
 
-  IconData get _icon {
-    switch (category) {
-      case TaskCategory.rumah:
-        return Icons.home_rounded;
-      case TaskCategory.pekerjaan:
-        return Icons.work_rounded;
-      case TaskCategory.pribadi:
-        return Icons.person_rounded;
-      case TaskCategory.belajar:
-        return Icons.menu_book_rounded;
-      case TaskCategory.lainnya:
-        return Icons.auto_awesome_rounded;
-      case TaskCategory.kesehatan:
-        return Icons.favorite_rounded;
-    }
-  }
+  Color get _backgroundColor =>
+      PurpleTheme.primaryPurple.withValues(alpha: 0.12);
 
-  Color get _backgroundColor {
-    switch (category) {
-      case TaskCategory.kesehatan:
-        return PurpleTheme.categoryColors['kesehatan']!;
-      case TaskCategory.pekerjaan:
-        return PurpleTheme.categoryColors['pekerjaan']!;
-      case TaskCategory.belajar:
-        return PurpleTheme.categoryColors['belajar']!;
-      case TaskCategory.lainnya:
-        return PurpleTheme.categoryColors['hubungan']!;
-      case TaskCategory.rumah:
-        return PurpleTheme.backgroundCream;
-      case TaskCategory.pribadi:
-        return PurpleTheme.categoryColors['kesehatanMental']!;
-    }
-  }
-
-  Color get _iconColor {
-    switch (category) {
-      case TaskCategory.kesehatan:
-        return PurpleTheme.categoryIconColors['kesehatan']!;
-      case TaskCategory.pekerjaan:
-        return PurpleTheme.categoryIconColors['pekerjaan']!;
-      case TaskCategory.belajar:
-        return PurpleTheme.categoryIconColors['belajar']!;
-      case TaskCategory.lainnya:
-        return PurpleTheme.categoryIconColors['hubungan']!;
-      case TaskCategory.rumah:
-        return PurpleTheme.primaryPurple;
-      case TaskCategory.pribadi:
-        return PurpleTheme.categoryIconColors['kesehatanMental']!;
-    }
-  }
+  Color get _contentColor => const Color(0xFF6D28D9);
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +64,12 @@ class PurpleCategoryCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isSelected ? PurpleTheme.primaryPurplePale : _backgroundColor,
+          color: isSelected ? Colors.white : _backgroundColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? PurpleTheme.primaryPurple : Colors.transparent,
+            color: isSelected
+                ? PurpleTheme.primaryPurple
+                : Colors.transparent,
             width: 2,
           ),
           boxShadow: [
@@ -127,26 +85,27 @@ class PurpleCategoryCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: isSelected ? PurpleTheme.primaryPurple : _iconColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                _icon,
-                color: Colors.white,
-                size: 28,
+            SvgPicture.asset(
+              category.iconPath,
+              width: 34,
+              height: 34,
+              colorFilter: ColorFilter.mode(
+                isSelected
+                    ? PurpleTheme.primaryPurple
+                    : _contentColor,
+                BlendMode.srcIn,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              category.displayName,
+              category.displayName, // 🔥 dari TaskCategory
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? PurpleTheme.primaryPurple : PurpleTheme.textDark,
+                fontWeight:
+                    isSelected ? FontWeight.bold : FontWeight.w600,
+                color: isSelected
+                    ? PurpleTheme.primaryPurple
+                    : _contentColor,
               ),
             ),
           ],

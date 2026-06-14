@@ -522,7 +522,6 @@ class _HomepagePageState extends State<HomepagePage> {
                       title: task.namaTugas,
                       duration: task.formattedDuration,
                       category: task.kategori.displayName,
-                      categoryColor: task.kategori.color,
                     ),
                   )),
           ],
@@ -554,7 +553,6 @@ class _HomepagePageState extends State<HomepagePage> {
     required String title,
     required String duration,
     required String category,
-    required Color categoryColor,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -592,8 +590,8 @@ class _HomepagePageState extends State<HomepagePage> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(color: categoryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
-            child: Text(category, style: TextStyle(color: categoryColor, fontWeight: FontWeight.w600, fontSize: 11)),
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
+            child: Text(category, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 11)),
           ),
         ],
       ),

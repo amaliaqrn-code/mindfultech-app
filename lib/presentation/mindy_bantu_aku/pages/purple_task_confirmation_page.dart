@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/purple_theme.dart';
@@ -19,40 +20,37 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: PurpleTheme.backgroundPage,
+      backgroundColor: PurpleTheme.backgroundWhite,
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 32),
+            const SizedBox(height: 44),
 
             // Title
             const Text(
               'Tugas Dipilih',
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: PurpleTheme.primaryPurple,
+                fontSize: 28,
+                fontWeight: FontWeight.w500,
+                color: PurpleTheme.primaryPurpleDark,
               ),
             ),
             const SizedBox(height: 6),
 
             // Subtitle
             const Text(
-              'Yuk, pastikan tugas yang kamu pilih ini\ndan siap untuk fokus!',
+              'Aktivitas yang kamu pilih untuk menemani\nfokus hari ini',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 color: PurpleTheme.textGrey,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             // Mascot Image - centered above card
             _buildMascotImage(),
-
-            const SizedBox(height: 12),
-
             // Main Task Card
             Expanded(
               child: SingleChildScrollView(
@@ -83,34 +81,26 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           // Badge Header - height 56
-                          Container(
-                            width: double.infinity,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: PurpleTheme.primaryPurplePale,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(24),
-                                topRight: Radius.circular(24),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 18),
+                            child: Container(
+                              width: double.infinity,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: PurpleTheme.primaryPurplePale,
+                                borderRadius: BorderRadius.circular(24),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.lightbulb_outline,
-                                  color: PurpleTheme.primaryPurple,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Hari ini coba kamu fokus ke:',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: PurpleTheme.primaryPurple,
+                              child: 
+                                  Center(
+                                    child: Text(
+                                      'Hari ini coba kamu fokus ke:',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: PurpleTheme.primaryPurple,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
                             ),
                           ),
 
@@ -127,10 +117,17 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                                     color: PurpleTheme.primaryPurplePale,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Icon(
-                                    selectedTask.kategori.icon,
-                                    color: PurpleTheme.primaryPurple,
-                                    size: 50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: SvgPicture.asset(
+                                      selectedTask.kategori.iconPath,
+                                      width: 50,
+                                      height: 50,
+                                      colorFilter: const ColorFilter.mode(
+                                        PurpleTheme.primaryPurple,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 32),
@@ -140,9 +137,9 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
                                   selectedTask.namaTugas,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: PurpleTheme.textDark,
+                                    color: PurpleTheme.primaryPurpleDark,
                                     height: 1.3,
                                   ),
                                 ),
@@ -215,12 +212,12 @@ class PurpleTaskConfirmationPage extends StatelessWidget {
   }
 
   Widget _buildMascotImage() {
-    return Center(
+    return   Padding(
+      padding: EdgeInsetsGeometry.only(left: 20),
       child: Image.asset(
         'assets/images/energitinggi/energi_rekomendasi.png',
-        width: 180,
-        height: 90,
-        fit: BoxFit.contain,
+        width: 200,
+        height: 106.59996032714844,
         errorBuilder: (context, error, stackTrace) {
           return Container(
             width: 180,

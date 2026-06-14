@@ -262,18 +262,6 @@ class _TaskCategoryPageState extends State<TaskCategoryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Green Category Grid (for low energy)
-        Text(
-          'Kategori untuk Energimu',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: _textDark,
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Use appropriate grid based on energy level
         _buildCategoryGridWidget(),
       ],
     );
@@ -347,7 +335,7 @@ class _TaskCategoryPageState extends State<TaskCategoryPage> {
           ),
           child: Center(
             child: Text(
-              'Lanjut ke Rekomendasi',
+              'Lanjut',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

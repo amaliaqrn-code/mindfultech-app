@@ -262,9 +262,9 @@ class _GreenTaskRecommendationPageState
           'Mindy memilihkan\ntugas untukmu',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: GreenTheme.textDark,
+            color: GreenTheme.sageGreen,
             height: 1.3,
           ),
         ),
@@ -281,14 +281,13 @@ class _GreenTaskRecommendationPageState
           ),
         ),
 
-        const SizedBox(height: 24),
-
         // Mascot (moved outside card)
-        Center(
-          child: _buildMascotImage(),
+        Padding(
+          padding: const EdgeInsets.only(left: 34),
+          child: Center(
+            child: _buildMascotImage(),
+          ),
         ),
-
-        const SizedBox(height: 16),
 
         // Card
         Column(
@@ -345,8 +344,8 @@ class _GreenTaskRecommendationPageState
   Widget _buildMascotImage() {
     return Image.asset(
       'assets/images/energirendah/energi_rendah_rekomendasi.png',
-      width: 180,
-      height: 120,
+      width: 292.01202392578125,
+      height: 134,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
         return Container(

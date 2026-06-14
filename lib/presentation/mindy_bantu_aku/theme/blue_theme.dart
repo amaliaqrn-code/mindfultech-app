@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 /// Blue Theme Colors for Choose Energy Screen - Medium Energy
 class BlueTheme {
   // Primary Blue Colors
-  static const Color primaryBlue = Color(0xFF4597E6);
-  static const Color primaryBlueDark = Color(0xFF2E5C8A);
-  static const Color primaryBlueLight = Color(0xFF87BFFF);
+  static const Color primaryBlue = Color(0xFF7BBEFF);
+  static const Color primaryBlueDark = Color(0xFF4597E6);
+  static const Color primaryNavy = Color(0xFF2859C5);
+  static const Color primaryBlueLight = Color(0xFF83DFC6);
   static const Color primaryBluePale = Color(0xFFE8F1FE);
   static const Color primaryBlueFaded = Color(0xFFEDF4FF);
 
@@ -39,13 +40,13 @@ class BlueTheme {
 
   // Gradient for buttons
   static const LinearGradient primaryButtonGradient = LinearGradient(
-    colors: [primaryBlue, Color(0xFF2E8B8B)],
+    colors: [primaryBlueDark,primaryBlue,primaryBlueLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient solidBlueGradient = LinearGradient(
-    colors: [primaryBlue, primaryBlueDark],
+    colors: [primaryBlueDark, primaryBlueDark],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );

@@ -490,7 +490,7 @@ class _TimerPageState extends State<TimerPage> {
                           ),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 24),
 
                         // LINGKARAN TIMER PROGRESS UTAMA
                         TimerCircleProgress(
@@ -500,7 +500,7 @@ class _TimerPageState extends State<TimerPage> {
                           showCloud: state.isBreakTime,
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 24),
 
                         // INDIKATOR TARGET SESI (Kapsul Biru Tengah Bawah)
                         AnimatedSwitcher(
@@ -557,7 +557,7 @@ class _TimerPageState extends State<TimerPage> {
                                 ),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 100),
 
                         // ========================================
                         // KOTAK DINAMIS (AnimatedSwitcher)
@@ -567,7 +567,7 @@ class _TimerPageState extends State<TimerPage> {
                         // ========================================
                         _buildDynamicCard(state),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 50),
 
                         // TOMBOL UTAMA "JEDA FOKUS" (Capsule Lebar Gradasi)
                         SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 
@@ -105,13 +106,25 @@ class PurpleConfirmationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildMetaChip(
-                icon: task.kategori.icon,
+                icon: SvgPicture.asset(
+                  task.kategori.iconPath,
+                  width: 14,
+                  height: 14,
+                  colorFilter: const ColorFilter.mode(
+                    PurpleTheme.primaryPurple,
+                    BlendMode.srcIn,
+                  ),
+                ),
                 label: task.kategori.displayName,
                 color: PurpleTheme.primaryPurple,
               ),
               const SizedBox(width: 12),
               _buildMetaChip(
-                icon: Icons.timer_outlined,
+                icon: const Icon(
+                  Icons.timer_outlined,
+                  size: 14,
+                  color: PurpleTheme.primaryPurple,
+                ),
                 label: '~${task.estimasiWaktu} menit',
                 color: PurpleTheme.primaryPurple,
               ),
@@ -152,7 +165,7 @@ class PurpleConfirmationCard extends StatelessWidget {
   }
 
   Widget _buildMetaChip({
-    required IconData icon,
+    required Widget icon,
     required String label,
     required Color color,
   }) {
@@ -164,12 +177,8 @@ class PurpleConfirmationCard extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
+        children: [  
             icon,
-            size: 14,
-            color: color,
-          ),
           const SizedBox(width: 6),
           Text(
             label,
