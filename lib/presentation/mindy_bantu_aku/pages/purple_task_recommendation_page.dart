@@ -207,9 +207,9 @@ class _PurpleTaskRecommendationPageState
           'Mindy memilihkan\ntugas untukmu',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: PurpleTheme.textDark,
+            fontSize: 28,
+            fontWeight: FontWeight.w500,
+            color: PurpleTheme.primaryPurpleDark,
             height: 1.3,
           ),
         ),
@@ -225,16 +225,13 @@ class _PurpleTaskRecommendationPageState
             height: 1.4,
           ),
         ),
-
-        const SizedBox(height: 24),
-
         // Mascot (moved outside card)
-        Center(
-          child: _buildMascotImage(),
+        Padding(
+          padding: const EdgeInsets.only(left: 34),
+          child: Center(
+            child: _buildMascotImage(),
+          ),
         ),
-
-        const SizedBox(height: 16),
-
         // Card
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -286,8 +283,8 @@ class _PurpleTaskRecommendationPageState
   Widget _buildMascotImage() {
     return Image.asset(
       'assets/images/energitinggi/energi_rekomendasi.png',
-      width: 180,
-      height: 90,
+      width: 289,
+      height: 133.59996032714844,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
         return Container(

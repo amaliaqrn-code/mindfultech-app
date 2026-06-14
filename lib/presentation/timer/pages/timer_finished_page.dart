@@ -114,9 +114,9 @@ class _TimerFinishedPageState extends State<TimerFinishedPage> {
                           physics: const NeverScrollableScrollPhysics(),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
+                            crossAxisCount: 6,
+                            mainAxisSpacing: 2,
+                            crossAxisSpacing: 2,
                           ),
                           itemBuilder: (context, index) {
                             return GestureDetector(
@@ -257,15 +257,8 @@ class _TimerFinishedPageState extends State<TimerFinishedPage> {
 
   /// Handle save focus session and navigate to journey
   Future<void> _handleContinueToJourney(BuildContext context, JourneyCubit cubit) async {
-    // NAVIGATION GUARD: Check if daily target is reached
-    if (!cubit.isDailyTargetReached) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Target fokus harian belum tercapai!"),
-        ),
-      );
-      return;
-    }
+    // Require emotion selection before proceeding
+    if (selectedEmoji == null) return;
 
     // ✅ STEP 1: Save focus session to database
     await _saveFocusSession();
@@ -273,8 +266,10 @@ class _TimerFinishedPageState extends State<TimerFinishedPage> {
     // ✅ STEP 2: Delete completed task from database (except default tasks)
     await _deleteCompletedTask();
 
-    // ✅ STEP 3: Update Journey state using completeLevelSession
-    cubit.completeLevelSession();
+    // ✅ STEP 3: Update Journey — always advance, regardless of daily target
+    // The daily target check only affects streak; the journey day always progresses
+    // after completing a timer session.
+    await cubit.completeLevelSession();
 
     // ✅ STEP 4: Refresh homepage emotion data
     if (context.mounted) {

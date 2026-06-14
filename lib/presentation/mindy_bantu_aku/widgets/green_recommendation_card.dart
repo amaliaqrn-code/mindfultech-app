@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
@@ -46,7 +47,7 @@ class GreenRecommendationCard extends StatelessWidget {
           children: [
             // Badge di dalam kartu
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 color: GreenTheme.sageGreenLight,
                 borderRadius: BorderRadius.circular(20),
@@ -54,9 +55,9 @@ class GreenRecommendationCard extends StatelessWidget {
               child: const Text(
                 'Hari ini coba kamu fokus ke:',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: GreenTheme.sageGreen,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -70,10 +71,16 @@ class GreenRecommendationCard extends StatelessWidget {
                 color: GreenTheme.sageGreenLight,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                effectiveTask.kategori.icon,
-                color: GreenTheme.sageGreen,
-                size: 44,
+              child: Center(
+                child: SvgPicture.asset(
+                  effectiveTask.kategori.iconPath,
+                  width: 44,
+                  height: 44,
+                  colorFilter: const ColorFilter.mode(
+                    GreenTheme.sageGreen,
+                    BlendMode.srcIn,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -83,9 +90,9 @@ class GreenRecommendationCard extends StatelessWidget {
               effectiveTask.namaTugas,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: GreenTheme.textDark,
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                color: GreenTheme.sageGreenDark,
                 height: 1.3,
               ),
             ),
@@ -144,7 +151,7 @@ class GreenOutlineButton extends StatelessWidget {
         height: 52,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: GreenTheme.sageGreen,
             width: 1.5,
@@ -154,8 +161,8 @@ class GreenOutlineButton extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
               color: GreenTheme.sageGreen,
             ),
           ),
@@ -184,14 +191,14 @@ class GreenSolidButton extends StatelessWidget {
         height: 52,
         decoration: BoxDecoration(
           color: GreenTheme.sageGreen,
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Center(
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),

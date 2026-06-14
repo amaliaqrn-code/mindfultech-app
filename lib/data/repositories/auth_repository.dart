@@ -3,6 +3,7 @@ import '../datasources/auth_remote_datasource.dart';
 import '../models/user_model.dart';
 import '../models/requests/login_request.dart';
 import '../models/requests/register_request.dart';
+import 'package:get_storage/get_storage.dart';
 
 class AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
@@ -25,6 +26,8 @@ class AuthRepository {
     if (response.user != null) {
       await _localDataSource.saveUser(response.user!);
       await _localDataSource.setLoggedIn(true);
+      // Also write userId to GetStorage for legacy readers (e.g. JourneyCubit fallback)
+      GetStorage().write('userId', response.user!.id.toString());
     }
 
     return response.user!;
@@ -47,6 +50,8 @@ class AuthRepository {
       await _localDataSource.saveToken(response.token!);
       await _localDataSource.saveUser(response.user!);
       await _localDataSource.setLoggedIn(true);
+      // Also write userId to GetStorage for legacy readers
+      GetStorage().write('userId', response.user!.id.toString());
 
       return response.user!;
     } catch (e) {
@@ -67,6 +72,8 @@ class AuthRepository {
       // Ignore remote error, clear local anyway
     }
     await _localDataSource.clearAuth();
+    // Clear userId from GetStorage on logout
+    GetStorage().remove('userId');
   }
 
   // Check if user is logged in

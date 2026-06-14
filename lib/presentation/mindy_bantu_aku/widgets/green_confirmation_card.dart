@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
@@ -102,21 +103,33 @@ class GreenConfirmationCard extends StatelessWidget {
 
           // Meta Info
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildMetaChip(
-                icon: task.kategori.icon,
-                label: task.kategori.displayName,
-                color: GreenTheme.sageGreen,
-              ),
-              const SizedBox(width: 12),
-              _buildMetaChip(
-                icon: Icons.timer_outlined,
-                label: '~${task.estimasiWaktu} menit',
-                color: GreenTheme.sageGreen,
-              ),
-            ],
-          ),
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    _buildMetaChip(
+      icon: SvgPicture.asset(
+        task.kategori.iconPath,
+        width: 14,
+        height: 14,
+        colorFilter: const ColorFilter.mode(
+          GreenTheme.sageGreen,
+          BlendMode.srcIn,
+        ),
+      ),
+      label: task.kategori.displayName,
+      color: GreenTheme.sageGreen,
+    ),
+    const SizedBox(width: 12),
+    _buildMetaChip(
+      icon: const Icon(
+        Icons.timer_outlined,
+        size: 14,
+        color: GreenTheme.sageGreen,
+      ),
+      label: '~${task.estimasiWaktu} menit',
+      color: GreenTheme.sageGreen,
+    ),
+  ],
+),
           const SizedBox(height: 24),
 
           // Encouragement
@@ -152,7 +165,7 @@ class GreenConfirmationCard extends StatelessWidget {
   }
 
   Widget _buildMetaChip({
-    required IconData icon,
+    required Widget icon,
     required String label,
     required Color color,
   }) {
@@ -164,12 +177,8 @@ class GreenConfirmationCard extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 14,
-            color: color,
-          ),
+        children: [       
+            icon,       
           const SizedBox(width: 6),
           Text(
             label,

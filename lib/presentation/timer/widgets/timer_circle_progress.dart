@@ -20,7 +20,7 @@ class TimerCircleProgress extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Responsive size: use up to 55% of available width, max 300
-        final double size = constraints.maxWidth * 0.55;
+        final double size = constraints.maxWidth * 0.75;
         final double cappedSize = size.clamp(180.0, 300.0);
         final double fontSize = (cappedSize / 300 * 64).clamp(36.0, 64.0);
         final double strokeWidth = (cappedSize / 300 * 28).clamp(18.0, 28.0);

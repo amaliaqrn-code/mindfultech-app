@@ -215,3 +215,11 @@ flutter:
     - assets/images/result/resultlevel6.png
 
     - assets/images/page_success.png
+
+    # Kategori
+    - assets/icon/kategori/rumah.svg
+    - assets/icon/kategori/belajar.svg
+    - assets/icon/kategori/pekerjaan.svg
+    - assets/icon/kategori/kesehatan.svg
+    - assets/icon/kategori/pribadi.svg
+    - assets/icon/kategori/lainnya.svg

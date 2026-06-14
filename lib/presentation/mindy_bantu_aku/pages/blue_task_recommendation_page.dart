@@ -212,14 +212,12 @@ class _BlueTaskRecommendationPageState
             height: 1.4,
           ),
         ),
-        const SizedBox(height: 24),
 
+        SizedBox(height: 12),
         // Mascot
         Center(
           child: _buildMascotImage(),
         ),
-
-        const SizedBox(height: 16),
 
         // Card with Stack (mascot overlap effect removed - mascot is now above)
         Column(
@@ -272,7 +270,7 @@ class _BlueTaskRecommendationPageState
   }
 
   Widget _buildMascotImage() {
-    return Image.asset('assets/images/energisedang/energi_rekomendasi.png', width: 180, height: 90, fit: BoxFit.contain,
+    return Image.asset('assets/images/energisedang/energi_rekomendasi.png', width: 271, height: 111.59996032714844, fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) => Container(width: 180, height: 90, decoration: BoxDecoration(color: BlueTheme.primaryBluePale, borderRadius: BorderRadius.circular(16)), child: const Center(child: Text('😊', style: TextStyle(fontSize: 50)))));
   }
 }

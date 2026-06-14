@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/blue_theme.dart';
 
@@ -105,16 +106,28 @@ class BlueConfirmationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildMetaChip(
-                icon: task.kategori.icon,
+                icon: SvgPicture.asset(
+                  task.kategori.iconPath,
+                  width: 16,
+                  height: 16,
+                  colorFilter: ColorFilter.mode(
+                    BlueTheme.primaryBlue,
+                    BlendMode.srcIn,
+                  ),
+                ),
                 label: task.kategori.displayName,
                 color: BlueTheme.primaryBlue,
               ),
               const SizedBox(width: 12),
               _buildMetaChip(
-                icon: Icons.timer_outlined,
-                label: '~${task.estimasiWaktu} menit',
-                color: BlueTheme.primaryBlue,
-              ),
+                  icon: const Icon(
+                    Icons.timer_outlined,
+                    size: 16,
+                    color: BlueTheme.primaryBlue,
+                  ),
+                  label: '~${task.estimasiWaktu} menit',
+                  color: BlueTheme.primaryBlue,
+                ),
             ],
           ),
           const SizedBox(height: 24),
@@ -152,7 +165,7 @@ class BlueConfirmationCard extends StatelessWidget {
   }
 
   Widget _buildMetaChip({
-    required IconData icon,
+    required Widget icon,
     required String label,
     required Color color,
   }) {
@@ -165,11 +178,7 @@ class BlueConfirmationCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: color,
-          ),
+            icon,     
           const SizedBox(width: 6),
           Text(
             label,

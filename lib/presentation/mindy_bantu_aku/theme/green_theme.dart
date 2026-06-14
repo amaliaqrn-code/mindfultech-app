@@ -7,7 +7,7 @@ class GreenTheme {
   static const Color sageGreenDark = Color(0xFF3D6B33);
   static const Color sageGreenLight = Color(0xFFD4E6C9);
   static const Color sageGreenPale = Color(0xFFF5F7F4);
-  static const Color sageGreenFaded = Color(0xFFE8EDE4);
+  static const Color sageGreenFaded = Color(0xFFBBCFBC);
 
   // Mint Accents
   static const Color mintGreen = Color(0xFF83DFC6);

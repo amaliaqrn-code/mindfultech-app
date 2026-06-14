@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/green_theme.dart';
 
@@ -55,38 +56,28 @@ class GreenAlternativeTaskCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? GreenTheme.sageGreen : GreenTheme.backgroundWhite,
+          color: isSelected ? GreenTheme.sageGreenFaded : GreenTheme.sageGreenPale,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? GreenTheme.sageGreen : GreenTheme.borderLight,
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? GreenTheme.sageGreen.withValues(alpha: 0.3)
-                  : GreenTheme.shadowColor,
-              blurRadius: isSelected ? 10 : 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Row(
           children: [
             // Icon Container
             Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? GreenTheme.sageGreenLight.withValues(alpha: 0.3)
-                    : GreenTheme.sageGreenLight,
-                borderRadius: BorderRadius.circular(12),
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                color: GreenTheme.sageGreen, // full hijau solid
+                shape: BoxShape.circle,
               ),
-              child: Icon(
-                task.kategori.icon,
-                color: isSelected ? Colors.white : GreenTheme.sageGreen,
-                size: 24,
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                task.kategori.iconPath,
+                width: 16,
+                height: 16,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white, // icon putih seperti gambar
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -101,7 +92,7 @@ class GreenAlternativeTaskCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : GreenTheme.textDark,
+                      color: isSelected ? GreenTheme.textDark : GreenTheme.textDark,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -112,7 +103,7 @@ class GreenAlternativeTaskCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       color: isSelected
-                          ? Colors.white.withValues(alpha: 0.9)
+                          ? GreenTheme.textGrey
                           : GreenTheme.textGrey,
                     ),
                   ),
@@ -123,7 +114,7 @@ class GreenAlternativeTaskCard extends StatelessWidget {
                         Icons.timer_outlined,
                         size: 12,
                         color: isSelected
-                            ? Colors.white.withValues(alpha: 0.8)
+                            ? GreenTheme.textLightGrey
                             : GreenTheme.textLightGrey,
                       ),
                       const SizedBox(width: 4),
@@ -132,7 +123,7 @@ class GreenAlternativeTaskCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           color: isSelected
-                              ? Colors.white.withValues(alpha: 0.8)
+                              ? GreenTheme.textLightGrey
                               : GreenTheme.textLightGrey,
                         ),
                       ),
@@ -158,19 +149,8 @@ class GreenAlternativeTaskCard extends StatelessWidget {
       height: 28,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isSelected ? Colors.white : Colors.transparent,
-        border: Border.all(
-          color: isSelected ? Colors.white : GreenTheme.borderMedium,
-          width: 2,
-        ),
+        color: isSelected ? GreenTheme.sageGreenDark : Colors.white,
       ),
-      child: isSelected
-          ? const Icon(
-              Icons.check,
-              color: GreenTheme.sageGreen,
-              size: 18,
-            )
-          : null,
     );
   }
 }

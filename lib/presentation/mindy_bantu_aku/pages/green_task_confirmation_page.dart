@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/green_theme.dart';
@@ -49,9 +50,10 @@ class GreenTaskConfirmationPage extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Mascot Image - centered above card
-            _buildMascotImage(),
-
-            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 38),
+              child: _buildMascotImage(),
+            ),
 
             // Main Task Card
             Expanded(
@@ -83,54 +85,49 @@ class GreenTaskConfirmationPage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           // Badge Header - height 56
-                          Container(
-                            width: double.infinity,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: GreenTheme.sageGreenLight,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(24),
-                                topRight: Radius.circular(24),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 75, vertical: 20),
+                            child: Container(
+                              width: double.infinity,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: GreenTheme.sageGreenLight,
+                                borderRadius: BorderRadius.circular(32),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.lightbulb_outline,
-                                  color: GreenTheme.sageGreen,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Hari ini coba kamu fokus ke:',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: GreenTheme.sageGreen,
+                              child: 
+                                Center(
+                                  child: Text(
+                                   'Hari ini coba kamu fokus ke:',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: GreenTheme.sageGreen,
+                                    ),                        
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
                           ),
-
                           // Content
                           Padding(
-                            padding: const EdgeInsets.all(24),
+                            padding: const EdgeInsets.all(30),
                             child: Column(
                               children: [
                                 // Task Icon -100x100
                                 Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: const BoxDecoration(
                                     color: GreenTheme.sageGreenLight,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Icon(
-                                    selectedTask.kategori.icon,
-                                    color: GreenTheme.sageGreen,
-                                    size: 50,
+                                  child: SvgPicture.asset(
+                                    selectedTask.kategori.iconPath,
+                                    width: 22,
+                                    height: 22,
+                                    colorFilter: const ColorFilter.mode(
+                                      GreenTheme.sageGreen,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 32),
@@ -142,7 +139,7 @@ class GreenTaskConfirmationPage extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: GreenTheme.textDark,
+                                    color: GreenTheme.sageGreen,
                                     height: 1.3,
                                   ),
                                 ),
@@ -218,9 +215,8 @@ class GreenTaskConfirmationPage extends StatelessWidget {
     return Center(
       child: Image.asset(
         'assets/images/energirendah/energi_rendah_rekomendasi.png',
-        width: 180,
-        height: 90,
-        fit: BoxFit.contain,
+        width: 292,
+        height: 133,
         errorBuilder: (context, error, stackTrace) {
           return Container(
             width: 180,

@@ -45,7 +45,7 @@ class _GreenAlternativeTaskListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GreenTheme.backgroundPage,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -65,29 +65,28 @@ class _GreenAlternativeTaskListPageState
                     const Text(
                       'Pilih tugas lain',
                       style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: GreenTheme.textDark,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w500,
+                        color: GreenTheme.sageGreen,
                       ),
                     ),
                     const SizedBox(height: 8),
 
                     // Subtitle
                     const Text(
-                      'Pilih task yang ingin kamu kerjakan',
+                      'Mindy sudah menyiapkan beberapa opsi\nkegiatan untukmu',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         color: GreenTheme.textGrey,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Main image dari assets
                     _buildMainImage(),
-
-                    const SizedBox(height: 20),
-
+                    
                     // Task list
                     BlocBuilder<MindyBantuAkuCubit, MindyBantuAkuState>(
                       builder: (context, state) {
@@ -96,7 +95,7 @@ class _GreenAlternativeTaskListPageState
                             child: Padding(
                               padding: const EdgeInsets.all(40),
                               child: CircularProgressIndicator(
-                                color: GreenTheme.sageGreen,
+                                color: GreenTheme.sageGreenPale,
                               ),
                             ),
                           );
@@ -253,41 +252,43 @@ class _GreenAlternativeTaskListPageState
   }
 
   Widget _buildMainImage() {
-    return Image.asset(
-      'assets/images/energirendah/energi_rendah_alternative.png',
-      width: double.infinity,
-      height: 200,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        // Fallback jika asset tidak ditemukan
-        return Container(
-          width: double.infinity,
-          height: 180,
-          decoration: BoxDecoration(
-            color: GreenTheme.sageGreenLight,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.spa_rounded,
-                size: 60,
-                color: GreenTheme.sageGreen,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '☁️ Mindy siap membantu!',
-                style: TextStyle(
-                  fontSize: 16,
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Image.asset(
+        'assets/images/energirendah/energi_rendah_alternative.png',
+        width: 162.5181884765625,
+        height: 109.16992950439453,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback jika asset tidak ditemukan
+          return Container(
+            width: double.infinity,
+            height: 180,
+            decoration: BoxDecoration(
+              color: GreenTheme.sageGreenLight,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.spa_rounded,
+                  size: 60,
                   color: GreenTheme.sageGreen,
-                  fontWeight: FontWeight.w500,
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+                const SizedBox(height: 8),
+                const Text(
+                  '☁️ Mindy siap membantu!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: GreenTheme.sageGreen,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
