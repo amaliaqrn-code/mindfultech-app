@@ -68,7 +68,7 @@ class ProfileRemoteDataSource {
 
       // ⚠️ PERHATIAN: Password TIDAK dikirim ke server
       // Jika user tidak mengisi field password, Laravel tidak mengubah password lama
-      final response = await _dioClient.post(
+      final response = await _dioClient.put(
         '/profile',
         data: {
           'name': name,
@@ -157,7 +157,7 @@ class ProfileRemoteDataSource {
         ),
       });
 
-      final response = await _dioClient.post(
+      final response = await _dioClient.put(
         '/profile/photo',
         data: formData,
         options: options,

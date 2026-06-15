@@ -13,6 +13,8 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  bool _isSaving = false;
+
   late final TextEditingController nameController;
   late final TextEditingController usernameController;
   late final TextEditingController genderController;
@@ -81,6 +83,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     );
                   },
                   success: (user, _) {
+                    if (mounted) {
+                      setState(() {
+                        _isSaving = false;
+                      });
+                    }
                     debugPrint("SUCCESS PROFILE UPDATE");
 
                     if (Navigator.of(context, rootNavigator: true).canPop()) {
@@ -101,6 +108,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     });
                   },
                   error: (message) {
+                    if (mounted) {
+                      setState(() {
+                        _isSaving = false;
+                      });
+                    }
                     if (Navigator.of(context, rootNavigator: true).canPop()) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
@@ -240,22 +252,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ),
                             child: ElevatedButton(
-                              onPressed: () {
-                                final updatedUser = UserModel(
-                                  id: widget.user.id,
-                                  name: nameController.text.trim(),
-                                  username: usernameController.text.trim(),
-                                  gender: genderController.text.trim(),
-                                  phone: phoneController.text.trim(),
-                                  email: widget.user.email,
-                                );
+                              onPressed: _isSaving
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        _isSaving = true;
+                                      });
 
-                                context.read<ProfileBloc>().add(
-                                  ProfileEvent.updateProfile(
-                                    updatedUser: updatedUser,
-                                  ),
-                                );
-                              },
+                                      debugPrint("TOMBOL SIMPAN DIKLIK");
+
+                                      final updatedUser = UserModel(
+                                        id: widget.user.id,
+                                        name: nameController.text.trim(),
+                                        username: usernameController.text
+                                            .trim(),
+                                        gender: genderController.text.trim(),
+                                        phone: phoneController.text.trim(),
+                                        email: widget.user.email,
+                                      );
+
+                                      context.read<ProfileBloc>().add(
+                                        ProfileEvent.updateProfile(
+                                          updatedUser: updatedUser,
+                                        ),
+                                      );
+                                    },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,

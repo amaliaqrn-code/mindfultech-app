@@ -112,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               builder: (context, state) {
                 final UserModel user = state.maybeWhen(
+                  success: (user, _) => user,
                   orElse: () => UserModel(
                     id: 0,
                     name: '',
