@@ -13,8 +13,8 @@ class ProfileRepository {
   ProfileRepository({
     required ProfileRemoteDataSource remoteDataSource,
     required AuthLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   /// Update profile user di server dan simpan ke local storage
   Future<UserModel> updateProfile({

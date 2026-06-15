@@ -49,16 +49,16 @@ class LogoutDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
-                      Navigator.pop(context); // Tutup dialog
+                      final authCubit = context.read<AuthCubit>();
 
-                      // Panggil fungsi logout dari AuthCubit agar prosesnya bersih (API + Lokal)
-                      await context.read<AuthCubit>().logout();
+                      await authCubit.logout();
 
                       if (!context.mounted) return;
 
-                      // Arahkan kembali ke SplashPage / Login screen
-                      Navigator.pushAndRemoveUntil(
+                      Navigator.of(
                         context,
+                        rootNavigator: true,
+                      ).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (_) => const SplashPage()),
                         (route) => false,
                       );

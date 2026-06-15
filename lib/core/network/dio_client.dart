@@ -13,6 +13,12 @@ class DioClient {
         baseUrl: ApiConstants.baseUrl,
         connectTimeout: const Duration(milliseconds: 10000),
         receiveTimeout: const Duration(milliseconds: 10000),
+
+        // 🔥 TAMBAHKAN INI
+        validateStatus: (status) {
+          return status != null && status < 500;
+        },
+
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -62,29 +68,22 @@ class DioClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return await _dio.get(path, queryParameters: queryParameters, options: options);
+    return await _dio.get(
+      path,
+      queryParameters: queryParameters,
+      options: options,
+    );
   }
 
-  Future<Response> post(
-    String path, {
-    dynamic data,
-    Options? options,
-  }) async {
+  Future<Response> post(String path, {dynamic data, Options? options}) async {
     return await _dio.post(path, data: data, options: options);
   }
 
-  Future<Response> put(
-    String path, {
-    dynamic data,
-    Options? options,
-  }) async {
+  Future<Response> put(String path, {dynamic data, Options? options}) async {
     return await _dio.put(path, data: data, options: options);
   }
 
-  Future<Response> delete(
-    String path, {
-    Options? options,
-  }) async {
+  Future<Response> delete(String path, {Options? options}) async {
     return await _dio.delete(path, options: options);
   }
 }

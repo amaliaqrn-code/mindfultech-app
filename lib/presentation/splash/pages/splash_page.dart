@@ -111,7 +111,20 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     try {
       final isLoggedIn = _authLocalDataSource.isLoggedIn();
       final token = _authLocalDataSource.getToken();
+
+      debugPrint("=== CEK LOGIN ===");
+      debugPrint("isLoggedIn: $isLoggedIn");
+      debugPrint("token: $token");
+
+      debugPrint("=== ROUTE DECISION ===");
+      debugPrint(
+        (isLoggedIn && token != null && token.isNotEmpty)
+            ? "GO TO MAIN PAGE"
+            : "GO TO ONBOARDING",
+      );
+
       if (!mounted) return;
+
       if (isLoggedIn && token != null && token.isNotEmpty) {
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -126,6 +139,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         );
       }
     } catch (e) {
+      debugPrint("ERROR ON MULAI: $e");
+
       if (mounted) {
         Navigator.pushNamedAndRemoveUntil(
           context,

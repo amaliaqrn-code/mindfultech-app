@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
@@ -16,17 +17,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository _profileRepository;
 
   ProfileBloc({ProfileRepository? profileRepository})
-      : _profileRepository = profileRepository ??
-            ProfileRepository(
-              remoteDataSource: ProfileRemoteDataSource(DioClient()),
-              localDataSource: AuthLocalDataSource(),
-            ),
-        super(const ProfileState.initial()) {
-
+    : _profileRepository =
+          profileRepository ??
+          ProfileRepository(
+            remoteDataSource: ProfileRemoteDataSource(DioClient()),
+            localDataSource: AuthLocalDataSource(),
+          ),
+      super(const ProfileState.initial()) {
     // Handler saat BLoC pertama kali aktif
     on<_Started>((event, emit) async {
       emit(const ProfileState.loading());
- try {
+      try {
         // Coba ambil dari local storage dulu (cache)
         final localUser = _profileRepository.getLocalUser();
         if (localUser != null) {
@@ -40,14 +41,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
     });
 
-    // Handler untuk update text profil
+    // Handler untuk update foto profil
     on<_UpdateProfile>((event, emit) async {
+      debugPrint("=== MASUK UPDATE PROFILE ===");
+
       final currentState = state;
+
+      debugPrint("STATE SEKARANG: $currentState");
+
       if (currentState is _Success) {
+        debugPrint("STATE SUCCESS");
+
         emit(const ProfileState.loading());
 
         try {
-          // Kirim ke server Laravel
+          debugPrint("SEBELUM CALL REPOSITORY");
+
           final updatedUser = await _profileRepository.updateProfile(
             name: event.updatedUser.name,
             username: event.updatedUser.username,
@@ -55,54 +64,28 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             gender: event.updatedUser.gender,
           );
 
-          // Emit sukses dengan data dari server
-          emit(ProfileState.success(
-            user: updatedUser,
-            profileImage: currentState.profileImage,
-          ));
+          debugPrint("SESUDAH CALL REPOSITORY");
+
+          debugPrint("===== UPDATE SUCCESS =====");
+          debugPrint("NAME: ${updatedUser.name}");
+          debugPrint("USERNAME: ${updatedUser.username}");
+          debugPrint("PHONE: ${updatedUser.phone}");
+          debugPrint("GENDER: ${updatedUser.gender}");
+          debugPrint("==========================");
+
+          emit(
+            ProfileState.success(
+              user: updatedUser,
+              profileImage: currentState.profileImage,
+            ),
+          );
         } catch (e) {
-          // Jika gagal, tetap update lokal tapi tampilkan error
-          emit(ProfileState.success(
-            user: event.updatedUser,
-            profileImage: currentState.profileImage,
-          ));
-          // Emit error message
+          debugPrint("ERROR UPDATE: $e");
+
           emit(ProfileState.error(message: e.toString()));
-          // Kembali ke state success
-          emit(ProfileState.success(
-            user: event.updatedUser,
-            profileImage: currentState.profileImage,
-          ));
         }
-      }
-    });
-
-    // Handler untuk update foto profil
-    on<_UpdateProfileImage>((event, emit) async {
-      final currentState = state;
-      if (currentState is _Success) {
-        emit(const ProfileState.loading());
-
-        try {
-          // Upload foto ke server
-          await _profileRepository.uploadProfilePhoto(event.imageFile);
-
-          emit(ProfileState.success(
-            user: currentState.user,
-            profileImage: event.imageFile,
-          ));
-        } catch (e) {
-          // Jika gagal upload, tetap tampilkan foto lokal
-          emit(ProfileState.success(
-            user: currentState.user,
-            profileImage: event.imageFile,
-          ));
-          emit(ProfileState.error(message: 'Gagal upload foto: ${e.toString()}'));
-          emit(ProfileState.success(
-            user: currentState.user,
-            profileImage: event.imageFile,
-          ));
-        }
+      } else {
+        debugPrint("STATE BUKAN SUCCESS");
       }
     });
   }

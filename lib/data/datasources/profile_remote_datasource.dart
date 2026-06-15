@@ -12,7 +12,7 @@ class ProfileRemoteDataSource {
   final AuthLocalDataSource _localDataSource;
 
   ProfileRemoteDataSource(this._dioClient)
-      : _localDataSource = AuthLocalDataSource();
+    : _localDataSource = AuthLocalDataSource();
 
   // ============================================================
   // HELPER - Ambil Bearer Token
@@ -24,7 +24,9 @@ class ProfileRemoteDataSource {
 
     if (kDebugMode) {
       print('=== PROFILE API DEBUG ===');
-      print('Token: ${token != null ? "ADA (${token.substring(0, 10)}...)" : "TIDAK ADA"}');
+      print(
+        'Token: ${token != null ? "ADA (${token.substring(0, 10)}...)" : "TIDAK ADA"}',
+      );
     }
 
     return Options(
@@ -66,7 +68,7 @@ class ProfileRemoteDataSource {
 
       // ⚠️ PERHATIAN: Password TIDAK dikirim ke server
       // Jika user tidak mengisi field password, Laravel tidak mengubah password lama
-      final response = await _dioClient.post(
+      final response = await _dioClient.put(
         '/profile',
         data: {
           'name': name,
@@ -77,6 +79,8 @@ class ProfileRemoteDataSource {
         },
         options: options,
       );
+      print("STATUS CODE: ${response.statusCode}");
+      print("RESPONSE DATA: ${response.data}");
 
       if (kDebugMode) {
         print('✅ Laravel Response: ${response.data}');
@@ -117,10 +121,7 @@ class ProfileRemoteDataSource {
         print('GET /profile');
       }
 
-      final response = await _dioClient.get(
-        '/profile',
-        options: options,
-      );
+      final response = await _dioClient.get('/profile', options: options);
 
       if (kDebugMode) {
         print('Response: ${response.data}');
@@ -156,7 +157,7 @@ class ProfileRemoteDataSource {
         ),
       });
 
-      final response = await _dioClient.post(
+      final response = await _dioClient.put(
         '/profile/photo',
         data: formData,
         options: options,
@@ -202,11 +203,13 @@ class ProfileRemoteDataSource {
         userData = responseData['user'] as Map<String, dynamic>;
       }
       // Cek format {'data': {...}}
-      else if (responseData.containsKey('data') && responseData['data'] is Map) {
+      else if (responseData.containsKey('data') &&
+          responseData['data'] is Map) {
         userData = responseData['data'] as Map<String, dynamic>;
       }
       // Langsung parse jika response adalah user object
-      else if (responseData.containsKey('id') || responseData.containsKey('email')) {
+      else if (responseData.containsKey('id') ||
+          responseData.containsKey('email')) {
         userData = responseData;
       } else {
         throw Exception('Format response tidak dikenali');
