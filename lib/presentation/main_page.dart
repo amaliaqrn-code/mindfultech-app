@@ -32,7 +32,7 @@ class _MainPageState extends State<MainPage> {
   /// Default task for SetupTimerPage when accessed from main nav
   /// This is used when user taps the Fokus tab without selecting a specific task
   TaskModel get _defaultFocusTask => TaskModel(
-    id: 'default_focus_task',
+    id: 99999,
     namaTugas: 'Pilih tugas untuk fokus',
     kategori: TaskCategory.pribadi,
     energi: EnergyLevel.sedang,

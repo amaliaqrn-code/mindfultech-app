@@ -490,7 +490,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
                         }
 
                         final newTask = TaskModel(
-                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          id: DateTime.now().millisecondsSinceEpoch.toInt(),
                           namaTugas: taskName,
                           kategori: category,
                           energi: energy,

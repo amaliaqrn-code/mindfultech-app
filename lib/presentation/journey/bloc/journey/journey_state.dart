@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
+
 import '../../models/journey_level_model.dart';
 
 class JourneyState extends Equatable {
@@ -17,6 +19,9 @@ class JourneyState extends Equatable {
 
   // Loading state
   final bool isLoading;
+  final int animatedNode;
+  final bool moveMindy;
+  final int? selectedEmojiIndex;
 
   const JourneyState({
     required this.todayFocusSeconds,
@@ -27,6 +32,9 @@ class JourneyState extends Equatable {
     required this.streakCount,
     required this.lastFocusDate,
     this.isLoading = false,
+    this.animatedNode = 1,
+    this.moveMindy = false,
+    this.selectedEmojiIndex,
   });
 
   /// Factory untuk state awal - SELALU gunakan ini dengan nilai default yang aman
@@ -44,6 +52,7 @@ class JourneyState extends Equatable {
       lastFocusDate: '',
       // Loading state
       isLoading: true, // ✅ Mulai dengan loading=true sampai data dimuat
+      animatedNode: 1,
     );
   }
 
@@ -82,6 +91,9 @@ class JourneyState extends Equatable {
     int? streakCount,
     String? lastFocusDate,
     bool? isLoading,
+    bool? moveMindy,
+    int? animatedNode,
+    int? selectedEmojiIndex,
   }) {
     return JourneyState(
       todayFocusSeconds: todayFocusSeconds ?? this.todayFocusSeconds,
@@ -92,6 +104,9 @@ class JourneyState extends Equatable {
       streakCount: streakCount ?? this.streakCount,
       lastFocusDate: lastFocusDate ?? this.lastFocusDate,
       isLoading: isLoading ?? this.isLoading,
+      animatedNode: animatedNode ?? this.animatedNode,
+      moveMindy: moveMindy ?? this.moveMindy,
+      selectedEmojiIndex: selectedEmojiIndex ?? this.selectedEmojiIndex,
     );
   }
 

@@ -343,85 +343,110 @@ class _HomepagePageState extends State<HomepagePage> {
     );
   }
 
-  // ================= REKAPAN EMOSI DENGAN INDIKATOR LEVEL =================
-  Widget _buildEmotionProgressSection(HomepageState homeState) {
-    // ✅ Use real data from HomepageCubit state (loaded from database)
-    final int collectedEmotions = homeState.emotionSessionCount;
-    final int totalFocusSessions = homeState.totalFocusSessions;
-    const int totalLevels = 6;
+// 1. Deklarasikan list path emoji yang sama persis dengan yang ada di TimerFinishedPage
+final List<String> _timerEmojis = [
+  'assets/icon/timerpage/Cloud1.png',
+  'assets/icon/timerpage/Cloud2.png',
+  'assets/icon/timerpage/Cloud3.png',
+  'assets/icon/timerpage/Cloud4.png',
+  'assets/icon/timerpage/Cloud5.png',
+  'assets/icon/timerpage/Cloud6.png',
+];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Rekapan Emosimu',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE6F2FF),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '$collectedEmotions dari $totalLevels level',
-                style: const TextStyle(
-                  fontSize: 12,
+// ================= REKAPAN EMOSI DENGAN INDIKATOR LEVEL =================
+Widget _buildEmotionProgressSection(HomepageState homeState) {
+  final int totalFocusSessions = homeState.totalFocusSessions;
+  final List<int> savedEmojiIndices = homeState.savedEmojiIndices;
+  const int totalSlots = 6;
+
+  return BlocBuilder<JourneyCubit, JourneyState>(
+    builder: (context, journeyState) {
+      // ✅ FIX: Hitung currentSlot dengan formula yang BENAR
+      //    currentSlot adalah slot yang AKAN dipakai untuk sesi berikutnya
+      //    - totalDays = 0: currentSlot = 0 (slot pertama)
+      //    - totalDays = 1: currentSlot = 1 (slot kedua, karena slot 0 sudah terisi)
+      final int currentSlot = journeyState.totalDays % 6;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Rekapan Emosimu',
+                style: TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2B92E4),
+                  color: AppColors.primary,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6F2FF),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Hari ${currentSlot + 1} dari $totalSlots',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2B92E4),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6F2FF),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(totalSlots, (index) {
+                final int slotNumber = index; // Slot 0-5
+
+                // ✅ FIX: Cek apakah ada emoji di slot ini
+                //    savedEmojiIndices di-index berdasarkan dayNumber (0-5)
+                //    Jika ada emoji di slot ini, tampilkan
+                if (savedEmojiIndices.isNotEmpty && slotNumber < savedEmojiIndices.length) {
+                  final emojiIndex = savedEmojiIndices[slotNumber];
+                  return Image.asset(
+                    _timerEmojis[emojiIndex],
+                    width: 44,
+                    height: 44,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.cloud_queue_rounded, color: AppColors.primary, size: 44);
+                    },
+                  );
+                } else {
+                  return _buildEmptyEmotionPlaceholder();
+                }
+              }),
+            ),
+          ),
+          if (totalFocusSessions > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                '$totalFocusSessions sesi fokus selesai',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
                 ),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE6F2FF),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(totalLevels, (index) {
-              if (index < collectedEmotions) {
-                return Image.asset(
-                  'assets/images/homepage/awan.png',
-                  width: 44,
-                  height: 44,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.cloud_queue_rounded, color: AppColors.primary, size: 44);
-                  },
-                );
-              } else {
-                return _buildEmptyEmotionPlaceholder();
-              }
-            }),
-          ),
-        ),
-        if (totalFocusSessions > 0)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              '$totalFocusSessions sesi fokus selesai',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
+        ],
+      );
+    },
+  );
+}
 
   Widget _buildEmptyEmotionPlaceholder() {
     return Stack(

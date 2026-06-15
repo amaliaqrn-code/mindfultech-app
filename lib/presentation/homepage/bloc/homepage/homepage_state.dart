@@ -18,13 +18,15 @@ class HomepageState extends Equatable {
   final int userLevel;
   final String mascotGreeting;
   final int emotionSessionCount; // Number of unique emotions used
-  final int totalFocusSessions; // Total completed focus sessions
+  final int totalFocusSessions;  // Total completed focus sessions
+  final List<int> savedEmojiIndices; // ✅ TAMBAHKAN INI: Menyimpan list index emoji asli dari database
 
   const HomepageState({
     required this.userLevel,
     required this.mascotGreeting,
     this.emotionSessionCount = 0,
     this.totalFocusSessions = 0,
+    this.savedEmojiIndices = const [], // ✅ Set default sebagai list kosong agar aman
   });
 
   static const Map<int, LevelData> levelConfigs = {
@@ -98,20 +100,30 @@ class HomepageState extends Equatable {
     return 0.0; // Will be calculated from JourneyState
   }
 
+  // ✅ UPDATE METHOD COPYWITH AGAR BERHASIL MENERIMA PARAMS BARU
   HomepageState copyWith({
     int? userLevel,
     String? mascotGreeting,
     int? emotionSessionCount,
     int? totalFocusSessions,
+    List<int>? savedEmojiIndices, // <-- Tambahkan parameter ini
   }) {
     return HomepageState(
       userLevel: userLevel ?? this.userLevel,
       mascotGreeting: mascotGreeting ?? this.mascotGreeting,
       emotionSessionCount: emotionSessionCount ?? this.emotionSessionCount,
       totalFocusSessions: totalFocusSessions ?? this.totalFocusSessions,
+      savedEmojiIndices: savedEmojiIndices ?? this.savedEmojiIndices, // <-- Assign ke properti class
     );
   }
 
+  // ✅ MASUKKAN KEDALAM PROPS EQUATABLE AGAR DI-TRACK SAAT EMIT STATE BARU
   @override
-  List<Object?> get props => [userLevel, mascotGreeting, emotionSessionCount, totalFocusSessions];
+  List<Object?> get props => [
+        userLevel,
+        mascotGreeting,
+        emotionSessionCount,
+        totalFocusSessions,
+        savedEmojiIndices, // <-- Daftarkan di sini
+      ];
 }

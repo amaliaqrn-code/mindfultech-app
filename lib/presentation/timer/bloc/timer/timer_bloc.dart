@@ -39,6 +39,14 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   // =========================
+  // TICK — Source of truth adalah event.remainingSeconds
+  // BUKAN state.remainingSeconds (avoid stale closure capture)
+  // =========================
+  void _onTick(TimerTicked event, Emitter<TimerState> emit) {
+    emit(state.copyWith(remainingSeconds: event.remainingSeconds));
+  }
+
+  // =========================
   // START TIMER
   // =========================
   void _onStart(TimerStarted event, Emitter<TimerState> emit) {
@@ -52,12 +60,15 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     _timer?.cancel();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final current = state;
+      // ✅ FIX: Jangan pakai `state` dari closure capture
+      //    Bloc membaca state dari event handler, bukan dari closure
+      //    Cek isRunning & remainingSeconds DARI EMITTED STATE yang sudah diproses
+      final currentState = state;
 
-      if (!current.isRunning) return;
+      if (!currentState.isRunning) return;
 
-      if (current.remainingSeconds > 0) {
-        add(TimerEvent.tick(current.remainingSeconds - 1));
+      if (currentState.remainingSeconds > 0) {
+        add(TimerEvent.tick(currentState.remainingSeconds - 1));
       } else {
         add(const TimerEvent.sessionEnded());
       }
@@ -71,9 +82,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     _timer?.cancel();
     _timer = null;
 
-    // =========================
+    // ========================================
     // 1. CEK FINISH DULU (PALING PENTING)
-    // =========================
+    // ========================================
     if (!state.isBreakTime &&
         state.currentSession >= state.totalSessions) {
       emit(state.copyWith(
@@ -83,9 +94,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       return;
     }
 
-    // =========================
+    // ========================================
     // 2. STUDY → BREAK
-    // =========================
+    // ========================================
     if (!state.isBreakTime) {
       emit(state.copyWith(
         isBreakTime: true,
@@ -97,9 +108,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       return;
     }
 
-    // =========================
+    // ========================================
     // 3. BREAK → NEXT SESSION / FINISH
-    // =========================
+    // ========================================
     if (state.currentSession < state.totalSessions) {
       emit(state.copyWith(
         isBreakTime: false,
@@ -146,13 +157,6 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     _timer = null;
 
     emit(TimerState.initial());
-  }
-
-  // =========================
-  // TICK UPDATE UI
-  // =========================
-  void _onTick(TimerTicked event, Emitter<TimerState> emit) {
-    emit(state.copyWith(remainingSeconds: event.remainingSeconds));
   }
 
   @override

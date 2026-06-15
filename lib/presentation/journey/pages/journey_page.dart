@@ -13,6 +13,7 @@ class JourneyPage extends StatefulWidget {
 }
 
 class _JourneyPageState extends State<JourneyPage> {
+  int animatedLevel = 1;
   // Koordinat presisi meliuk dari bawah (level 1) menuju atas (level 6) sesuai alur denah asli
   final List<Map<String, double>> _levelPositions = [
     {'x': 0.31, 'y': 0.79}, // Level 1 (Dekat rumah mulai awal)
@@ -23,18 +24,26 @@ class _JourneyPageState extends State<JourneyPage> {
     {'x': 0.78, 'y': 0.22}, // Level 6 (Puncak Kastil Ketenangan)
   ];
 
+  void _animateMindyToNode(int level) {
+    setState(() {
+      animatedLevel = level;
+    });
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<JourneyCubit, JourneyState>(
+Widget build(BuildContext context) {
+  return BlocListener<JourneyCubit, JourneyState>(
+    listenWhen: (prev, curr) => prev.currentLevel != curr.currentLevel,
+    listener: (context, state) {
+    _animateMindyToNode(state.currentLevel.level);
+    },
+    child: BlocBuilder<JourneyCubit, JourneyState>(
       buildWhen: (previous, current) {
-        // ✅ REACTIVE: Rebuild when level or totalDays changes
         return previous.currentLevel.level != current.currentLevel.level ||
                previous.totalDays != current.totalDays ||
                previous.isLoading != current.isLoading;
       },
       builder: (context, state) {
-        // ✅ SAFE: Use state from BlocBuilder directly
-        // Clamp level to valid range (1-6)
         final currentLevel = state.currentLevel.level.clamp(1, 6);
         final cubit = context.read<JourneyCubit>();
 
@@ -50,8 +59,9 @@ class _JourneyPageState extends State<JourneyPage> {
           ),
         );
       },
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildHeader(JourneyState state, JourneyCubit cubit) {
     return Container(
@@ -73,13 +83,13 @@ class _JourneyPageState extends State<JourneyPage> {
             ],
           ),
           const SizedBox(height: 10),
-          _buildProgressCard(state),
+          _buildProgressCard(state, cubit),
         ],
       ),
     );
   }
 
-  Widget _buildProgressCard(JourneyState state) {
+  Widget _buildProgressCard(JourneyState state, JourneyCubit cubit) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -119,7 +129,7 @@ class _JourneyPageState extends State<JourneyPage> {
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: [
                             Text(
-                              '${state.safeTotalDays}', // ✅ Use safe getter
+                              '${state.totalDays}', // Menggunakan totalDays langsung dari state
                               style: GoogleFonts.inter(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -178,7 +188,8 @@ class _JourneyPageState extends State<JourneyPage> {
         Positioned(
           top: -24,
           right: 20,
-          child: _buildMindyHeaderBubble(context.read<JourneyCubit>().getMotivationalMessage()),
+          // ✅ FIX TYPO: Mengubah nama method menjadi getMotivationalMessage sesuai di Cubit
+          child: _buildMindyHeaderBubble(cubit.getMotivationalMessage()),
         ),
       ],
     );
@@ -230,9 +241,7 @@ class _JourneyPageState extends State<JourneyPage> {
   }
 
   Widget _buildMapArea(JourneyState state, int currentLevel) {
-    // Menghitung persentase kejenuhan warna denah berdasarkan progress hari (Maksimal 30 hari)
-    // Hari ke-0 = Full Grayscale (0.0), Hari ke-30 = Full Color (1.0)
-    final double saturationProgress = (state.safeTotalDays / JourneyData.maxDays).clamp(0.0, 1.0);
+    final double saturationProgress = (state.totalDays / JourneyData.maxDays).clamp(0.0, 1.0);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -241,13 +250,11 @@ class _JourneyPageState extends State<JourneyPage> {
           height: constraints.maxHeight,
           child: Stack(
             children: [
-              // Efek Animasi Perubahan Denah dari Abu-Abu menjadi Berwarna Cerah secara perlahan
               Positioned.fill(
                 child: TweenAnimationBuilder<double>(
                   tween: Tween<double>(begin: 0.0, end: saturationProgress),
                   duration: const Duration(milliseconds: 1000),
                   builder: (context, saturation, child) {
-                    // Menggunakan matriks filter warna untuk saturasi dinamis
                     final double invSat = 1 - saturation;
                     final double r = 0.2126 * invSat;
                     final double g = 0.7152 * invSat;
@@ -276,14 +283,8 @@ class _JourneyPageState extends State<JourneyPage> {
                   },
                 ),
               ),
-
-              // Render Semua Node Pin (1 sampai 6)
               ..._buildLevelNodes(constraints, currentLevel, state),
-
-              // Render Maskot Bergerak secara Halus & Balon Teks di Atas Map
-              _buildAnimatedMascot(constraints, currentLevel),
-
-              // Render Kotak Peti Harta Karun Samping
+              _buildAnimatedMascot(constraints, animatedLevel),
               _buildTreasureChestCard(constraints, currentLevel),
             ],
           ),
@@ -298,8 +299,9 @@ class _JourneyPageState extends State<JourneyPage> {
       final pos = _levelPositions[i];
       final level = i + 1;
 
-      // ✅ SAFE: Calculate completed status based on totalDays
-      final isCompleted = state.safeTotalDays >= _getRequiredDaysForLevel(level);
+      // ✅ LOGIC FIX: Menggunakan rumus kelipatan 5 hari untuk kelulusan level.
+      // Level 1 lulus jika hari >= 5, Level 2 lulus jika hari >= 10, dst.
+      final isCompleted = state.totalDays >= (level * 5);
       final isCurrent = level == currentLevel;
 
       nodes.add(
@@ -308,7 +310,6 @@ class _JourneyPageState extends State<JourneyPage> {
           top: pos['y']! * constraints.maxHeight - 40,
           child: GestureDetector(
             onTap: () {
-              // Pengguna bisa mengklik level yang aktif saat ini atau level yang sudah selesai dilewati
               if (level <= currentLevel) {
                 Navigator.pushNamed(context, AppRoutes.chooseEnergy);
               } else {
@@ -332,32 +333,12 @@ class _JourneyPageState extends State<JourneyPage> {
     return nodes;
   }
 
-  /// Get required days for a level (helper method)
-  int _getRequiredDaysForLevel(int level) {
-    switch (level) {
-      case 1:
-        return 1;
-      case 2:
-        return 6;
-      case 3:
-        return 11;
-      case 4:
-        return 16;
-      case 5:
-        return 21;
-      case 6:
-        return 26;
-      default:
-        return 1;
-    }
-  }
-
   Widget _buildMapPin({required int level, required bool isCompleted, required bool isCurrent}) {
-    Color pinColor = const Color(0xFF9E9E9E); // Abu-abu default (Terkunci)
+    Color pinColor = const Color(0xFF9E9E9E); 
     if (isCompleted) {
-      pinColor = const Color(0xFF4CAF50); // Hijau solid jika level sudah tuntas selesai
+      pinColor = const Color(0xFF4CAF50); // Hijau jika level sudah tuntas (lewat 5 hari)
     } else if (isCurrent) {
-      pinColor = const Color(0xFF81C784); // Hijau cerah menyala menandakan level aktif saat ini
+      pinColor = const Color(0xFF81C784); // Hijau muda jika level ini sedang aktif dimainkan
     }
 
     return Column(
@@ -372,7 +353,7 @@ class _JourneyPageState extends State<JourneyPage> {
             border: Border.all(color: Colors.white, width: 2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
+                color: Colors.black.withOpacity(0.15),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -397,21 +378,14 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  /// ✅ FIXED: Menggunakan AnimatedPositioned dengan Key untuk memastikan animasi ter-trigger
-  /// Awan bergerak mengikuti currentLevel dari state
-  Widget _buildAnimatedMascot(BoxConstraints constraints, int currentLevel) {
-    // Clamp level to valid range (1-6)
-    int activeIndex = currentLevel.clamp(1, 6);
-
-    // Get position for current level
+  Widget _buildAnimatedMascot(BoxConstraints constraints, int animatedLevel) {
+    int activeIndex = animatedLevel.clamp(1, 6);
     final pinPos = _levelPositions[activeIndex - 1];
 
-    // Menghitung koordinat berdiri Mindy tepat di samping kiri Pin Level yang dituju
     final double targetLeft = (pinPos['x']! * constraints.maxWidth) - 65;
     final double targetTop = (pinPos['y']! * constraints.maxHeight) - 15;
 
     return AnimatedPositioned(
-      key: ValueKey('mascot_level_$currentLevel'), // ✅ Key-based animation trigger per level
       duration: const Duration(milliseconds: 800),
       curve: Curves.easeInOut,
       left: targetLeft,
@@ -434,7 +408,7 @@ class _JourneyPageState extends State<JourneyPage> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -456,7 +430,7 @@ class _JourneyPageState extends State<JourneyPage> {
   }
 
   Widget _buildTreasureChestCard(BoxConstraints constraints, int currentLevel) {
-    final isTreasureUnlocked = currentLevel >= 6;
+    final isTreasureUnlocked = currentLevel >= 6 && JourneyData.maxDays >= 30;
 
     return Positioned(
       left: 16,
@@ -472,7 +446,7 @@ class _JourneyPageState extends State<JourneyPage> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -562,3 +536,4 @@ class _TrianglePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

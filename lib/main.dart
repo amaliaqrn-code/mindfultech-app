@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 
 import 'package:mindfultech_app/core/routes/app_router.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/core/sync/sync_manager.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/auth/auth_cubit.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
@@ -17,7 +18,7 @@ Future<void> main() async {
   // Initialize sqflite FFI for database operations.
   // This is required for sqflite_common_ffi package.
   // On Android/iOS, it will use the native SQLite driver automatically.
-
+  await SyncManager().init();
   await GetStorage.init();
   final dependencies = AppRouter.initDependencies();
 

@@ -14,7 +14,7 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_a
 
 class GreenAlternativeTaskListPage extends StatefulWidget {
   final TaskCategory category;
-  final String? excludeTaskId;
+  final int? excludeTaskId;
   final EnergyLevel energyLevel;
 
   const GreenAlternativeTaskListPage({

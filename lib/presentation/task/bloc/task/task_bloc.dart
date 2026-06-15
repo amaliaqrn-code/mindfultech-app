@@ -115,7 +115,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     try {
       // Repository menangani delete dari lokal dan sinkronisasi ke server
-      await _taskRepository.deleteTask(event.taskId);
+      await _taskRepository.deleteTask(int.parse(event.taskId));
 
       // Hapus dari list lokal
       final updatedTasks = state.tasks

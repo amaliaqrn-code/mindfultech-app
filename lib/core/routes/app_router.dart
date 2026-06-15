@@ -98,24 +98,19 @@ class AppRouter {
         return _buildPageRoute(settings, const StreakPage());
       case AppRoutes.chooseEnergy:
         return _buildPageRoute(settings, ChooseEnergyPage());
+
       case AppRoutes.greenTaskRecommendation:
         final args = settings.arguments as Map<String, dynamic>?;
-        final category = args?['category'] as TaskCategory?;
+        final category = args?['category'] as TaskCategory? ?? TaskCategory.pribadi;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
 
-        final energyLevel =
-            args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
-
-        final selectedTask =
-            args?['selectedTask'] as TaskModel? ??
-            TaskModel(
-              id: 'default_recommendation_task',
-              namaTugas: 'Menulis Jurnal',
-              kategori: TaskCategory.pribadi,
-              energi: EnergyLevel.rendah,
-              estimasiWaktu: 10,
-              prioritas: TaskPriority.santai,
-              createdAt: DateTime.now(),
+        // 🟢 Cek apakah ada lemparan data asli, jika tidak ada gunakan DefaultTaskHelper agar aman
+        final selectedTask = args?['selectedTask'] as TaskModel? ??
+            DefaultTaskHelper.createDefaultTask(
+              energi: energyLevel,
+              kategori: category,
             );
+
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -127,13 +122,12 @@ class AppRouter {
             ),
           ),
         );
+
       case AppRoutes.greenAlternativeTaskList:
         final args = settings.arguments as Map<String, dynamic>?;
-        final category =
-            args?['category'] as TaskCategory? ?? TaskCategory.pribadi;
-        final excludeTaskId = args?['excludeTaskId'] as String?;
-        final energyLevel =
-            args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
+        final category = args?['category'] as TaskCategory? ?? TaskCategory.pribadi;
+        final excludeTaskId = args?['excludeTaskId'] as int?;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.rendah;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -145,40 +139,31 @@ class AppRouter {
             ),
           ),
         );
+
       case AppRoutes.greenTaskConfirmation:
         final args = settings.arguments as Map<String, dynamic>?;
-        final selectedTask =
-            args?['selectedTask'] as TaskModel? ??
-            TaskModel(
-              id: 'default_confirm_task',
-              namaTugas: 'Menulis Jurnal',
-              kategori: TaskCategory.pribadi,
+        final selectedTask = args?['selectedTask'] as TaskModel? ??
+            DefaultTaskHelper.createDefaultTask(
               energi: EnergyLevel.rendah,
-              estimasiWaktu: 10,
-              prioritas: TaskPriority.santai,
-              createdAt: DateTime.now(),
+              kategori: TaskCategory.pribadi,
             );
         return _buildPageRoute(
           settings,
           GreenTaskConfirmationPage(selectedTask: selectedTask),
         );
+
       case AppRoutes.blueTaskRecommendation:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueCategory = blueArgs?['category'] as TaskCategory?;
-        final blueEnergyLevel =
-            blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
+        final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
 
-        final blueSelectedTask =
-            blueArgs?['selectedTask'] as TaskModel? ??
-            TaskModel(
-              id: 'default_recommendation_task',
-              namaTugas: 'Meditasi 15 menit',
-              kategori: TaskCategory.pribadi,
-              energi: EnergyLevel.sedang,
-              estimasiWaktu: 15,
-              prioritas: TaskPriority.santai,
-              createdAt: DateTime.now(),
+        // 🟢 Menggunakan data lembaran asli atau fallback terpadu
+        final blueSelectedTask = blueArgs?['selectedTask'] as TaskModel? ??
+            DefaultTaskHelper.createDefaultTask(
+              energi: blueEnergyLevel,
+              kategori: blueCategory,
             );
+
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -190,13 +175,12 @@ class AppRouter {
             ),
           ),
         );
+
       case AppRoutes.blueAlternativeTaskList:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueCategory =
-            blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
+        final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
         final blueExcludeTaskId = blueArgs?['excludeTaskId'] as String?;
-        final blueEnergyLevel =
-            blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -208,40 +192,31 @@ class AppRouter {
             ),
           ),
         );
+
       case AppRoutes.blueTaskConfirmation:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
-        final blueSelectedTask =
-            blueArgs?['selectedTask'] as TaskModel? ??
-            TaskModel(
-              id: 'default_blue_confirm',
-              namaTugas: 'Meditasi 15 menit',
-              kategori: TaskCategory.pribadi,
+        final blueSelectedTask = blueArgs?['selectedTask'] as TaskModel? ??
+            DefaultTaskHelper.createDefaultTask(
               energi: EnergyLevel.sedang,
-              estimasiWaktu: 15,
-              prioritas: TaskPriority.penting,
-              createdAt: DateTime.now(),
+              kategori: TaskCategory.pribadi,
             );
         return _buildPageRoute(
           settings,
           BlueTaskConfirmationPage(selectedTask: blueSelectedTask),
         );
+
       case AppRoutes.purpleTaskRecommendation:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleCategory = purpleArgs?['category'] as TaskCategory?;
-        final purpleEnergyLevel =
-            purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
+        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
+        final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
 
-        final purpleSelectedTask =
-            purpleArgs?['selectedTask'] as TaskModel? ??
-            TaskModel(
-              id: 'default_recommendation_task',
-              namaTugas: 'Belajar coding intensif',
-              kategori: TaskCategory.belajar,
-              energi: EnergyLevel.tinggi,
-              estimasiWaktu: 120,
-              prioritas: TaskPriority.mendesak,
-              createdAt: DateTime.now(),
+        // 🟢 Menggunakan data lembaran asli atau fallback terpadu
+        final purpleSelectedTask = purpleArgs?['selectedTask'] as TaskModel? ??
+            DefaultTaskHelper.createDefaultTask(
+              energi: purpleEnergyLevel,
+              kategori: purpleCategory,
             );
+
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -253,44 +228,39 @@ class AppRouter {
             ),
           ),
         );
+
       case AppRoutes.purpleAlternativeTaskList:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleCategory =
-            purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
-        final purpleExcludeTaskId = purpleArgs?['excludeTaskId'] as String?;
-        final purpleEnergyLevel =
-            purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
+        final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
+        final excludeTaskId = purpleArgs?['excludeTaskId'] as String?;
+        final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
         return _buildPageRoute(
           settings,
           BlocProvider(
             create: (_) => MindyBantuAkuCubit(taskRepository: taskRepository),
             child: PurpleAlternativeTaskListPage(
               category: purpleCategory,
-              excludeTaskId: purpleExcludeTaskId,
+              excludeTaskId: excludeTaskId,
               energyLevel: purpleEnergyLevel,
             ),
           ),
         );
+
       case AppRoutes.purpleTaskConfirmation:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
-        final purpleSelectedTask =
-            purpleArgs?['selectedTask'] as TaskModel? ??
-            TaskModel(
-              id: 'default_purple_confirm',
-              namaTugas: 'Belajar coding intensif',
-              kategori: TaskCategory.belajar,
+        final purpleSelectedTask = purpleArgs?['selectedTask'] as TaskModel? ??
+            DefaultTaskHelper.createDefaultTask(
               energi: EnergyLevel.tinggi,
-              estimasiWaktu: 120,
-              prioritas: TaskPriority.mendesak,
-              createdAt: DateTime.now(),
+              kategori: TaskCategory.belajar,
             );
         return _buildPageRoute(
           settings,
           PurpleTaskConfirmationPage(selectedTask: purpleSelectedTask),
         );
+
       case AppRoutes.setupTimer:
-        final args = settings.arguments as Map<String, dynamic>?;
-        final task = args?['task'] as dynamic;
+        final task = settings.arguments as TaskModel?;
+      
         return _buildPageRoute(
           settings,
           BlocProvider(
@@ -312,8 +282,7 @@ class AppRouter {
         return _buildPageRoute(settings, const CreateCustomTaskPage());
       case AppRoutes.taskCategory:
         final args = settings.arguments as Map<String, dynamic>?;
-        final energyLevel =
-            args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
+        final energyLevel = args?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
           TaskCategoryPage(energyLevel: energyLevel),
@@ -333,16 +302,12 @@ class AppRouter {
     );
   }
 
-  /// Helper to convert int value to EnergyLevel
-  /// Initialize dependencies and return both repositories
   static AppDependencies initDependencies() {
-    // Network & Data layer
     final dioClient = DioClient();
     final localDataSource = AuthLocalDataSource();
     final authRemoteDataSource = AuthRemoteDataSource(dioClient);
     final taskRemoteDataSource = TaskRemoteDataSource(dioClient);
 
-    // Repositories
     final authRepository = AuthRepository(
       remoteDataSource: authRemoteDataSource,
       localDataSource: localDataSource,

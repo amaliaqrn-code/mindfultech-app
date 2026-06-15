@@ -82,7 +82,8 @@ class DatabaseHelper {
         userId TEXT NOT NULL,
         durationSeconds INTEGER NOT NULL,
         emotion INTEGER NOT NULL,
-        createdAt TEXT NOT NULL
+        createdAt TEXT NOT NULL,
+        dayNumber INTEGER DEFAULT 0
       )
     ''');
     await db.execute('CREATE INDEX idx_focus_sessions_userId ON focus_sessions(userId)');
@@ -133,7 +134,8 @@ class DatabaseHelper {
             userId TEXT NOT NULL,
             durationSeconds INTEGER NOT NULL,
             emotion INTEGER NOT NULL,
-            createdAt TEXT NOT NULL
+            createdAt TEXT NOT NULL,
+            dayNumber INTEGER DEFAULT 0
           )
         ''');
         await db.execute('CREATE INDEX idx_focus_sessions_userId ON focus_sessions(userId)');
@@ -344,7 +346,7 @@ class DatabaseHelper {
     return await db.update('tasks', task.toMap(), where: 'id = ?', whereArgs: [task.id]);
   }
 
-  Future<int> deleteTask(String id, {String? userId}) async {
+  Future<int> deleteTask(id, {String? userId}) async {
     final db = await database;
     if (userId != null) {
       return await db.delete('tasks', where: 'id = ? AND userId = ?', whereArgs: [id, userId]);
@@ -495,6 +497,27 @@ class DatabaseHelper {
       [userId],
     );
     return result.map((r) => r['emotion'] as int).toList();
+  }
+
+  /// ✅ FIX: Ambil data sesi fokus terbaru (maksimal 6 sesi sesuai jumlah slot awan)
+  ///    Method ini di dalam class — `database` resolve dengan benar
+  ///    Urutkan berdasarkan dayNumber agar emoji muncul di slot yang benar
+  Future<List<FocusSessionModel>> getRecentFocusSessions() async {
+    try {
+      final db = await database;
+
+      final List<Map<String, dynamic>> maps = await db.query(
+        'focus_sessions',
+        orderBy: 'dayNumber ASC, createdAt DESC', // ✅ Order by dayNumber ASC
+        limit: 6,
+      );
+
+      return List.generate(maps.length, (i) {
+        return FocusSessionModel.fromMap(maps[i]);
+      });
+    } catch (e) {
+      return [];
+    }
   }
 
   /// Delete focus session by ID

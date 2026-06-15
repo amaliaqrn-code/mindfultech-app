@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 /// Enum untuk level energi
 enum EnergyLevel { rendah, sedang, tinggi }
@@ -13,36 +12,26 @@ enum TaskPriority { mendesak, penting, santai }
 extension EnergyLevelExtension on EnergyLevel {
   String get displayName {
     switch (this) {
-      case EnergyLevel.rendah:
-        return 'Rendah';
-      case EnergyLevel.sedang:
-        return 'Sedang';
-      case EnergyLevel.tinggi:
-        return 'Tinggi';
+      case EnergyLevel.rendah: return 'Rendah';
+      case EnergyLevel.sedang: return 'Sedang';
+      case EnergyLevel.tinggi: return 'Tinggi';
     }
   }
 
   int get value {
     switch (this) {
-      case EnergyLevel.rendah:
-        return 0;
-      case EnergyLevel.sedang:
-        return 1;
-      case EnergyLevel.tinggi:
-        return 2;
+      case EnergyLevel.rendah: return 0;
+      case EnergyLevel.sedang: return 1;
+      case EnergyLevel.tinggi: return 2;
     }
   }
 
   static EnergyLevel fromValue(int value) {
     switch (value) {
-      case 0:
-        return EnergyLevel.rendah;
-      case 1:
-        return EnergyLevel.sedang;
-      case 2:
-        return EnergyLevel.tinggi;
-      default:
-        return EnergyLevel.rendah;
+      case 0: return EnergyLevel.rendah;
+      case 1: return EnergyLevel.sedang;
+      case 2: return EnergyLevel.tinggi;
+      default: return EnergyLevel.rendah;
     }
   }
 }
@@ -50,55 +39,35 @@ extension EnergyLevelExtension on EnergyLevel {
 extension TaskCategoryExtension on TaskCategory {
   String get displayName {
     switch (this) {
-      case TaskCategory.belajar:
-        return 'Belajar';
-      case TaskCategory.pekerjaan:
-        return 'Pekerjaan';
-      case TaskCategory.kesehatan:
-        return 'Kesehatan';
-      case TaskCategory.pribadi:
-        return 'Pribadi';
-      case TaskCategory.rumah:
-        return 'Rumah';
-      case TaskCategory.lainnya:
-        return 'Lainnya';
+      case TaskCategory.belajar: return 'Belajar';
+      case TaskCategory.pekerjaan: return 'Pekerjaan';
+      case TaskCategory.kesehatan: return 'Kesehatan';
+      case TaskCategory.pribadi: return 'Pribadi';
+      case TaskCategory.rumah: return 'Rumah';
+      case TaskCategory.lainnya: return 'Lainnya';
     }
   }
 
   String get iconPath {
     switch (this) {
-      case TaskCategory.belajar:
-        return 'assets/icon/kategori/belajar.svg';
-      case TaskCategory.pekerjaan:
-        return 'assets/icon/kategori/pekerjaan.svg';
-      case TaskCategory.kesehatan:
-        return 'assets/icon/kategori/kesehatan.svg';
-      case TaskCategory.pribadi:
-        return 'assets/icon/kategori/pribadi.svg';
-      case TaskCategory.rumah:
-        return 'assets/icon/kategori/rumah.svg';
-      case TaskCategory.lainnya:
-        return 'assets/icon/kategori/lainnya.svg';
+      case TaskCategory.belajar: return 'assets/icon/kategori/belajar.svg';
+      case TaskCategory.pekerjaan: return 'assets/icon/kategori/pekerjaan.svg';
+      case TaskCategory.kesehatan: return 'assets/icon/kategori/kesehatan.svg';
+      case TaskCategory.pribadi: return 'assets/icon/kategori/pribadi.svg';
+      case TaskCategory.rumah: return 'assets/icon/kategori/rumah.svg';
+      case TaskCategory.lainnya: return 'assets/icon/kategori/lainnya.svg';
     }
   }
 
-
   static TaskCategory fromString(String value) {
-    switch (value) {
-      case 'Belajar':
-        return TaskCategory.belajar;
-      case 'Pekerjaan':
-        return TaskCategory.pekerjaan;
-      case 'Kesehatan':
-        return TaskCategory.kesehatan;
-      case 'Pribadi':
-        return TaskCategory.pribadi;
-      case 'Rumah':
-        return TaskCategory.rumah;
-      case 'Lainnya':
-        return TaskCategory.lainnya;
-      default:
-        return TaskCategory.lainnya;
+    switch (value.toLowerCase()) {
+      case 'belajar': return TaskCategory.belajar;
+      case 'pekerjaan': return TaskCategory.pekerjaan;
+      case 'kesehatan': return TaskCategory.kesehatan;
+      case 'pribadi': return TaskCategory.pribadi;
+      case 'rumah': return TaskCategory.rumah;
+      case 'lainnya': return TaskCategory.lainnya;
+      default: return TaskCategory.lainnya;
     }
   }
 }
@@ -106,118 +75,81 @@ extension TaskCategoryExtension on TaskCategory {
 extension TaskPriorityExtension on TaskPriority {
   String get displayName {
     switch (this) {
-      case TaskPriority.mendesak:
-        return 'Mendesak';
-      case TaskPriority.penting:
-        return 'Penting';
-      case TaskPriority.santai:
-        return 'Santai';
+      case TaskPriority.mendesak: return 'Mendesak';
+      case TaskPriority.penting: return 'Penting';
+      case TaskPriority.santai: return 'Santai';
     }
   }
 
   int get value {
     switch (this) {
-      case TaskPriority.mendesak:
-        return 0;
-      case TaskPriority.penting:
-        return 1;
-      case TaskPriority.santai:
-        return 2;
+      case TaskPriority.mendesak: return 0;
+      case TaskPriority.penting: return 1;
+      case TaskPriority.santai: return 2;
     }
   }
 
   static TaskPriority fromValue(int value) {
     switch (value) {
-      case 0:
-        return TaskPriority.mendesak;
-      case 1:
-        return TaskPriority.penting;
-      case 2:
-        return TaskPriority.santai;
-      default:
-        return TaskPriority.mendesak;
+      case 0: return TaskPriority.mendesak;
+      case 1: return TaskPriority.penting;
+      case 2: return TaskPriority.santai;
+      default: return TaskPriority.mendesak;
     }
   }
 }
 
 /// Default task data helper for fallback recommendations
 class DefaultTaskHelper {
-  /// Get default task title based on energy level and category
   static String getDefaultTaskTitle(EnergyLevel energi, TaskCategory kategori) {
-    // Low energy (rendah) - 5 minutes tasks
     if (energi == EnergyLevel.rendah) {
       switch (kategori) {
-        case TaskCategory.belajar:
-          return 'Baca 1 halaman buku atau artikel edukatif ringan';
-        case TaskCategory.pekerjaan:
-          return 'Cek dan rapihkan inbox email atau urutkan to-do list';
-        case TaskCategory.kesehatan:
-          return 'Minum satu gelas air putih dan regangkan tangan';
-        case TaskCategory.pribadi:
-          return 'Tulis 1 hal yang kamu syukuri hari ini di jurnal';
-        case TaskCategory.rumah:
-          return 'Buang sampah atau letakkan baju kotor ke tempatnya';
-        case TaskCategory.lainnya:
-          return 'Istirahat tanpa melihat layar smartphone sama sekali';
+        case TaskCategory.belajar: return 'Baca 1 halaman buku atau artikel edukatif ringan';
+        case TaskCategory.pekerjaan: return 'Cek dan rapihkan inbox email atau urutkan to-do list';
+        case TaskCategory.kesehatan: return 'Minum satu gelas air putih dan regangkan tangan';
+        case TaskCategory.pribadi: return 'Tulis 1 hal yang kamu syukuri hari ini di jurnal';
+        case TaskCategory.rumah: return 'Buang sampah atau letakkan baju kotor ke tempatnya';
+        case TaskCategory.lainnya: return 'Istirahat tanpa melihat layar smartphone sama sekali';
       }
     }
 
-    // Medium energy (sedang) - 10-15 minutes tasks
     if (energi == EnergyLevel.sedang) {
       switch (kategori) {
-        case TaskCategory.belajar:
-          return 'Tonton 1 video tutorial atau rangkum materi singkat';
-        case TaskCategory.pekerjaan:
-          return 'Balas pesan klien atau cicil dokumen kerjaan ringan';
-        case TaskCategory.kesehatan:
-          return 'Latihan napas dalam (deep breathing) atau jalan santai';
-        case TaskCategory.pribadi:
-          return 'Lakukan meditasi tenang atau rapikan galeri foto HP';
-        case TaskCategory.rumah:
-          return 'Lap meja kerja, cuci piring, atau rapikan kasur';
-        case TaskCategory.lainnya:
-          return 'Buat daftar lagu (playlist) santai untuk nemenin hari';
+        case TaskCategory.belajar: return 'Tonton 1 video tutorial atau rangkum materi singkat';
+        case TaskCategory.pekerjaan: return 'Balas pesan klien atau cicil dokumen kerjaan ringan';
+        case TaskCategory.kesehatan: return 'Latihan napas dalam (deep breathing) atau jalan santai';
+        case TaskCategory.pribadi: return 'Lakukan meditasi tenang atau rapikan galeri foto HP';
+        case TaskCategory.rumah: return 'Lap meja kerja, cuci piring, atau rapikan kasur';
+        case TaskCategory.lainnya: return 'Buat daftar lagu (playlist) santai untuk nemenin hari';
       }
     }
 
-    // High energy (tinggi) - 15-30 minutes tasks
-    // Default case for tinggi
     switch (kategori) {
-      case TaskCategory.belajar:
-        return 'Pelajari topik baru yang sulit atau latihan soal';
-      case TaskCategory.pekerjaan:
-        return 'Selesaikan tugas utama yang paling menyita otak';
-      case TaskCategory.kesehatan:
-        return 'Olahraga ringan, stretching total, atau workout singkat';
-      case TaskCategory.pribadi:
-        return 'Evaluasi target mingguan atau rencanakan hobi barumu';
-      case TaskCategory.rumah:
-        return 'Sapu dan pel kamar atau tata ulang lemari pakaian';
-      case TaskCategory.lainnya:
-        return 'Bereskan satu hal kecil yang terus kamu tunda minggu ini';
+      case TaskCategory.belajar: return 'Pelajari topik baru yang sulit atau latihan soal';
+      case TaskCategory.pekerjaan: return 'Selesaikan tugas utama yang paling menyita otak';
+      case TaskCategory.kesehatan: return 'Olahraga ringan, stretching total, atau workout singkat';
+      case TaskCategory.pribadi: return 'Evaluasi target mingguan atau rencanakan hobi barumu';
+      case TaskCategory.rumah: return 'Sapu dan pel kamar atau tata ulang lemari pakaian';
+      case TaskCategory.lainnya: return 'Bereskan satu hal kecil yang terus kamu tunda minggu ini';
     }
   }
 
-  /// Get default duration based on energy level
   static int getDefaultDuration(EnergyLevel energi) {
     switch (energi) {
-      case EnergyLevel.rendah:
-        return 5;
-      case EnergyLevel.sedang:
-        return 15;
-      case EnergyLevel.tinggi:
-        return 25;
+      case EnergyLevel.rendah: return 5;
+      case EnergyLevel.sedang: return 15;
+      case EnergyLevel.tinggi: return 25;
     }
   }
 
-  /// Create a default TaskModel based on energy level and category
   static TaskModel createDefaultTask({
     required EnergyLevel energi,
     required TaskCategory kategori,
-    String? customId,
+    int? customId,
   }) {
     return TaskModel(
-      id: customId ?? 'default_${energi.name}_${kategori.name}_${DateTime.now().millisecondsSinceEpoch}',
+      // 🟢 Karena id bertipe int, kita gunakan milidetik timestamp saat ini sebagai angka ID unik unik
+      id: customId ?? DateTime.now().millisecondsSinceEpoch, 
       namaTugas: getDefaultTaskTitle(energi, kategori),
       kategori: kategori,
       energi: energi,
@@ -229,7 +161,9 @@ class DefaultTaskHelper {
   }
 }
 
-/// Fungsi helper untuk parsing int yang aman
+// ==========================================
+// PARSING HELPER FUNCTIONS
+// ==========================================
 int _parseInt(dynamic value, {int defaultValue = 0}) {
   if (value == null) return defaultValue;
   if (value is int) return value;
@@ -238,14 +172,12 @@ int _parseInt(dynamic value, {int defaultValue = 0}) {
   return defaultValue;
 }
 
-/// Fungsi helper untuk parsing string yang aman
 String _parseString(dynamic value, {String defaultValue = ''}) {
   if (value == null) return defaultValue;
   if (value is String) return value;
   return value.toString();
 }
 
-/// Fungsi helper untuk parsing DateTime yang aman
 DateTime _parseDateTime(dynamic value, {DateTime? defaultValue}) {
   if (value == null) return defaultValue ?? DateTime.now();
   if (value is DateTime) return value;
@@ -259,47 +191,40 @@ DateTime _parseDateTime(dynamic value, {DateTime? defaultValue}) {
   return defaultValue ?? DateTime.now();
 }
 
-/// Fungsi helper untuk parsing kategori yang aman
-/// Bisa menerima String (displayName) atau int (value) dari database/API
 TaskCategory _safeParseKategori(dynamic value) {
   if (value == null) return TaskCategory.lainnya;
-
-  // Jika berupa int, coba parse sebagai value
   if (value is int) {
-    if (value >= 0 && value <= 5) {
+    if (value >= 0 && value < TaskCategory.values.length) {
       return TaskCategory.values[value];
     }
     return TaskCategory.lainnya;
   }
-
-  // Jika berupa String, gunakan fromString
   if (value is String) {
-    // Coba parse sebagai int terlebih dahulu
     final intValue = int.tryParse(value);
-    if (intValue != null && intValue >= 0 && intValue <= 5) {
+    if (intValue != null && intValue >= 0 && intValue < TaskCategory.values.length) {
       return TaskCategory.values[intValue];
     }
-    // Gunakan fromString untuk displayName
     return TaskCategoryExtension.fromString(value);
   }
-
   return TaskCategory.lainnya;
 }
 
-/// Model untuk Tugas
+// ==========================================
+// CORE MODEL CLASS
+// ==========================================
 class TaskModel extends Equatable {
-  final String id;
+  final int id; // 🟢 SEKARANG SUDAH JADI INT
   final String namaTugas;
   final TaskCategory kategori;
   final EnergyLevel energi;
-  final int estimasiWaktu; // dalam menit
+  final int estimasiWaktu; 
   final TaskPriority prioritas;
   final DateTime createdAt;
-  final String? userId; // User ID untuk multi-user isolation
-  final bool isDefault; // Flag untuk default system tasks
+  final String? userId; 
+  final bool isDefault; 
 
   const TaskModel({
-    required this.id,
+    required this.id, // 🟢 Tipe data int
     required this.namaTugas,
     required this.kategori,
     required this.energi,
@@ -310,47 +235,31 @@ class TaskModel extends Equatable {
     this.isDefault = false,
   });
 
-  /// Membuat TaskModel dari Map (biasanya dari database)
-  /// Menggunakan parsing yang aman untuk menangani data dari berbagai sumber
   factory TaskModel.fromMap(Map<String, dynamic> map) {
-    // Parse energi - bisa berupa int atau String dari database/API
-    final energiValue = _parseInt(map['energi']);
-    // Parse prioritas - bisa berupa int atau String dari database/API
-    final prioritasValue = _parseInt(map['prioritas']);
-    // Parse estimasiWaktu - bisa berupa int atau String dari database/API
-    final estimasiValue = _parseInt(map['estimasiWaktu'], defaultValue: 10);
-    // Parse kategori - bisa berupa String (displayName) atau int dari database/API
-    final kategoriValue = _safeParseKategori(map['kategori']);
-    // Parse id - pastikan string
-    final idValue = _parseString(map['id']);
-    // Parse namaTugas - pastikan string
-    final namaTugasValue = _parseString(map['namaTugas']);
-    // Parse createdAt - handle berbagai format tanggal
-    final createdAtValue = _parseDateTime(map['createdAt']);
-    // Parse userId - nullable, untuk multi-user isolation
-    final userIdValue = map['userId'] != null ? _parseString(map['userId']) : null;
-    // Parse isDefault - boolean flag untuk default tasks
-    final isDefaultValue = map['isDefault'] == 1 || map['isDefault'] == true;
+    // 🟢 Parsing menggunakan _parseInt agar aman dari database/API
+    final idValue = _parseInt(map['id']); 
+    final isDefaultValue = map['isDefault'] == 1 || map['isDefault'] == true || map['is_default'] == 1 || map['is_default'] == true;
 
     return TaskModel(
-      id: idValue.isEmpty ? DateTime.now().millisecondsSinceEpoch.toString() : idValue,
-      namaTugas: namaTugasValue,
-      kategori: kategoriValue,
-      energi: EnergyLevelExtension.fromValue(energiValue),
-      estimasiWaktu: estimasiValue,
-      prioritas: TaskPriorityExtension.fromValue(prioritasValue),
-      createdAt: createdAtValue,
-      userId: userIdValue?.isNotEmpty == true ? userIdValue : null,
+      id: idValue == 0 ? DateTime.now().millisecondsSinceEpoch : idValue,
+      namaTugas: _parseString(map['namaTugas'] ?? map['title']),
+      kategori: _safeParseKategori(map['kategori'] ?? (map['category_id'] != null ? (_parseInt(map['category_id']) - 1) : null)),
+      energi: map['energi'] != null 
+          ? EnergyLevelExtension.fromValue(_parseInt(map['energi']))
+          : (map['difficulty'] == 'easy' ? EnergyLevel.rendah : map['difficulty'] == 'hard' ? EnergyLevel.tinggi : EnergyLevel.sedang),
+      estimasiWaktu: _parseInt(map['estimasiWaktu'] ?? map['duration'], defaultValue: 10),
+      prioritas: TaskPriorityExtension.fromValue(_parseInt(map['prioritas'])),
+      createdAt: _parseDateTime(map['createdAt'] ?? map['created_at']),
+      userId: map['userId'] != null ? _parseString(map['userId']) : (map['user_id'] != null ? _parseString(map['user_id']) : null),
       isDefault: isDefaultValue,
     );
   }
 
-  /// Mengubah TaskModel ke Map untuk disimpan ke database
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': id, // 🟢 Tulis langsung sebagai integer ke database
       'namaTugas': namaTugas,
-      'kategori': kategori.index,
+      'kategori': kategori.index, 
       'energi': energi.value,
       'estimasiWaktu': estimasiWaktu,
       'prioritas': prioritas.value,
@@ -360,30 +269,26 @@ class TaskModel extends Equatable {
     };
   }
 
-  //// Mengubah data Task ke format JSON yang dimengerti oleh API Laravel
   Map<String, dynamic> toApiMap({required int userId}) {
-    // 1. Konversi Energi Level Flutter ke String Difficulty Laravel
     String difficultyLaravel = 'medium';
     if (energi == EnergyLevel.rendah) difficultyLaravel = 'easy';
     if (energi == EnergyLevel.tinggi) difficultyLaravel = 'hard';
 
-    // 2. Ambil ID Kategori secara dinamis berdasarkan index enum + 1
-    // Contoh: Jika user milih 'rumah' (index 0), maka laravelCategoryId = 1
     int laravelCategoryId = kategori.index + 1;
 
     return {
+      'id': id, // 🟢 Dikirim sebagai integer ke backend Laravel
       'user_id': userId,
-      'category_id': laravelCategoryId, // 🟢 ID Dinamis 1 sampai 6 aman!
-      'title': namaTugas,               // Sesuaikan dengan nama variabel properti tugasmu
+      'category_id': laravelCategoryId, 
+      'title': namaTugas,              
       'difficulty': difficultyLaravel,
       'is_completed': 0,
       'is_default': isDefault ? 1 : 0,
     };
   }
 
-  /// Membuat salinan dengan data yang diperbarui
   TaskModel copyWith({
-    String? id,
+    int? id, // 🟢 SEKARANG KONSISTEN MENGGUNAKAN INT?
     String? namaTugas,
     TaskCategory? kategori,
     EnergyLevel? energi,
@@ -394,7 +299,7 @@ class TaskModel extends Equatable {
     bool? isDefault,
   }) {
     return TaskModel(
-      id: id ?? this.id,
+      id: id ?? this.id, // 🟢 Sempurna, int ketemu int!
       namaTugas: namaTugas ?? this.namaTugas,
       kategori: kategori ?? this.kategori,
       energi: energi ?? this.energi,
@@ -406,7 +311,6 @@ class TaskModel extends Equatable {
     );
   }
 
-  /// Format estimasi waktu untuk tampilan
   String get formattedDuration => '$estimasiWaktu Menit Fokus';
 
   @override

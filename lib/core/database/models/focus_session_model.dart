@@ -90,6 +90,7 @@ class FocusSessionModel {
   final int durationSeconds;
   final EmotionType emotion;
   final String createdAt;
+  final int dayNumber; // ✅ FIX: Posisi slot emoji (0-5) sesuai hari dalam level
 
   FocusSessionModel({
     this.id,
@@ -98,6 +99,7 @@ class FocusSessionModel {
     required this.durationSeconds,
     required this.emotion,
     required this.createdAt,
+    this.dayNumber = 0, // Default 0 jika tidak ditentukan
   });
 
   Map<String, dynamic> toMap() {
@@ -108,6 +110,7 @@ class FocusSessionModel {
       'durationSeconds': durationSeconds,
       'emotion': emotion.value,
       'createdAt': createdAt,
+      'dayNumber': dayNumber, // ✅ Include dayNumber
     };
   }
 
@@ -119,6 +122,7 @@ class FocusSessionModel {
       durationSeconds: map['durationSeconds'] as int? ?? 0,
       emotion: EmotionTypeExtension.fromValue(map['emotion'] as int? ?? 2),
       createdAt: map['createdAt'] as String,
+      dayNumber: map['dayNumber'] as int? ?? 0, // ✅ Include dayNumber
     );
   }
 
@@ -129,6 +133,7 @@ class FocusSessionModel {
     int? durationSeconds,
     EmotionType? emotion,
     String? createdAt,
+    int? dayNumber, // ✅ Include dayNumber
   }) {
     return FocusSessionModel(
       id: id ?? this.id,
@@ -137,6 +142,7 @@ class FocusSessionModel {
       durationSeconds: durationSeconds ?? this.durationSeconds,
       emotion: emotion ?? this.emotion,
       createdAt: createdAt ?? this.createdAt,
+      dayNumber: dayNumber ?? this.dayNumber, // ✅ Include dayNumber
     );
   }
 

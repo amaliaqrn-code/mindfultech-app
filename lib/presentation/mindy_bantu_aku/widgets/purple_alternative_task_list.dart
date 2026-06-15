@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mindfultech_app/presentation/mindy_bantu_aku/theme/blue_theme.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import '../theme/purple_theme.dart';
 

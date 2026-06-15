@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/database/database_helper.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_state.dart';
@@ -7,6 +8,8 @@ import 'homepage_state.dart';
 class HomepageCubit extends Cubit<HomepageState> {
   final AuthLocalDataSource _authLocalDataSource;
   final DatabaseHelper _databaseHelper;
+  final GetStorage _storage = GetStorage();
+  int _lastEmojiUpdateTimestamp = 0;
 
   HomepageCubit({
     AuthLocalDataSource? authLocalDataSource,
@@ -15,6 +18,15 @@ class HomepageCubit extends Cubit<HomepageState> {
         _databaseHelper = databaseHelper ?? DatabaseHelper(),
         super(const HomepageState(userLevel: 1, mascotGreeting: 'Yuk mulai hari produktif bareng Mindy!')) {
     _updateMascotText();
+    _checkForEmojiUpdates();
+  }
+
+  void _checkForEmojiUpdates() {
+    final lastUpdate = _storage.read('journey_emojiUpdated');
+    if (lastUpdate is int && lastUpdate > _lastEmojiUpdateTimestamp) {
+      _lastEmojiUpdateTimestamp = lastUpdate;
+      loadEmotionData();
+    }
   }
 
   void _updateMascotText() {
@@ -48,7 +60,6 @@ class HomepageCubit extends Cubit<HomepageState> {
   }
 
   /// Get formatted streak text for display (null-safe)
-  /// ✅ FIXED: Use real data from JourneyState
   String getStreakText(JourneyState? journeyState) {
     if (journeyState == null) {
       return '0 / 0 hari';
@@ -59,7 +70,6 @@ class HomepageCubit extends Cubit<HomepageState> {
   }
 
   /// Get level text for display (null-safe)
-  /// ✅ FIXED: Use real data from JourneyState
   String getLevelText(JourneyState? journeyState) {
     if (journeyState == null) {
       return 'LEVEL 01';
@@ -69,27 +79,24 @@ class HomepageCubit extends Cubit<HomepageState> {
   }
 
   /// Load emotion session count from database
+  /// ✅ FIX: Selalu reload dari database untuk dapat data terbaru
   Future<void> loadEmotionData() async {
     try {
-      final user = _authLocalDataSource.getUser();
-      if (user == null) return;
+      // Check for updates from JourneyCubit
+      _checkForEmojiUpdates();
 
-      final userId = user.id.toString();
-      final uniqueEmotions = await _databaseHelper.getUniqueEmotionsUsed(userId);
-      final sessionCount = await _databaseHelper.getFocusSessionCount(userId);
+      final sessions = await _databaseHelper.getRecentFocusSessions();
+
+      // Konversi data emosi dari DB ke List<int> (emoji index)
+      final List<int> indices = sessions.map((s) => s.emotion.index).toList();
 
       emit(state.copyWith(
-        emotionSessionCount: uniqueEmotions.length,
-        totalFocusSessions: sessionCount,
+        emotionSessionCount: indices.length,
+        totalFocusSessions: sessions.length,
+        savedEmojiIndices: indices,
       ));
-    } catch (_) {
-      // Ignore errors, keep default values
+    } catch (e) {
+      // Handle error silently, keep existing state
     }
-  }
-
-  /// Get current user ID
-  String? getCurrentUserId() {
-    final user = _authLocalDataSource.getUser();
-    return user?.id.toString();
   }
 }

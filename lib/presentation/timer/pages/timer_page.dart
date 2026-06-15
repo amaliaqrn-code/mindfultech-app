@@ -46,6 +46,11 @@ class _TimerPageState extends State<TimerPage> {
   /// Timer untuk transisi dari breakIntro ke breakActive
   Timer? _breakIntroTimer;
 
+  /// ❌ PREVIOUS BUG: Guard pakai state.hasNavigatedToFinished — tapi
+  ///    _onSetup SET ke true → guard !hasNavigatedToFinished = false → tidak navigasi
+  /// ✅ FIX: Pakai widget local flag — hidup di widget lifecycle, tidak terpengaruh bloc
+  bool _hasNavigatedToFinished = false;
+
   @override
   void dispose() {
     _breakIntroTimer?.cancel();
@@ -171,20 +176,28 @@ class _TimerPageState extends State<TimerPage> {
       listener: (context, state) {
         _handleStateChange(state);
 
-        if (state.isAllCompleted) {
-          // Send total focus time to JourneyCubit when all sessions complete
+        // ✅ FIX: Pakai widget local flag _hasNavigatedToFinished
+        //    (bukan state.hasNavigatedToFinished yang error)
+        // state.isAllCompleted → trigger, _hasNavigatedToFinished → guard
+        if (state.isAllCompleted && !_hasNavigatedToFinished) {
+          // Kunci langsung agar tidak masuk lagi
+          _hasNavigatedToFinished = true;
+
+          // Kirim data ke JourneyCubit
           final totalFocusSeconds = state.durationPerSession * 60;
           context.read<JourneyCubit>().onTimerSessionEnded(totalFocusSeconds);
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TimerFinishedPage(
-                task: widget.task,
-                focusDurationSeconds: totalFocusSeconds,
-              ),
-            ),
-          );
+          // Navigasi aman dari konflik render frame
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TimerFinishedPage(),
+                ),
+              );
+            }
+          });
         }
       },
       builder: (context, state) {

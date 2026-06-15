@@ -81,7 +81,7 @@ class TutorialContent extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: _buildCard(),
             ),
           ),

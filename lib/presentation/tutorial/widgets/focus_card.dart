@@ -9,14 +9,14 @@ class FocusCard extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        SizedBox(height: 18),
         // ================= MINDY IMAGE =================
-        Container(
+       Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
           child: Image.asset(
-            'assets/images/energisedang/mindy.png',
-            height: 120,
-            fit: BoxFit.contain,
+            'assets/images/tutorial/slide3.png',
+            width: double.infinity,
+            fit: BoxFit.cover, // 👈 ini kunci utama
           ),
         ),
 
