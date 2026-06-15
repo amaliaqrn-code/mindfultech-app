@@ -22,6 +22,7 @@ class TaskRepository {
 
   int _getCurrentUserId() => _localDataSource.getUser()?.id ?? 0;
   String? _getCurrentUserIdString() => _localDataSource.getUser()?.id.toString();
+  String? getUserId() => _getCurrentUserIdString();
   bool get isUserLoggedIn => _localDataSource.isLoggedIn();
 
   // ============================================================

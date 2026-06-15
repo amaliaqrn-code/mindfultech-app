@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mindfultech_app/core/routes/app_routes.dart';
+import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
-import 'package:mindfultech_app/presentation/journey/pages/journey_page.dart';
 import 'package:mindfultech_app/presentation/journey/pages/level_result_page.dart';
+import 'package:mindfultech_app/presentation/main_page.dart';
 import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_bloc.dart';
-import 'package:mindfultech_app/presentation/timer/bloc/timer/timer_state.dart';
+import 'package:mindfultech_app/presentation/widgets/custom_bottom_nav_bar.dart';
 
 class TimerFinishedPage extends StatefulWidget {
   const TimerFinishedPage({super.key});
@@ -15,6 +17,26 @@ class TimerFinishedPage extends StatefulWidget {
 
 class _TimerFinishedPageState extends State<TimerFinishedPage> {
   int? selectedEmojiIndex;
+
+  bool _isWidgetActive = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _isWidgetActive = true;
+  }
+
+  @override
+  void deactivate() {
+    _isWidgetActive = false;
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _isWidgetActive = false;
+    super.dispose();
+  }
 
   // ✅ Menggunakan list asset emoji asli milikmu (Cloud1 sampai Cloud6)
   final List<String> cloudEmojis = [
@@ -222,45 +244,66 @@ class _TimerFinishedPageState extends State<TimerFinishedPage> {
         ),
       ),
       
-      // ✅ 5. Bottom Navigation Bar agar layout presisi seperti gambar mockup kamu
-      bottomNavigationBar: BottomNavigationBar(
+      // ✅ 5. Bottom Navigation Bar menggunakan CustomBottomNavBar
+      bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1, // Fokus aktif
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF2980B9),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.timer), label: 'Fokus'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Journey'),
-          BottomNavigationBarItem(icon: Icon(Icons.local_fire_department), label: 'Streak'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
+        onTap: (index) => _onNavTap(context, index),
       ),
     );
   }
 
+  void _onNavTap(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.mainPage, (route) => false);
+        break;
+      case 1:
+        // Already on Fokus, do nothing
+        break;
+      case 2:
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.journey, (route) => false);
+        break;
+      case 3:
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.streak, (route) => false);
+        break;
+      case 4:
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.profile, (route) => false);
+        break;
+    }
+  }
+
   Future<void> _handleContinueToJourney(BuildContext context, JourneyCubit cubit) async {
-    await cubit.completeLevelSession();
+    if (!_isWidgetActive) return;
+    final timerState = context.read<TimerBloc>().state;
+    final durationSeconds = timerState.durationPerSession * 60;
+    await cubit.completeLevelSession(durationSeconds);
     final int updatedTotalDays = cubit.state.totalDays;
 
-    if (!context.mounted) return;
+    if (!_isWidgetActive) return;
 
     final bool isLevelCompleted = updatedTotalDays > 0 && updatedTotalDays % 5 == 0;
 
-    if (isLevelCompleted) {
-      final int completedLevel = updatedTotalDays ~/ 5;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => LevelResultPage(currentLevel: completedLevel),
-        ),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const JourneyPage()),
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isWidgetActive) return;
+
+      if (isLevelCompleted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LevelResultPage(currentLevel: updatedTotalDays ~/ 5),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MainPage(
+              authRepository: context.read<AuthRepository>(),
+            ),
+          ),
+        );
+      }
+    });
   }
 }
 

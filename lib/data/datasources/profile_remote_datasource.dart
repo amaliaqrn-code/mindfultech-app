@@ -33,7 +33,6 @@ class ProfileRemoteDataSource {
       headers: {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
       },
     );
   }
@@ -157,7 +156,7 @@ class ProfileRemoteDataSource {
         ),
       });
 
-      final response = await _dioClient.put(
+      final response = await _dioClient.post(
         '/profile/photo',
         data: formData,
         options: options,
@@ -171,14 +170,14 @@ class ProfileRemoteDataSource {
       if (response.data is Map<String, dynamic>) {
         final data = response.data as Map<String, dynamic>;
         if (data.containsKey('photo_url')) {
-          return data['photo_url'] as String;
+          return data['photo_url']?.toString() ?? '';
         }
         if (data.containsKey('image_path')) {
-          return data['image_path'] as String;
+          return data['image_path']?.toString() ?? '';
         }
         if (data.containsKey('data') && data['data'] is Map) {
           final innerData = data['data'] as Map<String, dynamic>;
-          return innerData['photo_url'] ?? innerData['image_path'] ?? '';
+          return innerData['photo_url']?.toString() ?? innerData['image_path']?.toString() ?? '';
         }
       }
 
@@ -262,7 +261,7 @@ class ProfileRemoteDataSource {
     if (e.response != null) {
       final data = e.response!.data;
       if (data is Map && data['message'] != null) {
-        return data['message'];
+        return data['message'].toString();
       }
       // Handle validation errors
       if (data is Map && data['errors'] != null) {

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/database/database_helper.dart';
+import 'package:mindfultech_app/core/network/dio_client.dart';
 import 'package:mindfultech_app/data/datasources/auth_local_datasource.dart';
 import 'journey_state.dart';
 
@@ -120,41 +121,55 @@ class JourneyCubit extends Cubit<JourneyState> {
   // JOURNEY SYSTEM (KELIPATAN 5 HARI)
   // ==========================================
 
-  /// Dipanggil SEKALI dari TimerFinishedPage saat klik "Lanjut"
-  Future<void> completeLevelSession() async {
+  /// Dipanggil dari TimerFinishedPage saat klik "Lanjut"
+  /// flow: fokusTime bertambah, totalDays HANYA bertambah jika SEMUA task selesai
+  Future<void> completeLevelSession(int sessionDuration) async {
     final userId = _userId;
     final today = _getTodayDateString();
 
-     if (state.lastFocusDate == today) return;
-    
-    // 1. Tambah hari petualangan
-    final newDays = state.totalDays + 1;
-    final newLevel = JourneyData.getLevelForDay(newDays);
-
-    _saveToStorage(totalDays: newDays, lastFocusDate: today);
-
-    // 2. Evaluasi peningkatan streak otomatis (Proteksi double-increment)
-    int newStreak = state.streakCount;
-  if (state.isDailyTargetReached) {
-    newStreak += 1;
-  }
-
-    await _db.incrementTotalDays(userId, newDays, newLevel.level);
-
-    emit(state.copyWith(
-      totalDays: newDays,
-      currentLevel: newLevel,
+    // 1. Simpan fokus time hari ini
+    final newFocusSeconds = state.todayFocusSeconds + sessionDuration;
+    _saveToStorage(todayFocusSeconds: newFocusSeconds, lastFocusDate: today);
+    await _db.updateJourneyProgress(
+      userId: userId,
+      todayFocusSeconds: newFocusSeconds,
       lastFocusDate: today,
-      streakCount: newStreak,
+    );
+
+    // 2. Cek day change
+    _checkAndHandleDayChange();
+
+    // 3. Cek apakah semua task hari ini sudah selesai
+    final completedTasks = await _db.getCompletedTasksCountToday(userId);
+    final totalTasks = await _db.getTotalTasksCountToday(userId);
+    final allTasksCompleted = totalTasks > 0 && completedTasks >= totalTasks;
+    final lastDayCompleted = await _db.getLastDayCompletedDate(userId);
+
+    if (allTasksCompleted && lastDayCompleted != today) {
+      // Update totalDays dan lastDayCompleted
+      final newDays = state.totalDays + 1;
+      final newLevel = JourneyData.getLevelForDay(newDays);
+
+      await _db.incrementTotalDays(userId, newDays, newLevel.level);
+      await _db.updateLastDayCompleted(userId, today);
+      _saveToStorage(totalDays: newDays, lastFocusDate: today);
+
+      emit(state.copyWith(
+        totalDays: newDays,
+        currentLevel: newLevel,
+        lastFocusDate: today,
+        isLoading: false,
+        moveMindy: true,
+        animatedNode: newDays,
+      ));
+      emit(state.copyWith(moveMindy: false));
+    }
+
+    // 4. Emit state dengan focus seconds yang sudah diupdate
+    emit(state.copyWith(
+      todayFocusSeconds: newFocusSeconds,
       isLoading: false,
-
-        // 🔥 INI KUNCI ANIMASI
-      moveMindy: true,
-      animatedNode: newDays,
-    
-
     ));
-    emit(state.copyWith(moveMindy: false));
   }
 
   bool isLevelUnlocked(int levelNumber) {
@@ -288,16 +303,50 @@ class JourneyCubit extends Cubit<JourneyState> {
     );
     await _db.insertFocusSession(session);
 
-    // 4. ✅ FIX: Refresh emotion data di HomepageCubit
-    //    Ini perlu karena HomepageCubit mengambil data dari database
+    // 4. Sync ke Laravel API (POST /api/focus/sync)
+    _syncFocusSessionToServer(durationSeconds, emojiIndex);
+
+    // 5. ✅ FIX: Refresh emotion data di HomepageCubit
     _refreshHomepageEmotionData();
   }
 
-  /// ✅ FIX: Helper untuk refresh emotion data
-  ///    Notify HomepageCubit agar reload data dari database
+  /// Helper untuk refresh emotion data
   void _refreshHomepageEmotionData() {
-    // Simpan flag di storage untuk trigger refresh di HomepageCubit
     _storage.write('journey_emojiUpdated', DateTime.now().millisecondsSinceEpoch);
+  }
+
+  /// Sync focus session ke Laravel API (POST /api/focus/sync)
+  void _syncFocusSessionToServer(int durationSeconds, int emojiIndex) {
+    try {
+      final dioClient = DioClient();
+      final emotionLabels = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
+      final emotion = emojiIndex >= 0 && emojiIndex < emotionLabels.length
+          ? emotionLabels[emojiIndex]
+          : null;
+
+      dioClient.post('/focus/sync', data: {
+        'duration': durationSeconds,
+        'emotion': emotion,
+        'day_number': state.totalDays % 6,
+      }).then((response) {
+        if (response.statusCode == 200 && response.data is Map) {
+          final data = response.data as Map<String, dynamic>;
+          if (data.containsKey('journey')) {
+            final journey = data['journey'] as Map<String, dynamic>;
+            _storage.write(_keyTotalFocusDays, journey['total_focus_days']);
+          }
+          if (data.containsKey('streak') && data['streak'] != null) {
+            final streakData = data['streak'] as Map<String, dynamic>;
+            _storage.write(_keyStreakCount, streakData['current_streak']);
+          }
+        }
+      }).catchError((error) {
+        // Gagal sync ke server - data tetap aman di lokal
+        // Akan sync nanti melalui SyncManager
+      });
+    } catch (_) {
+      // Gagal sync ke server
+    }
   }
 
   String _getTodayDateString() {

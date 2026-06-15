@@ -249,7 +249,7 @@ class TaskRemoteDataSource {
     if (e.response != null) {
       final data = e.response!.data;
       if (data is Map && data['message'] != null) {
-        return data['message'];
+        return data['message'].toString();
       }
       // Handle validation errors
       if (data is Map && data['errors'] != null) {

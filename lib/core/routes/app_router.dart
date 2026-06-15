@@ -179,7 +179,7 @@ class AppRouter {
       case AppRoutes.blueAlternativeTaskList:
         final blueArgs = settings.arguments as Map<String, dynamic>?;
         final blueCategory = blueArgs?['category'] as TaskCategory? ?? TaskCategory.pribadi;
-        final blueExcludeTaskId = blueArgs?['excludeTaskId'] as String?;
+        final blueExcludeTaskId = blueArgs?['excludeTaskId'] as int?;
         final blueEnergyLevel = blueArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.sedang;
         return _buildPageRoute(
           settings,
@@ -232,7 +232,7 @@ class AppRouter {
       case AppRoutes.purpleAlternativeTaskList:
         final purpleArgs = settings.arguments as Map<String, dynamic>?;
         final purpleCategory = purpleArgs?['category'] as TaskCategory? ?? TaskCategory.belajar;
-        final excludeTaskId = purpleArgs?['excludeTaskId'] as String?;
+        final excludeTaskId = purpleArgs?['excludeTaskId'] as int?;
         final purpleEnergyLevel = purpleArgs?['energyLevel'] as EnergyLevel? ?? EnergyLevel.tinggi;
         return _buildPageRoute(
           settings,

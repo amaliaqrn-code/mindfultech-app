@@ -88,6 +88,39 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         debugPrint("STATE BUKAN SUCCESS");
       }
     });
+
+    // Handler untuk upload foto profil
+    on<_UpdateProfileImage>((event, emit) async {
+      final currentState = state;
+      if (currentState is _Success) {
+        emit(const ProfileState.loading());
+        try {
+          final photoUrl = await _profileRepository.uploadProfilePhoto(
+            event.imageFile,
+          );
+
+          final updatedUser = UserModel(
+            id: currentState.user.id,
+            name: currentState.user.name,
+            email: currentState.user.email,
+            username: currentState.user.username,
+            gender: currentState.user.gender,
+            phone: currentState.user.phone,
+            imagePath: photoUrl,
+            createdAt: currentState.user.createdAt,
+          );
+
+          emit(
+            ProfileState.success(
+              user: updatedUser,
+              profileImage: event.imageFile,
+            ),
+          );
+        } catch (e) {
+          emit(ProfileState.error(message: e.toString()));
+        }
+      }
+    });
   }
 
   /// Buat default user untuk fallback

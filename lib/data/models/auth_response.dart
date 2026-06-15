@@ -14,9 +14,9 @@ class AuthResponse extends Equatable {
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      message: json['message'] ?? '',
+      message: json['message']?.toString() ?? '',
       user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
-      token: json['token'],
+      token: json['token']?.toString(),
     );
   }
 

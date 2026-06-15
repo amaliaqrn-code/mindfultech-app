@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http; // Sesuaikan jika kamu pakai Dio
+import 'package:http/http.dart' as http;
+import 'package:mindfultech_app/core/network/api_constants.dart';
 
 enum SyncOperationType { create, update, delete }
 
@@ -30,11 +31,11 @@ class SyncOperation {
   };
 
   factory SyncOperation.fromMap(Map<String, dynamic> map) => SyncOperation(
-    type: SyncOperationType.values[map['type']],
-    entity: map['entity'],
-    entityId: map['entityId'],
+    type: SyncOperationType.values[map['type'] is int ? map['type'] : int.tryParse('${map['type']}') ?? 0],
+    entity: map['entity']?.toString() ?? '',
+    entityId: map['entityId']?.toString() ?? '',
     data: Map<String, dynamic>.from(map['data']),
-    createdAt: DateTime.parse(map['createdAt']),
+    createdAt: DateTime.parse(map['createdAt']?.toString() ?? ''),
   );
 }
 
@@ -114,8 +115,7 @@ class SyncManager {
 
   /// Logika HTTP Request ke backend Laravel kamu
   Future<void> _sendDataToLaravel(SyncOperation operation) async {
-    // Sesuaikan dengan base URL Laravel API kamu
-    final baseUrl = 'https://api.mindfultech.com/api/v1'; 
+    final baseUrl = ApiConstants.baseUrl;
     final url = Uri.parse('$baseUrl/${operation.entity}');
     
     // Ambil Token auth (misal dari GetStorage atau SharedPreferences kamu)

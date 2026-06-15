@@ -43,7 +43,7 @@ class _TutorialPageState extends State<TutorialPage> {
     final storage = GetStorage();
     storage.write('hasOnboarded', true);
 
-    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.mainPage, (route) => false);
   }
 
   @override

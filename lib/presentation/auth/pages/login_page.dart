@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
             // 🔥 PANGGIL AUTH CUBIT - Simpan token & redirect
             context.read<AuthCubit>().onLoginSuccess().then((_) {
               if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homepage, (route) => false);
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.mainPage, (route) => false);
               }
             });
           } catch (e) {

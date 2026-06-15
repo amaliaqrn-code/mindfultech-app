@@ -1,3 +1,9 @@
+String _parseString(dynamic value, {String defaultValue = ''}) {
+  if (value == null) return defaultValue;
+  if (value is String) return value;
+  return value.toString();
+}
+
 /// Enum untuk emotion type setelah sesi fokus selesai
 enum EmotionType {
   cloud1, // Sangat Bahagia
@@ -117,12 +123,12 @@ class FocusSessionModel {
   factory FocusSessionModel.fromMap(Map<String, dynamic> map) {
     return FocusSessionModel(
       id: map['id'] as int?,
-      taskId: map['taskId'] as String?,
-      userId: map['userId'] as String,
-      durationSeconds: map['durationSeconds'] as int? ?? 0,
+      taskId: map['taskId'] != null ? _parseString(map['taskId']) : null,
+      userId: _parseString(map['userId']),
+      durationSeconds: (map['durationSeconds'] as int?) ?? 0,
       emotion: EmotionTypeExtension.fromValue(map['emotion'] as int? ?? 2),
-      createdAt: map['createdAt'] as String,
-      dayNumber: map['dayNumber'] as int? ?? 0, // ✅ Include dayNumber
+      createdAt: _parseString(map['createdAt']),
+      dayNumber: (map['dayNumber'] as int?) ?? 0,
     );
   }
 

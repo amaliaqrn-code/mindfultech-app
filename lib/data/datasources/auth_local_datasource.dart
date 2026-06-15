@@ -15,7 +15,8 @@ class AuthLocalDataSource {
 
   // Get auth token
   String? getToken() {
-    return _storage.read(_tokenKey);
+    final token = _storage.read(_tokenKey);
+    return token?.toString();
   }
 
   // Save user data

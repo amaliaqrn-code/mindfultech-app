@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:mindfultech_app/core/routes/app_router.dart';
 import 'package:mindfultech_app/core/routes/app_routes.dart';
 import 'package:mindfultech_app/core/sync/sync_manager.dart';
+import 'package:mindfultech_app/data/repositories/auth_repository.dart';
 import 'package:mindfultech_app/presentation/auth/bloc/auth/auth_cubit.dart';
 import 'package:mindfultech_app/presentation/homepage/bloc/homepage/homepage_cubit.dart';
 import 'package:mindfultech_app/presentation/journey/bloc/journey/journey_cubit.dart';
@@ -34,18 +35,26 @@ class MindfulTechApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        RepositoryProvider<AuthRepository>(
+          create: (_) => dependencies.authRepository,
+        ),
+
         BlocProvider<AuthCubit>(
           create: (_) => AuthCubit(authRepository: dependencies.authRepository),
         ),
+
         BlocProvider<JourneyCubit>(create: (_) => JourneyCubit()),
         BlocProvider<HomepageCubit>(create: (_) => HomepageCubit()),
+
         BlocProvider<TaskBloc>(
           create: (_) => TaskBloc(taskRepository: dependencies.taskRepository),
         ),
+
         BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc()..add(const ProfileEvent.started()),
         ),
-        BlocProvider<TimerBloc>( // 💡 2. Daftarkan TimerBloc ke Global di sini
+
+        BlocProvider<TimerBloc>(
           create: (_) => TimerBloc(),
         ),
       ],

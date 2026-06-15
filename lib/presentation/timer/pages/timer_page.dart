@@ -51,9 +51,27 @@ class _TimerPageState extends State<TimerPage> {
   /// ✅ FIX: Pakai widget local flag — hidup di widget lifecycle, tidak terpengaruh bloc
   bool _hasNavigatedToFinished = false;
 
+  /// Guard untuk menolak listener callback setelah widget tidak aktif.
+  /// Berbeda dengan [mounted] yang masih true selama deactivate → dispose,
+  /// flag ini langsung false begitu deactivate() dipanggil.
+  bool _isWidgetActive = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _isWidgetActive = true;
+  }
+
+  @override
+  void deactivate() {
+    _isWidgetActive = false;
+    super.deactivate();
+  }
+
   @override
   void dispose() {
     _breakIntroTimer?.cancel();
+    _isWidgetActive = false;
     super.dispose();
   }
 
@@ -174,20 +192,15 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<TimerBloc, TimerState>(
       listener: (context, state) {
+        if (!_isWidgetActive) return;
         _handleStateChange(state);
 
-        // ✅ FIX: Pakai widget local flag _hasNavigatedToFinished
-        //    (bukan state.hasNavigatedToFinished yang error)
-        // state.isAllCompleted → trigger, _hasNavigatedToFinished → guard
         if (state.isAllCompleted && !_hasNavigatedToFinished) {
-          // Kunci langsung agar tidak masuk lagi
           _hasNavigatedToFinished = true;
 
-          // Kirim data ke JourneyCubit
           final totalFocusSeconds = state.durationPerSession * 60;
           context.read<JourneyCubit>().onTimerSessionEnded(totalFocusSeconds);
 
-          // Navigasi aman dari konflik render frame
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               Navigator.pushReplacement(

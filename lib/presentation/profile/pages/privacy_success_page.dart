@@ -122,7 +122,7 @@ class _PrivacySuccessScreenState extends State<PrivacySuccessScreen> {
                     onPressed: () {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
-                        AppRoutes.homepage,
+                        AppRoutes.mainPage,
                         (route) => false,
                       );
                     },

@@ -1,3 +1,9 @@
+String _parseString(dynamic value, {String defaultValue = ''}) {
+  if (value == null) return defaultValue;
+  if (value is String) return value;
+  return value.toString();
+}
+
 /// Model untuk journey progress yang disimpan di database
 /// ✅ FIXED: All fields have safe defaults - no null values
 class JourneyProgress {
@@ -8,6 +14,7 @@ class JourneyProgress {
   final int dailyTargetSeconds;
   final int streakCount;
   final String? lastFocusDate;
+  final String? lastDayCompleted;
   final int currentLevel;
   final String createdAt;
   final String updatedAt;
@@ -20,6 +27,7 @@ class JourneyProgress {
     this.dailyTargetSeconds = 300,
     this.streakCount = 0,
     this.lastFocusDate,
+    this.lastDayCompleted,
     this.currentLevel = 1,
     required this.createdAt,
     required this.updatedAt,
@@ -42,6 +50,7 @@ class JourneyProgress {
       'dailyTargetSeconds': dailyTargetSeconds,
       'streakCount': streakCount,
       'lastFocusDate': lastFocusDate,
+      'lastDayCompleted': lastDayCompleted,
       'currentLevel': currentLevel,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -49,18 +58,18 @@ class JourneyProgress {
   }
 
   factory JourneyProgress.fromMap(Map<String, dynamic> map) {
-    // ✅ SAFE: All values extracted with default fallbacks
     return JourneyProgress(
       id: map['id'] as int?,
-      userId: map['userId'] as String? ?? 'default_user',
+      userId: _parseString(map['userId'], defaultValue: 'default_user'),
       totalDays: (map['totalDays'] as int?) ?? 0,
       todayFocusSeconds: (map['todayFocusSeconds'] as int?) ?? 0,
       dailyTargetSeconds: (map['dailyTargetSeconds'] as int?) ?? 300,
       streakCount: (map['streakCount'] as int?) ?? 0,
-      lastFocusDate: map['lastFocusDate'] as String?,
+      lastFocusDate: map['lastFocusDate'] != null ? _parseString(map['lastFocusDate']) : null,
+      lastDayCompleted: map['lastDayCompleted'] != null ? _parseString(map['lastDayCompleted']) : null,
       currentLevel: (map['currentLevel'] as int?) ?? 1,
-      createdAt: (map['createdAt'] as String?) ?? DateTime.now().toIso8601String(),
-      updatedAt: (map['updatedAt'] as String?) ?? DateTime.now().toIso8601String(),
+      createdAt: map['createdAt'] != null ? _parseString(map['createdAt']) : DateTime.now().toIso8601String(),
+      updatedAt: map['updatedAt'] != null ? _parseString(map['updatedAt']) : DateTime.now().toIso8601String(),
     );
   }
 
@@ -72,6 +81,7 @@ class JourneyProgress {
     int? dailyTargetSeconds,
     int? streakCount,
     String? lastFocusDate,
+    String? lastDayCompleted,
     int? currentLevel,
     String? createdAt,
     String? updatedAt,
@@ -84,6 +94,7 @@ class JourneyProgress {
       dailyTargetSeconds: dailyTargetSeconds ?? this.dailyTargetSeconds,
       streakCount: streakCount ?? this.streakCount,
       lastFocusDate: lastFocusDate ?? this.lastFocusDate,
+      lastDayCompleted: lastDayCompleted ?? this.lastDayCompleted,
       currentLevel: currentLevel ?? this.currentLevel,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

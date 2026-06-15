@@ -38,7 +38,10 @@ class _GreenAlternativeTaskListPageState
     super.initState();
     // Trigger data fetch saat halaman dibuka
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MindyBantuAkuCubit>().selectEnergyLevel(widget.energyLevel);
+      context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+        energyLevel: widget.energyLevel,
+        category: widget.category,
+      );
     });
   }
 

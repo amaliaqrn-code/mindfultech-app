@@ -79,15 +79,15 @@ class HomepageCubit extends Cubit<HomepageState> {
   }
 
   /// Load emotion session count from database
-  /// ✅ FIX: Selalu reload dari database untuk dapat data terbaru
   Future<void> loadEmotionData() async {
     try {
-      // Check for updates from JourneyCubit
       _checkForEmojiUpdates();
 
-      final sessions = await _databaseHelper.getRecentFocusSessions();
+      final user = _authLocalDataSource.getUser();
+      final userId = user?.id.toString();
 
-      // Konversi data emosi dari DB ke List<int> (emoji index)
+      final sessions = await _databaseHelper.getRecentFocusSessions(userId: userId);
+
       final List<int> indices = sessions.map((s) => s.emotion.index).toList();
 
       emit(state.copyWith(

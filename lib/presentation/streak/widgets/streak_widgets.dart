@@ -132,13 +132,19 @@ class StreakInfo extends StatelessWidget {
 
   const StreakInfo({super.key, required this.currentStreak, required this.theme});
 
+  String get _description {
+    if (currentStreak == 0) return 'Mulai streak pertamamu';
+    if (currentStreak == 1) return 'Kamu sudah mencapai 1 hari streak';
+    return 'Kamu sudah mencapai $currentStreak hari streak';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
-          'Streak kamu saat ini',
-          style: TextStyle(
+        Text(
+          _description,
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Color(0xFF4B5563),
@@ -153,9 +159,9 @@ class StreakInfo extends StatelessWidget {
             Text(
               '$currentStreak',
               style: TextStyle(
-                fontSize: 64, // Lebih besar menyerupai Figma
+                fontSize: 64,
                 fontWeight: FontWeight.bold,
-                color: theme.mainColor, // Warna teks berubah sesuai level!
+                color: theme.mainColor,
                 height: 1,
               ),
             ),

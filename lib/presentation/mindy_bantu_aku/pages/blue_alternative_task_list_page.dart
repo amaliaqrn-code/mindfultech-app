@@ -14,7 +14,7 @@ import 'package:mindfultech_app/presentation/mindy_bantu_aku/cubit/mindy_bantu_a
 
 class BlueAlternativeTaskListPage extends StatefulWidget {
   final TaskCategory category;
-  final String? excludeTaskId;
+  final int? excludeTaskId;
   final EnergyLevel energyLevel;
 
   const BlueAlternativeTaskListPage({
@@ -37,7 +37,10 @@ class _BlueAlternativeTaskListPageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MindyBantuAkuCubit>().selectEnergyLevel(widget.energyLevel);
+      context.read<MindyBantuAkuCubit>().fetchInitialRecommendations(
+        energyLevel: widget.energyLevel,
+        category: widget.category,
+      );
     });
   }
 

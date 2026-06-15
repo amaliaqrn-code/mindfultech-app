@@ -33,7 +33,7 @@ class CreateTaskResponseModel {
 
   factory CreateTaskResponseModel.fromMap(Map<String, dynamic> json) =>
       CreateTaskResponseModel(
-        message: json["message"],
+        message: json["message"]?.toString(),
         data: CreateTaskData.fromMap(json["data"]),
       );
 
@@ -75,16 +75,16 @@ class CreateTaskData {
   String toJson() => json.encode(toMap());
 
   factory CreateTaskData.fromMap(Map<String, dynamic> json) => CreateTaskData(
-        id: json["id"],
-        userId: json["user_id"],
-        categoryId: json["category_id"],
-        title: json["title"],
-        description: json["description"],
-        difficulty: json["difficulty"],
-        deadline: json["deadline"],
-        isCompleted: json["is_completed"],
-        createdAt: json["created_at"],
-        updatedAt: json["updated_at"],
+        id: json["id"] is int ? json["id"] : int.tryParse('${json["id"]}') ?? 0,
+        userId: json["user_id"] is int ? json["user_id"] : int.tryParse('${json["user_id"]}'),
+        categoryId: json["category_id"] is int ? json["category_id"] : int.tryParse('${json["category_id"]}'),
+        title: json["title"]?.toString() ?? '',
+        description: json["description"]?.toString(),
+        difficulty: json["difficulty"]?.toString(),
+        deadline: json["deadline"]?.toString(),
+        isCompleted: json["is_completed"] is int ? json["is_completed"] : int.tryParse('${json["is_completed"]}'),
+        createdAt: json["created_at"]?.toString(),
+        updatedAt: json["updated_at"]?.toString(),
       );
 
   Map<String, dynamic> toMap() => {

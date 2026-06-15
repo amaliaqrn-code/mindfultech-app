@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mindfultech_app/core/database/database_helper.dart';
 import 'package:mindfultech_app/data/repositories/task_repository.dart';
 import 'package:mindfultech_app/presentation/task/models/task_model.dart';
 import 'mindy_bantu_aku_state.dart';
@@ -23,6 +24,30 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
   }
 
   // ============================================================
+  // FALLBACK - DefaultTaskHelper ketika DB kosong
+  // ============================================================
+
+  List<TaskModel> _createFallbackTasks(EnergyLevel energyLevel, {TaskCategory? category}) {
+    if (category != null) {
+      return [DefaultTaskHelper.createDefaultTask(energi: energyLevel, kategori: category)];
+    }
+    return TaskCategory.values.map((cat) =>
+      DefaultTaskHelper.createDefaultTask(energi: energyLevel, kategori: cat)
+    ).toList();
+  }
+
+  /// Simpan fallback task ke DB supaya muncul di kueri berikutnya
+  Future<void> _saveFallbackTask(TaskModel task) async {
+    try {
+      final db = DatabaseHelper();
+      final userId = _taskRepository.getUserId();
+      if (userId == null) return;
+      final saved = task.copyWith(id: DateTime.now().millisecondsSinceEpoch, userId: userId);
+      await db.insertTask(saved);
+    } catch (_) {}
+  }
+
+  // ============================================================
   // SET ENERGY LEVEL - Pilih level energi user
   // ============================================================
 
@@ -36,21 +61,20 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
     ));
 
     try {
-      final tasks = await _taskRepository.getRecommendedTasks(energyLevel);
+      var tasks = await _taskRepository.getRecommendedTasks(energyLevel);
 
       if (tasks.isEmpty) {
-        emit(state.copyWith(
-          status: MindyBantuAkuStatus.empty,
-          recommendedTasks: [],
-          primaryRecommendation: null,
-        ));
-      } else {
-        emit(state.copyWith(
-          status: MindyBantuAkuStatus.success,
-          recommendedTasks: tasks,
-          primaryRecommendation: tasks.firstOrNull,
-        ));
+        tasks = _createFallbackTasks(energyLevel);
+        for (final t in tasks) {
+          await _saveFallbackTask(t);
+        }
       }
+
+      emit(state.copyWith(
+        status: MindyBantuAkuStatus.success,
+        recommendedTasks: tasks,
+        primaryRecommendation: tasks.firstOrNull,
+      ));
     } catch (e) {
       emit(state.copyWith(
         status: MindyBantuAkuStatus.failure,
@@ -74,24 +98,23 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
     ));
 
     try {
-      final tasks = await _taskRepository.getRecommendedTasksByCategory(
+      var tasks = await _taskRepository.getRecommendedTasksByCategory(
         state.selectedEnergyLevel!,
         category,
       );
 
       if (tasks.isEmpty) {
-        emit(state.copyWith(
-          status: MindyBantuAkuStatus.empty,
-          recommendedTasks: [],
-          primaryRecommendation: null,
-        ));
-      } else {
-        emit(state.copyWith(
-          status: MindyBantuAkuStatus.success,
-          recommendedTasks: tasks,
-          primaryRecommendation: tasks.firstOrNull,
-        ));
+        tasks = _createFallbackTasks(state.selectedEnergyLevel!, category: category);
+        for (final t in tasks) {
+          await _saveFallbackTask(t);
+        }
       }
+
+      emit(state.copyWith(
+        status: MindyBantuAkuStatus.success,
+        recommendedTasks: tasks,
+        primaryRecommendation: tasks.firstOrNull,
+      ));
     } catch (e) {
       emit(state.copyWith(
         status: MindyBantuAkuStatus.failure,
@@ -101,51 +124,49 @@ class MindyBantuAkuCubit extends Cubit<MindyBantuAkuState> {
   }
 
   // ============================================================
-// INITIAL FETCH - Untuk Halaman Rekomendasi
-// ============================================================
+  // INITIAL FETCH - Untuk Halaman Rekomendasi
+  // ============================================================
 
-/// Mengambil rekomendasi berdasarkan Energi DAN Kategori sekaligus tanpa konflik state
-Future<void> fetchInitialRecommendations({
-  required EnergyLevel energyLevel,
-  TaskCategory? category,
-}) async {
-  emit(state.copyWith(
-    status: MindyBantuAkuStatus.loading,
-    selectedEnergyLevel: energyLevel,
-    selectedCategory: category, // Langsung pasang jika ada, tidak di-clear
-    clearError: true,
-  ));
+  /// Mengambil rekomendasi berdasarkan Energi DAN Kategori sekaligus tanpa konflik state
+  Future<void> fetchInitialRecommendations({
+    required EnergyLevel energyLevel,
+    TaskCategory? category,
+  }) async {
+    emit(state.copyWith(
+      status: MindyBantuAkuStatus.loading,
+      selectedEnergyLevel: energyLevel,
+      selectedCategory: category,
+      clearError: true,
+    ));
 
-  try {
-    List<TaskModel> tasks;
-    
-    // Jika ada kategori, cari spesifik. Jika tidak, cari berdasarkan energi saja.
-    if (category != null) {
-      tasks = await _taskRepository.getRecommendedTasksByCategory(energyLevel, category);
-    } else {
-      tasks = await _taskRepository.getRecommendedTasks(energyLevel);
-    }
+    try {
+      var tasks = <TaskModel>[];
+      
+      if (category != null) {
+        tasks = await _taskRepository.getRecommendedTasksByCategory(energyLevel, category);
+      } else {
+        tasks = await _taskRepository.getRecommendedTasks(energyLevel);
+      }
 
-    if (tasks.isEmpty) {
-      emit(state.copyWith(
-        status: MindyBantuAkuStatus.empty,
-        recommendedTasks: [],
-        primaryRecommendation: null,
-      ));
-    } else {
+      if (tasks.isEmpty) {
+        tasks = _createFallbackTasks(energyLevel, category: category);
+        for (final t in tasks) {
+          await _saveFallbackTask(t);
+        }
+      }
+
       emit(state.copyWith(
         status: MindyBantuAkuStatus.success,
         recommendedTasks: tasks,
         primaryRecommendation: tasks.firstOrNull,
       ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: MindyBantuAkuStatus.failure,
+        errorMessage: 'Gagal memuat rekomendasi: ${e.toString()}',
+      ));
     }
-  } catch (e) {
-    emit(state.copyWith(
-      status: MindyBantuAkuStatus.failure,
-      errorMessage: 'Gagal memuat rekomendasi: ${e.toString()}',
-    ));
   }
-}
 
   // ============================================================
   // SELECT RECOMMENDATION - Pilih tugas dari daftar
@@ -177,11 +198,20 @@ Future<void> fetchInitialRecommendations({
   // GET TASKS BY ENERGY - Helper untuk UI
   // ============================================================
 
-  /// Helper untuk mendapatkan semua task berdasarkan energi
-  /// (tanpa filter kategori) - untuk halaman alternatif
-  Future<List<TaskModel>> getTasksByEnergy(EnergyLevel energyLevel) async {
+  /// Helper untuk mendapatkan semua task berdasarkan energi dan kategori
+  Future<List<TaskModel>> getTasksByEnergy(EnergyLevel energyLevel, {TaskCategory? category}) async {
     try {
-      return await _taskRepository.getRecommendedTasks(energyLevel);
+      var tasks = category != null
+          ? await _taskRepository.getRecommendedTasksByCategory(energyLevel, category)
+          : await _taskRepository.getRecommendedTasks(energyLevel);
+
+      if (tasks.isEmpty) {
+        tasks = _createFallbackTasks(energyLevel, category: category);
+        for (final t in tasks) {
+          await _saveFallbackTask(t);
+        }
+      }
+      return tasks;
     } catch (e) {
       return [];
     }

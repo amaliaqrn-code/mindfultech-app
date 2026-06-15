@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 4,
+      version: 6,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -49,10 +49,10 @@ class DatabaseHelper {
         prioritas INTEGER NOT NULL,
         createdAt TEXT NOT NULL,
         userId TEXT,
-        isDefault INTEGER DEFAULT 0
+        isDefault INTEGER DEFAULT 0,
+        isCompleted INTEGER DEFAULT 0
       )
     ''');
-
     await db.execute('''
       CREATE INDEX idx_tasks_userId ON tasks(userId)
     ''');
@@ -67,6 +67,7 @@ class DatabaseHelper {
         dailyTargetSeconds INTEGER DEFAULT 300,
         streakCount INTEGER DEFAULT 0,
         lastFocusDate TEXT,
+        lastDayCompleted TEXT,
         currentLevel INTEGER DEFAULT 1,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL
@@ -107,18 +108,19 @@ class DatabaseHelper {
     if (oldVersion < 3) {
       try {
         await db.execute('''
-          CREATE TABLE journey_progress (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            userId TEXT NOT NULL,
-            totalDays INTEGER DEFAULT 0,
-            todayFocusSeconds INTEGER DEFAULT 0,
-            dailyTargetSeconds INTEGER DEFAULT 300,
-            streakCount INTEGER DEFAULT 0,
-            lastFocusDate TEXT,
-            currentLevel INTEGER DEFAULT 1,
-            createdAt TEXT NOT NULL,
-            updatedAt TEXT NOT NULL
-          )
+            CREATE TABLE journey_progress (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              userId TEXT NOT NULL,
+              totalDays INTEGER DEFAULT 0,
+              todayFocusSeconds INTEGER DEFAULT 0,
+              dailyTargetSeconds INTEGER DEFAULT 300,
+              streakCount INTEGER DEFAULT 0,
+              lastFocusDate TEXT,
+              lastDayCompleted TEXT,
+              currentLevel INTEGER DEFAULT 1,
+              createdAt TEXT NOT NULL,
+              updatedAt TEXT NOT NULL
+            )
         ''');
         await db.execute('CREATE INDEX idx_journey_userId ON journey_progress(userId)');
       } catch (_) {}
@@ -140,6 +142,26 @@ class DatabaseHelper {
         ''');
         await db.execute('CREATE INDEX idx_focus_sessions_userId ON focus_sessions(userId)');
       } catch (_) {}
+    }
+
+    // Migrasi untuk isCompleted di tasks + lastDayCompleted di journey_progress (versi 5)
+    if (oldVersion < 5) {
+      try {
+        await db.execute('ALTER TABLE tasks ADD COLUMN isCompleted INTEGER DEFAULT 0');
+      } catch (_) {}
+      try {
+        await db.execute('ALTER TABLE journey_progress ADD COLUMN lastDayCompleted TEXT');
+      } catch (_) {}
+    }
+
+    // Migrasi untuk lastDayCompleted di journey_progress - perbaikan (versi 6)
+    // SQLite kadang swallow error di ALTER TABLE di versi 5 akibat column sudah ada/tidak ada
+    if (oldVersion < 6) {
+      try {
+        await db.execute('ALTER TABLE journey_progress ADD COLUMN lastDayCompleted TEXT');
+      } catch (_) {
+        // Column mungkin sudah ada dari migrasi v5, abaikan
+      }
     }
   }
 
@@ -224,6 +246,7 @@ class DatabaseHelper {
     int? todayFocusSeconds,
     int? streakCount,
     String? lastFocusDate,
+    String? lastDayCompleted,
     int? currentLevel,
   }) async {
     final db = await database;
@@ -234,6 +257,7 @@ class DatabaseHelper {
     if (todayFocusSeconds != null) updates['todayFocusSeconds'] = todayFocusSeconds;
     if (streakCount != null) updates['streakCount'] = streakCount;
     if (lastFocusDate != null) updates['lastFocusDate'] = lastFocusDate;
+    if (lastDayCompleted != null) updates['lastDayCompleted'] = lastDayCompleted;
     if (currentLevel != null) updates['currentLevel'] = currentLevel;
 
     await db.update(
@@ -267,6 +291,51 @@ class DatabaseHelper {
       where: 'userId = ?',
       whereArgs: [userId],
     );
+  }
+
+  /// Ambil jumlah task yang sudah selesai untuk user hari ini
+  Future<int> getCompletedTasksCountToday(String userId) async {
+    final db = await database;
+    final today = DateTime.now();
+    final startOfDay = DateTime(today.year, today.month, today.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM tasks WHERE userId = ? AND isCompleted = 1 AND createdAt >= ? AND createdAt < ?',
+      [userId, startOfDay.toIso8601String(), endOfDay.toIso8601String()],
+    );
+    return result.first['count'] as int? ?? 0;
+  }
+
+  /// Ambil jumlah total task untuk user hari ini
+  Future<int> getTotalTasksCountToday(String userId) async {
+    final db = await database;
+    final today = DateTime.now();
+    final startOfDay = DateTime(today.year, today.month, today.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM tasks WHERE userId = ? AND createdAt >= ? AND createdAt < ?',
+      [userId, startOfDay.toIso8601String(), endOfDay.toIso8601String()],
+    );
+    return result.first['count'] as int? ?? 0;
+  }
+
+  /// Ambil tanggal last day completion untuk user
+  Future<String?> getLastDayCompletedDate(String userId) async {
+    final db = await database;
+    final result = await db.rawQuery(
+      'SELECT lastDayCompleted FROM journey_progress WHERE userId = ?',
+      [userId],
+    );
+    if (result.isEmpty) return null;
+    final val = result.first['lastDayCompleted'];
+    if (val == null) return null;
+    if (val is String) return val;
+    return val.toString();
+  }
+
+  /// Update lastDayCompleted
+  Future<void> updateLastDayCompleted(String userId, String date) async {
+    await updateJourneyProgress(userId: userId, lastDayCompleted: date);
   }
 
   /// Increment streak
@@ -380,37 +449,19 @@ class DatabaseHelper {
   Future<List<TaskModel>> getTasksByEnergyLevel(EnergyLevel energyLevel, {required String userId}) async {
     final db = await database;
     final List<Map<String, dynamic>> maps;
+    final energyIndex = energyLevel.index;
 
-    switch (energyLevel) {
-      case EnergyLevel.rendah:
-        maps = await db.query('tasks', where: 'energi = ? AND userId = ?', whereArgs: [0, userId], orderBy: 'prioritas ASC, createdAt DESC');
-        break;
-      case EnergyLevel.sedang:
-        maps = await db.query('tasks', where: 'energi IN (?, ?) AND userId = ?', whereArgs: [0, 1, userId], orderBy: 'prioritas ASC, createdAt DESC');
-        break;
-      case EnergyLevel.tinggi:
-        maps = await db.query('tasks', where: 'userId = ?', whereArgs: [userId], orderBy: 'prioritas ASC, createdAt DESC');
-        break;
-    }
+    maps = await db.query('tasks', where: 'energi = ? AND userId = ?', whereArgs: [energyIndex, userId], orderBy: 'prioritas ASC, createdAt DESC');
 
     return List.generate(maps.length, (i) => TaskModel.fromMap(maps[i]));
   }
 
   Future<List<TaskModel>> getTasksByEnergyAndCategory(EnergyLevel energyLevel, TaskCategory category, {required String userId}) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps;
+    final energyIndex = energyLevel.index;
+    final categoryIndex = category.index;
 
-    switch (energyLevel) {
-      case EnergyLevel.rendah:
-        maps = await db.query('tasks', where: 'energi = ? AND kategori = ? AND userId = ?', whereArgs: [0, category.index, userId], orderBy: 'prioritas ASC, createdAt DESC');
-        break;
-      case EnergyLevel.sedang:
-        maps = await db.query('tasks', where: 'energi IN (?, ?) AND kategori = ? AND userId = ?', whereArgs: [0, 1, category.index, userId], orderBy: 'prioritas ASC, createdAt DESC');
-        break;
-      case EnergyLevel.tinggi:
-        maps = await db.query('tasks', where: 'kategori = ? AND userId = ?', whereArgs: [category.index, userId], orderBy: 'prioritas ASC, createdAt DESC');
-        break;
-    }
+    final maps = await db.query('tasks', where: 'energi = ? AND kategori = ? AND userId = ?', whereArgs: [energyIndex, categoryIndex, userId], orderBy: 'prioritas ASC, createdAt DESC');
 
     return List.generate(maps.length, (i) => TaskModel.fromMap(maps[i]));
   }
@@ -499,18 +550,27 @@ class DatabaseHelper {
     return result.map((r) => r['emotion'] as int).toList();
   }
 
-  /// ✅ FIX: Ambil data sesi fokus terbaru (maksimal 6 sesi sesuai jumlah slot awan)
-  ///    Method ini di dalam class — `database` resolve dengan benar
-  ///    Urutkan berdasarkan dayNumber agar emoji muncul di slot yang benar
-  Future<List<FocusSessionModel>> getRecentFocusSessions() async {
+  /// Ambil data sesi fokus terbaru untuk user tertentu (maksimal 6 sesi)
+  Future<List<FocusSessionModel>> getRecentFocusSessions({String? userId}) async {
     try {
       final db = await database;
 
-      final List<Map<String, dynamic>> maps = await db.query(
-        'focus_sessions',
-        orderBy: 'dayNumber ASC, createdAt DESC', // ✅ Order by dayNumber ASC
-        limit: 6,
-      );
+      final List<Map<String, dynamic>> maps;
+      if (userId != null && userId.isNotEmpty) {
+        maps = await db.query(
+          'focus_sessions',
+          where: 'userId = ?',
+          whereArgs: [userId],
+          orderBy: 'dayNumber ASC, createdAt DESC',
+          limit: 6,
+        );
+      } else {
+        maps = await db.query(
+          'focus_sessions',
+          orderBy: 'dayNumber ASC, createdAt DESC',
+          limit: 6,
+        );
+      }
 
       return List.generate(maps.length, (i) {
         return FocusSessionModel.fromMap(maps[i]);

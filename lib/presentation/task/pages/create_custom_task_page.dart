@@ -104,7 +104,7 @@ class _CreateCustomTaskPageState extends State<CreateCustomTaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryName = _selectedCategory?['name'] as String? ?? 'Belajar';
+    final categoryName = _selectedCategory?['name']?.toString() ?? 'Belajar';
     const primaryBlue = Color(0xFF4191FF);
 
     return BlocListener<TaskBloc, TaskState>(
